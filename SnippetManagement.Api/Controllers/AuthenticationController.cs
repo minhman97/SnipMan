@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SnippetManagement.Api.Model;
+using SnippetManagement.Api.Services;
 
 namespace SnippetManagement.Api.Controllers;
 
@@ -7,8 +8,16 @@ namespace SnippetManagement.Api.Controllers;
 [Route("[controller]")]
 public class AuthenticationController : ControllerBase
 {
-   public IActionResult GetAuthToken(UserCredentials userCredentials)
+   private readonly IAuthenticationService _authenticationService;
+
+   public AuthenticationController(IAuthenticationService authenticationService)
    {
-      return Ok();
+      _authenticationService = authenticationService;
+   }
+
+   [HttpPost]
+   public async Task<IActionResult> GetAuthToken(UserCredentials userCredentials)
+   {
+      return Ok(await _authenticationService.GetToken(new UserCredentials() { UserName = "a", Password = "a" }));
    }
 }
