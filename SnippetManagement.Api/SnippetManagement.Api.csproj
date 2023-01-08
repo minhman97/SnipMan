@@ -23,4 +23,9 @@
       <ProjectReference Include="..\SnippetManagement.Service\SnippetManagement.Service.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Model" />
+      <Folder Include="Services" />
+    </ItemGroup>
+
 </Project>

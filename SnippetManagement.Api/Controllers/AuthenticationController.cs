@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SnippetManagement.Api.Model;
-using SnippetManagement.Api.Services;
+using SnippetManagement.Service;
+using SnippetManagement.Service.Model;
 
 namespace SnippetManagement.Api.Controllers;
 

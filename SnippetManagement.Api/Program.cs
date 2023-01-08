@@ -1,13 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using SnippetManagement.Data;
-using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SnippetManagement.Api.Services;
-using SnippetManagement.Api.Services.Implementation;
+using SnippetManagement.Service;
+using SnippetManagement.Service.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
