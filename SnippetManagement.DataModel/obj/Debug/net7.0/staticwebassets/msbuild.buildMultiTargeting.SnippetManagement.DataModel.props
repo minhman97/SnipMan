@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\SnippetManagement.DataModel.props" />
+</Project>
