@@ -11,6 +11,7 @@ public class JwtConfiguration
     public string? IssuerSigningKey { get; set; }
     public string? ValidAudience { get; set; }
     public string? ValidIssuer { get; set; }
+    public int ExpiringDays { get; set; }
 }
 
 public class AuthenticationService : IAuthenticationService
@@ -39,13 +40,12 @@ public class AuthenticationService : IAuthenticationService
 
     private SecurityTokenDescriptor GetTokenDescriptor()
     {
-        const int expiringDays = 1;
-        byte[] securityKey = Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey ?? string.Empty);
+        byte[] securityKey = Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey);
         var symmetricSecurityKey = new SymmetricSecurityKey(securityKey);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Expires = DateTime.UtcNow.AddDays(expiringDays),
+            Expires = DateTime.UtcNow.AddDays(_jwtConfiguration.ExpiringDays),
             SigningCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature),
             Audience = _jwtConfiguration.ValidAudience,
             Issuer = _jwtConfiguration.ValidIssuer

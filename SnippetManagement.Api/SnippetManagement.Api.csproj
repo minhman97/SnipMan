@@ -12,7 +12,6 @@
         <PackageReference Include="RestSharp" Version="108.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.6" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,11 +20,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SnippetManagement.Service\SnippetManagement.Service.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Model" />
-      <Folder Include="Services" />
     </ItemGroup>
 
 </Project>
