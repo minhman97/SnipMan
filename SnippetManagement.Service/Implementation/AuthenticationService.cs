@@ -8,9 +8,9 @@ namespace SnippetManagement.Service.Implementation;
 
 public class JwtConfiguration
 {
-    public string? IssuerSigningKey { get; set; }
-    public string? ValidAudience { get; set; }
-    public string? ValidIssuer { get; set; }
+    public string IssuerSigningKey { get; set; }
+    public string ValidAudience { get; set; }
+    public string ValidIssuer { get; set; }
     public int ExpiringDays { get; set; }
 }
 

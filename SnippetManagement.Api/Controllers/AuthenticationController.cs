@@ -18,6 +18,6 @@ public class AuthenticationController : ControllerBase
    [HttpPost]
    public async Task<IActionResult> GetAuthToken(UserCredentials userCredentials)
    {
-      return Ok(await _authenticationService.GetToken(new UserCredentials() { UserName = "a", Password = "a" }));
+      return Ok(await _authenticationService.GetToken(userCredentials));
    }
 }
