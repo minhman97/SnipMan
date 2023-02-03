@@ -17,16 +17,18 @@ public class JwtConfiguration
 public class AuthenticationService : IAuthenticationService
 {
     private readonly JwtConfiguration _jwtConfiguration;
+    private readonly IUserService _userService;
 
-    public AuthenticationService(IOptions<JwtConfiguration> jwtConfiguration)
+    public AuthenticationService(IOptions<JwtConfiguration> jwtConfiguration, IUserService userService)
     {
+        _userService = userService;
         _jwtConfiguration = jwtConfiguration.Value;
     }
 
     public async Task<string> GetToken(UserCredentials userCredentials)
     {
-        //TODO: Get user to create token
-        if (userCredentials is { UserName: "a", Password: "a" })
+        var user = await _userService.Get(userCredentials.Email);
+        if (user != null && BCrypt.Net.BCrypt.Verify(userCredentials.Password, user.Password))
         {
             SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor();
             var tokenHandler = new JwtSecurityTokenHandler();

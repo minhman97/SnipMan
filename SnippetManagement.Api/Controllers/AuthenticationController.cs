@@ -9,7 +9,7 @@ namespace SnippetManagement.Api.Controllers;
 public class AuthenticationController : ControllerBase
 {
    private readonly IAuthenticationService _authenticationService;
-
+   
    public AuthenticationController(IAuthenticationService authenticationService)
    {
       _authenticationService = authenticationService;
@@ -18,6 +18,12 @@ public class AuthenticationController : ControllerBase
    [HttpPost]
    public async Task<IActionResult> GetAuthToken(UserCredentials userCredentials)
    {
-      return Ok(await _authenticationService.GetToken(userCredentials));
+      var token = await _authenticationService.GetToken(userCredentials);
+      if (string.IsNullOrEmpty(token))
+      {
+         ModelState.AddModelError(string.Empty, "Invalid login");
+         return BadRequest(ModelState);
+      }
+      return Ok(token);
    }
 }
