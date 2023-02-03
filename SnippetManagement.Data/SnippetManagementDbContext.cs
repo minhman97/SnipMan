@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SnippetManagement.Data.Configurations;
 
 namespace SnippetManagement.Data;
 
@@ -11,6 +12,7 @@ public class SnippetManagementDbContext: DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-       
+
+        builder.ApplyConfiguration(new UserConfiguration());
     }
 }
