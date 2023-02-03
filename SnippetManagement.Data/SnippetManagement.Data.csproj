@@ -15,8 +15,4 @@
     <ItemGroup>
       <ProjectReference Include="..\SnippetManagement.DataModel\SnippetManagement.DataModel.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Migrations" />
-    </ItemGroup>
 </Project>
