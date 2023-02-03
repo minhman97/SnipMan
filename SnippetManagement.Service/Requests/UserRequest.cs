@@ -1,7 +1,8 @@
-﻿namespace SnippetManagement.Service.Model;
+namespace SnippetManagement.Service.Requests;
 
-public class UserCredentials
+public class CreateUserRequest
 {
     public string Email { get; set; }
     public string Password { get; set; }
 }
+
