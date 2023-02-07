@@ -36,6 +36,9 @@ builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.Ge
 
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISnippetService, SnippetService>();
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ISnippetTagService, SnippetTagService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
