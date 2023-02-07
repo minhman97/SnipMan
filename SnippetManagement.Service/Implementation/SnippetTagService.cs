@@ -8,14 +8,10 @@ namespace SnippetManagement.Service.Implementation;
 public class SnippetTagService : ISnippetTagService
 {
     private SnippetManagementDbContext _context;
-    private readonly ISnippetService _snippetService;
-    private readonly ITagService _tagService;
 
-    public SnippetTagService(SnippetManagementDbContext context, ISnippetService snippetService, ITagService tagService)
+    public SnippetTagService(SnippetManagementDbContext context)
     {
         _context = context;
-        _snippetService = snippetService;
-        _tagService = tagService;
     }
 
     public async Task Create(CreateSnippetTagRequest request)
@@ -26,23 +22,5 @@ public class SnippetTagService : ISnippetTagService
             TagId = request.TagId
         });
         await _context.SaveChangesAsync();
-    }
-    
-    public IEnumerable<SnippetTagDto> MapSnippetTag(IEnumerable<SnippetTag> snippetTags)
-    {
-        if (snippetTags is null)
-            return null;
-        var list = new List<SnippetTagDto>();
-        foreach (var snippetTag in snippetTags)
-        {
-            list.Add(new SnippetTagDto()
-            {
-                SnippetId = snippetTag.SnippetId,
-                TagId = snippetTag.TagId,
-                Tag = _tagService.Map(snippetTag.Tag),
-                Snippet = _snippetService.Map(snippetTag.Snippet)
-            });
-        }
-        return list;
     }
 }

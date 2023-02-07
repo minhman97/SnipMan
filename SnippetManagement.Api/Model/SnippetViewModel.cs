@@ -1,6 +1,6 @@
-namespace SnippetManagement.Service.Model;
+namespace SnippetManagement.Api.Model;
 
-public class SnippetDto
+public class SnippetViewModel
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -9,6 +9,4 @@ public class SnippetDto
     public string Origin { get; set; }
     public DateTimeOffset Created { get; set; }
     public DateTimeOffset? Modified { get; set; }
-    
-    public IEnumerable<TagDto> Tags { get; set; }
 }

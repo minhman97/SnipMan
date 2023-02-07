@@ -5,5 +5,5 @@ public class TagDto
     public Guid Id { get; set; }
     public string TagName { get; set; }
 
-    public IEnumerable<SnippetTagDto> Snippets { get; set; }
+    public IEnumerable<SnippetDto> Snippets { get; set; }
 }

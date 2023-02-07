@@ -6,6 +6,5 @@ namespace SnippetManagement.Service;
 
 public interface ISnippetTagService
 {
-    IEnumerable<SnippetTagDto> MapSnippetTag(IEnumerable<SnippetTag> snippetTags);
     Task Create(CreateSnippetTagRequest request);
 }

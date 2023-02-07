@@ -37,6 +37,21 @@ public class SnippetService : ISnippetService
         return Map(await _context.Set<DataModel.Snippet>().FindAsync(id));
     }
 
+    public async Task<SnippetDto> Update(UpdateSnippetRequest request)
+    {
+        var snippet = await _context.Set<DataModel.Snippet>().FindAsync(request.Id);
+        if (snippet is null)
+            return null;
+        snippet.Content = request.Content;
+        snippet.Description = request.Description;
+        snippet.Name = snippet.Name;
+        snippet.Modified = DateTimeOffset.UtcNow;
+
+        _context.Update(snippet);
+        await _context.SaveChangesAsync();
+        return Map(snippet);
+    }
+
     public async Task Delete(Guid id)
     {
         var snippet = await _context.Set<DataModel.Snippet>().FindAsync(id);
@@ -47,7 +62,7 @@ public class SnippetService : ISnippetService
         }
     }
 
-    public SnippetDto Map(Snippet snippet)
+    private SnippetDto Map(Snippet snippet)
     {
         if (snippet is null)
             return null;
@@ -60,7 +75,21 @@ public class SnippetService : ISnippetService
             Origin = snippet.Origin,
             Created = snippet.Created,
             Modified = snippet.Modified,
-            Tags = _snippetTagService.MapSnippetTag(snippet.Tags)
+            Tags = MapTag(snippet.Tags)
         };
+    }
+
+    private IEnumerable<TagDto> MapTag(IEnumerable<SnippetTag> tags)
+    {
+        var list = new List<TagDto>();
+        foreach (var tag in tags)
+        {
+            list.Add(new TagDto()
+            {
+                Id = tag.TagId,
+                TagName = tag.Tag.TagName,
+            });
+        }
+        return list;
     }
 }

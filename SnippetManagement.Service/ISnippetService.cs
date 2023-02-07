@@ -6,8 +6,8 @@ namespace SnippetManagement.Service;
 
 public interface ISnippetService
 {
-    SnippetDto Map(Snippet snippet);
     Task<SnippetDto> Create(CreateSnippetRequest request);
     Task<SnippetDto> Get(Guid id);
     Task Delete(Guid id);
+    Task<SnippetDto> Update(UpdateSnippetRequest request);
 }

@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using SnippetManagement.Data;
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SnippetManagement.Api.Model;
+using SnippetManagement.Api.Model.Validator;
 using SnippetManagement.Service;
 using SnippetManagement.Service.Implementation;
 
@@ -36,9 +39,10 @@ builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.Ge
 
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISnippetTagService, SnippetTagService>();
 builder.Services.AddScoped<ISnippetService, SnippetService>();
 builder.Services.AddScoped<ITagService, TagService>();
-builder.Services.AddScoped<ISnippetTagService, SnippetTagService>();
+builder.Services.AddScoped<IValidator<SnippetViewModel>, SnippetViewModelValidator>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -39,7 +39,7 @@ public class TagService : ITagService
         }
     }
 
-    public TagDto Map(Tag tag)
+    private TagDto Map(Tag tag)
     {
         if (tag is null)
             return null;
@@ -48,7 +48,26 @@ public class TagService : ITagService
         {
             Id = tag.Id,
             TagName = tag.TagName,
-            Snippets = _snippetTagService.MapSnippetTag(tag.Snippets)
+            Snippets = MapSnippet(tag.Snippets)
         };
+    }
+
+    private IEnumerable<SnippetDto> MapSnippet(IEnumerable<SnippetTag> snippetTags)
+    {
+        var list = new List<SnippetDto>();
+        foreach (var snippetTag in snippetTags)
+        {
+            list.Add(new SnippetDto()
+            {
+                Id = snippetTag.Snippet.Id,
+                Content = snippetTag.Snippet.Content,
+                Created = snippetTag.Snippet.Created,
+                Modified = snippetTag.Snippet.Modified,
+                Description = snippetTag.Snippet.Description,
+                Name = snippetTag.Snippet.Name,
+                Origin = snippetTag.Snippet.Origin
+            });
+        }
+        return list;
     }
 }
