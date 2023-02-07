@@ -14,5 +14,9 @@ public class SnippetManagementDbContext: DbContext
         base.OnModelCreating(builder);
 
         builder.ApplyConfiguration(new UserConfiguration());
+        builder.ApplyConfiguration(new SnippetConfiguration());
+        builder.ApplyConfiguration(new TagConfiguration());
+        builder.ApplyConfiguration(new SnippetTagConfiguration());
+        
     }
 }
