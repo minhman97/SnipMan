@@ -8,4 +8,5 @@ public interface ITagService
 {
     TagDto Map(Tag tag);
     Task<TagDto> Create(CreateTagRequest request);
+    Task Delete(Guid id);
 }

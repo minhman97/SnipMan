@@ -29,6 +29,16 @@ public class TagService : ITagService
         return Map(tag);
     }
 
+    public async Task Delete(Guid id)
+    {
+        var tag = await _context.Set<DataModel.Tag>().FindAsync(id);
+        if (tag is not null)
+        {
+            _context.Remove(tag);
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public TagDto Map(Tag tag)
     {
         if (tag is null)

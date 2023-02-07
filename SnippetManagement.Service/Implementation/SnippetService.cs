@@ -32,6 +32,21 @@ public class SnippetService : ISnippetService
         return Map(snippet);
     }
 
+    public async Task<SnippetDto> Get(Guid id)
+    {
+        return Map(await _context.Set<DataModel.Snippet>().FindAsync(id));
+    }
+
+    public async Task Delete(Guid id)
+    {
+        var snippet = await _context.Set<DataModel.Snippet>().FindAsync(id);
+        if (snippet is not null)
+        {
+            _context.Remove(snippet);
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public SnippetDto Map(Snippet snippet)
     {
         if (snippet is null)
