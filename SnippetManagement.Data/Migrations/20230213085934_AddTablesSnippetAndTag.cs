@@ -21,7 +21,8 @@ namespace SnippetManagement.Data.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Origin = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "getutcdate()"),
-                    Modified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                    Modified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,13 +56,13 @@ namespace SnippetManagement.Data.Migrations
                         column: x => x.SnippetId,
                         principalTable: "Snippet",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_SnippetTag_Tag_TagId",
                         column: x => x.TagId,
                         principalTable: "Tag",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

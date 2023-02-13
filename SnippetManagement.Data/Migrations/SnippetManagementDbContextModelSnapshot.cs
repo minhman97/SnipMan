@@ -37,6 +37,9 @@ namespace SnippetManagement.Data.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasDefaultValueSql("getutcdate()");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -114,13 +117,13 @@ namespace SnippetManagement.Data.Migrations
                     b.HasOne("SnippetManagement.DataModel.Snippet", "Snippet")
                         .WithMany("Tags")
                         .HasForeignKey("SnippetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SnippetManagement.DataModel.Tag", "Tag")
                         .WithMany("Snippets")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Snippet");

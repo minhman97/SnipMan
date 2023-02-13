@@ -12,7 +12,7 @@ using SnippetManagement.Data;
 namespace SnippetManagement.Data.Migrations
 {
     [DbContext(typeof(SnippetManagementDbContext))]
-    [Migration("20230207042738_AddTablesSnippetAndTag")]
+    [Migration("20230213085934_AddTablesSnippetAndTag")]
     partial class AddTablesSnippetAndTag
     {
         /// <inheritdoc />
@@ -39,6 +39,9 @@ namespace SnippetManagement.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetimeoffset")
                         .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -117,13 +120,13 @@ namespace SnippetManagement.Data.Migrations
                     b.HasOne("SnippetManagement.DataModel.Snippet", "Snippet")
                         .WithMany("Tags")
                         .HasForeignKey("SnippetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SnippetManagement.DataModel.Tag", "Tag")
                         .WithMany("Snippets")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Snippet");
