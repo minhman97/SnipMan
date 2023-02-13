@@ -37,8 +37,16 @@ public class SnippetController : ControllerBase
             Origin = model.Origin
         }));
     }
-
+    
     [HttpGet]
+
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await _snippetService.GetAll());
+    }
+
+    [HttpGet("{id}")]
+
     public async Task<IActionResult> Get(Guid id)
     {
         var snippet = await _snippetService.Get(id);
@@ -61,5 +69,19 @@ public class SnippetController : ControllerBase
             return NotFound();
 
         return Ok(snippet);
+    }
+
+    [HttpGet]
+    [Route("search/{keySearch}", Name="Search")]
+    public async Task<IActionResult> Search(string keySearch)
+    {
+        return Ok(await _snippetService.Search(keySearch));
+    }
+    
+    [HttpDelete]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _snippetService.Delete(id);
+        return Ok();
     }
 }
