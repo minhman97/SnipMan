@@ -1,10 +1,5 @@
-using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using SnippetManagement.Api.Model;
-using SnippetManagement.Api.Model.Validator;
 using SnippetManagement.Service;
 using SnippetManagement.Service.Requests;
 
@@ -12,34 +7,24 @@ namespace SnippetManagement.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class SnippetController : ControllerBase
 {
     private readonly ISnippetService _snippetService;
-    private readonly IValidator<SnippetViewModel> _validator;
 
-    public SnippetController(ISnippetService snippetService, IValidator<SnippetViewModel> validator)
+    public SnippetController(ISnippetService snippetService)
     {
         _snippetService = snippetService;
-        _validator = validator;
     }
-
+    //write test unit
     [HttpPost]
-    public async Task<IActionResult> Create(SnippetViewModel model)
+    public async Task<IActionResult> Create(CreateSnippetRequest request)
     {
-        var result = await _validator.ValidateAsync(model);
-        if (!result.IsValid)
-            return BadRequest(result.Errors);
-        return Ok(await _snippetService.Create(new CreateSnippetRequest()
-        {
-            Content = model.Content,
-            Name = model.Name,
-            Description = model.Description,
-            Origin = model.Origin
-        }));
+        return Ok();
+        return Ok(await _snippetService.Create(request));
     }
     
     [HttpGet]
-
     public async Task<IActionResult> GetAll()
     {
         return Ok(await _snippetService.GetAll());
@@ -55,16 +40,12 @@ public class SnippetController : ControllerBase
         return Ok(snippet);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> Update(SnippetViewModel model)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, UpdateSnippetRequest request)
     {
-        var snippet = await _snippetService.Update(new UpdateSnippetRequest()
-        {
-            Id = model.Id,
-            Content = model.Content,
-            Name = model.Name,
-            Description = model.Description,
-        });
+        return Ok();
+        request.Id = id;
+        var snippet = await _snippetService.Update(request);
         if (snippet is null)
             return NotFound();
 
@@ -72,15 +53,25 @@ public class SnippetController : ControllerBase
     }
 
     [HttpGet]
-    [Route("search/{keySearch}", Name="Search")]
-    public async Task<IActionResult> Search(string keySearch)
+    [Route("search/{keyWord}", Name="Search")]
+    public async Task<IActionResult> Search(string keyWord)
     {
-        return Ok(await _snippetService.Search(keySearch));
+        return Ok(await _snippetService.Search(keyWord));
+    }
+
+    [HttpGet]
+    [Route("filter/", Name="Filter")]
+    public async Task<IActionResult> Filter([FromQuery]FilterSnippetRequest request)
+    {
+        return Ok(await _snippetService.Filter(request));
     }
     
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
+        var snippet = await _snippetService.Get(id);
+        if (snippet is null)
+            return NotFound();
         await _snippetService.Delete(id);
         return Ok();
     }

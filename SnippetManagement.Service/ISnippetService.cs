@@ -10,6 +10,7 @@ public interface ISnippetService
     Task<SnippetDto> Get(Guid id);
     Task Delete(Guid id);
     Task<SnippetDto> Update(UpdateSnippetRequest request);
-    Task<List<SnippetDto>> Search(string keySearch);
+    Task<List<SnippetDto>> Search(string keyWord);
     Task<IEnumerable<SnippetDto>> GetAll();
+    Task<List<SnippetDto>> Filter(FilterSnippetRequest request);
 }

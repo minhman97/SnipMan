@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SnippetManagement.Api.Model;
 using SnippetManagement.Service;
@@ -7,6 +8,7 @@ namespace SnippetManagement.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class UserController: ControllerBase
 {
     private readonly IUserService _userService;

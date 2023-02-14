@@ -69,9 +69,26 @@ public class SnippetService : ISnippetService
         }
     }
 
-    public async Task<List<SnippetDto>> Search(string keySearch)
+    public async Task<List<SnippetDto>> Search(string keyWord)
     {
-        var snippetDtos = _context.Set<Snippet>().Where(x=> !x.Deleted).Include(x => x.Tags).Select(x => new SnippetDto()
+        var query = GetQueryableSnippetDtos();
+        
+        var term = keyWord?.ToLower()?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        query = term.Aggregate(query,
+            (originalQuery, term) => originalQuery.Where(x => x.Name.ToLower().Contains(keyWord)
+                                                              || x.Origin.ToLower().Contains(keyWord)
+                                                              || x.Description.ToLower().Contains(keyWord)
+                                                              || x.Content.ToLower().Contains(keyWord)
+                                                              || x.Tags.Any(tagDto =>
+                                                                  tagDto.TagName.ToLower().Contains(keyWord))
+                                                              || x.Created.ToString().Contains(keyWord)
+                                                              || x.Modified.ToString().Contains(keyWord)));
+        return await query.ToListAsync();
+    }
+
+    private IQueryable<SnippetDto> GetQueryableSnippetDtos()
+    {
+        return _context.Set<Snippet>().Where(x=> !x.Deleted).Include(x => x.Tags).Select(x => new SnippetDto()
         {
             Id = x.Id,
             Name =x.Name,
@@ -86,18 +103,37 @@ public class SnippetService : ISnippetService
                 TagName = tag.Tag.TagName
             })
         });
+    }
+
+    public async Task<List<SnippetDto>> Filter(FilterSnippetRequest request)
+    {
+        var query = GetQueryableSnippetDtos();
+        if (!string.IsNullOrEmpty(request.KeyWord))
+        {
+            var term = request.KeyWord?.ToLower()?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            query = term.Aggregate(query,
+                (originalQuery, term) => originalQuery.Where(x => x.Name.ToLower().Contains(request.KeyWord)
+                                                                  || x.Origin.ToLower().Contains(request.KeyWord)
+                                                                  || x.Description.ToLower().Contains(request.KeyWord)
+                                                                  || x.Content.ToLower().Contains(request.KeyWord)
+                                                                  || x.Tags.Any(tagDto =>
+                                                                      tagDto.TagName.ToLower().Contains(request.KeyWord))
+                                                                  || x.Created.ToString().Contains(request.KeyWord)
+                                                                  || x.Modified.ToString().Contains(request.KeyWord)));
+        }
+        //TODO: filter by multiple tag
+        if (request.Tags is not null && request.Tags.Any())
+        {
+            
+        }
         
-        var term = keySearch?.ToLower()?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        snippetDtos = term.Aggregate(snippetDtos,
-            (originalQuery, term) => originalQuery.Where(x => x.Name.ToLower().Contains(keySearch)
-                                                              || x.Origin.ToLower().Contains(keySearch)
-                                                              || x.Description.ToLower().Contains(keySearch)
-                                                              || x.Content.ToLower().Contains(keySearch)
-                                                              || x.Tags.Any(tagDto =>
-                                                                  tagDto.TagName.ToLower().Contains(keySearch))
-                                                              || x.Created.ToString().Contains(keySearch)
-                                                              || x.Modified.ToString().Contains(keySearch)));
-        return snippetDtos.ToList();
+        if (request.FromDate is not null)
+            query = query.Where(x => x.Created >= request.FromDate);
+        if (request.ToDate is not null)
+            query = query.Where(x => x.Created <= request.ToDate.Value.AddDays(1));
+        
+
+        return await query.ToListAsync();
     }
 
     private SnippetDto Map(Snippet snippet)
