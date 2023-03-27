@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SnippetManagement.DataModel;
 using SnippetManagement.Service;
+using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Requests;
 
 namespace SnippetManagement.Api.Controllers;
@@ -11,19 +13,60 @@ namespace SnippetManagement.Api.Controllers;
 public class SnippetController : ControllerBase
 {
     private readonly ISnippetService _snippetService;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ISnippetTagRepository _snippetTagRepository;
 
-    public SnippetController(ISnippetService snippetService)
+    public SnippetController(ISnippetService snippetService, IUnitOfWork unitOfWork, ISnippetTagRepository snippetTagRepository)
     {
         _snippetService = snippetService;
+        _unitOfWork = unitOfWork;
+        _snippetTagRepository = snippetTagRepository;
     }
-    //write test unit
+    //TODO: write unit test
     [HttpPost]
     public async Task<IActionResult> Create(CreateSnippetRequest request)
     {
-        return Ok();
-        return Ok(await _snippetService.Create(request));
+        var snippet = new Snippet()
+        {
+            Id = Guid.NewGuid(),
+            Content = request.Content,
+            Name = request.Name,
+            Description = request.Description,
+            Origin = request.Origin,
+        };
+        
+        var newTags = request.Tags.Where(x => x.Id is null).Select(x => new Tag()
+        {
+            Id = Guid.NewGuid(),
+            TagName = x.TagName
+        }).ToList();
+
+        var snippetTags = newTags.Concat(ExistedTags(request)).Select(x => new SnippetTag()
+        {
+            SnippetId = snippet.Id,
+            TagId = x.Id
+        }).ToList();
+        
+        _unitOfWork.SnippetRepository.Add(snippet);
+        _unitOfWork.TagRepository.AddRange(newTags);
+        _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
+        
+        await _unitOfWork.SaveChangesAsync();
+
+        snippet.Tags = await _snippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
+
+        return Ok(_unitOfWork.Map(snippet));
     }
-    
+
+    private IEnumerable<Tag> ExistedTags(CreateSnippetRequest request)
+    {
+        return request.Tags.Where(x => x.Id is not null).Select(x => new Tag()
+        {
+            Id = (Guid)x.Id,
+            TagName = x.TagName
+        });
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -43,7 +86,6 @@ public class SnippetController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateSnippetRequest request)
     {
-        return Ok();
         request.Id = id;
         var snippet = await _snippetService.Update(request);
         if (snippet is null)
