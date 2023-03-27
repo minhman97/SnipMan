@@ -6,8 +6,11 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SnippetManagement.DataModel;
 using SnippetManagement.Service;
 using SnippetManagement.Service.Implementation;
+using SnippetManagement.Service.Repositories;
+using SnippetManagement.Service.Repositories.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +53,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISnippetTagService, SnippetTagService>();
 builder.Services.AddScoped<ISnippetService, SnippetService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IRepository<Snippet>, SnippetRepository>();
+builder.Services.AddScoped<IRepository<Tag>, TagRepository>();
+builder.Services.AddScoped<IRepository<SnippetTag>, SnippetTagRepository>();
+builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddScoped<ISnippetTagRepository, SnippetTagRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -93,6 +102,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+{
+    scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.Migrate();
+}
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -101,3 +115,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

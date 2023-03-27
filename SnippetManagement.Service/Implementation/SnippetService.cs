@@ -9,12 +9,10 @@ namespace SnippetManagement.Service.Implementation;
 public class SnippetService : ISnippetService
 {
     private SnippetManagementDbContext _context;
-    private readonly ISnippetTagService _snippetTagService;
 
-    public SnippetService(SnippetManagementDbContext context, ISnippetTagService snippetTagService)
+    public SnippetService(SnippetManagementDbContext context)
     {
         _context = context;
-        _snippetTagService = snippetTagService;
     }
 
     public async Task<SnippetDto> Create(CreateSnippetRequest request)
