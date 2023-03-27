@@ -27,7 +27,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<string> GetToken(UserCredentials userCredentials)
     {
-        var user = await _userService.Get(userCredentials.Email);
+        var user = await _userService.Get(userCredentials.Email);//test user: a@a.vn/a
         if (user != null && BCrypt.Net.BCrypt.Verify(userCredentials.Password, user.Password))
         {
             SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor();
