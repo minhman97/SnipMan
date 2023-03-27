@@ -6,67 +6,29 @@ namespace SnippetManagement.Service.Repositories.Implementation;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly SnippetManagementDbContext _context;
-    private readonly IRepository<Snippet> _snippetRepository;
-    private readonly IRepository<Tag> _tagRepository;
-    private readonly IRepository<SnippetTag> _snippetTagRepository;
-    private readonly IRepository<User> _userRepository;
+    private readonly TagRepository _tagRepository;
+    private readonly SnippetRepository _snippetRepository;
+    private readonly UserRepository _userRepository;
+    private readonly SnippetTagRepository _snippetTagRepository;
 
 
-
-    public UnitOfWork(SnippetManagementDbContext context, IRepository<Snippet> snippetRepository, IRepository<Tag> tagRepository, IRepository<SnippetTag> snippetTagRepository, IRepository<User> userRepository)
+    public UnitOfWork(SnippetManagementDbContext context, TagRepository tagRepository,  SnippetRepository snippetRepository, UserRepository userRepository, SnippetTagRepository snippetTagRepository)
     {
         _context = context;
-        _snippetRepository = snippetRepository;
         _tagRepository = tagRepository;
-        _snippetTagRepository = snippetTagRepository;
+        _snippetRepository = snippetRepository;
         _userRepository = userRepository;
+        _snippetTagRepository = snippetTagRepository;
     }
     
-    public IRepository<Tag> TagRepository
-    {
-        get
-        {
-            return _tagRepository;
-            // if (_tagRepository is null)
-            //     _tagRepository = new TagRepository(_context);
-            // return _tagRepository;
-        }
-    }
+    public ITagRepository TagRepository => _tagRepository;
 
-    public IRepository<Snippet> SnippetRepository
-    {
-        get
-        {
-            return _snippetRepository;
+    public ISnippetRepository SnippetRepository => _snippetRepository;
 
-            // if (_snippetRepository is null)
-            //     _snippetRepository = new SnippetRepository(_context);
-            // return _snippetRepository;
-        }
-    }
+    public IUserRepository UserRepository => _userRepository;
 
-    public IRepository<User> UserRepository
-    {
-        get
-        {
-            return _userRepository;
-            // if(_userRepository is null)
-            //     _userRepository = new UserRepository(_context);
-            // return _userRepository;
-        }
-    }
-    
-    public IRepository<SnippetTag> SnippetTagRepository
-    {
-        get
-        {
-            return _snippetTagRepository;
-            // if(_snippetTagRepository is null)
-            //     _snippetTagRepository =new SnippetTagRepository(_context);
-            // return _snippetTagRepository;
-        }
-    }
-    
+    public ISnippetTagRepository SnippetTagRepository => _snippetTagRepository;
+
     public Task SaveChangesAsync(CancellationToken ct = default)
         => _context.SaveChangesAsync(ct);
     

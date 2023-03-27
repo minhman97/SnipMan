@@ -3,22 +3,12 @@ using SnippetManagement.DataModel;
 
 namespace SnippetManagement.Service.Repositories.Implementation;
 
-public class TagRepository: IRepository<Tag>
+public class TagRepository: BaseRepository<Tag>, ITagRepository
 {
     private readonly SnippetManagementDbContext _context;
 
-    public TagRepository(SnippetManagementDbContext context)
+    public TagRepository(SnippetManagementDbContext context) : base(context)
     {
         _context = context;
-    }
-    
-    public void Add(Tag tag)
-    {
-        _context.Add(tag);
-    }
-
-    public void AddRange(List<Tag> tags)
-    {
-        _context.AddRange(tags);
     }
 }

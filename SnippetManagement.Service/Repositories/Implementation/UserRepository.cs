@@ -4,23 +4,14 @@ using SnippetManagement.DataModel;
 
 namespace SnippetManagement.Service.Repositories.Implementation;
 
-public class UserRepository: IRepository<User>
+public class UserRepository : BaseRepository<User>, IUserRepository
 {
     private readonly SnippetManagementDbContext _context;
-    public UserRepository(SnippetManagementDbContext context)
+
+    public UserRepository(SnippetManagementDbContext context) : base(context)
     {
         _context = context;
     }
-    
-    public void Add(User user)
-    {
-        _context.Add(user);
-    }
-    public void AddRange(List<User> users)
-    {
-        _context.AddRange(users);
-    }
-
     public Task<List<User>> GetUsers()
     {
         return _context.Set<User>().ToListAsync();

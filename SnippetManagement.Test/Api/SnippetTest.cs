@@ -5,7 +5,6 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using SnippetManagement.Service.Model;
-using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Requests;
 
 namespace SnippetManagement.Test.API;
@@ -29,11 +28,9 @@ public class UnitTest1: IClassFixture<CustomWebApplicationFactory<Program>>
     public async Task CreateSnippet_ShouldBeSuccessful()
     {
         using var scope = _factory.Services.CreateScope();
-        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         var snippet = new CreateSnippetRequest
         {
-            
             Name = "test",
             Content = "test",
             Description = "test",
@@ -46,6 +43,7 @@ public class UnitTest1: IClassFixture<CustomWebApplicationFactory<Program>>
                 }
             }
         };
+        
         //tạo cai oebject Snippet
         var jsonSnippet = JsonSerializer.Serialize(snippet);
         var result1 = JsonSerializer.Deserialize<CreateSnippetRequest>(jsonSnippet);

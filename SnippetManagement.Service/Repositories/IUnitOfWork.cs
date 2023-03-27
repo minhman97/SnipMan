@@ -5,10 +5,10 @@ namespace SnippetManagement.Service.Repositories;
 
 public interface IUnitOfWork
 {
-    IRepository<Snippet> SnippetRepository { get; }
-    IRepository<User> UserRepository { get; }
-    IRepository<SnippetTag> SnippetTagRepository { get; }
-    IRepository<Tag> TagRepository { get; }
+    ISnippetRepository SnippetRepository { get; }
+    IUserRepository UserRepository { get; }
+    ISnippetTagRepository SnippetTagRepository { get; }
+    ITagRepository TagRepository { get; }
     SnippetDto Map(Snippet snippet);
     Task SaveChangesAsync(CancellationToken ct = default);
 }

@@ -54,11 +54,16 @@ builder.Services.AddScoped<ISnippetTagService, SnippetTagService>();
 builder.Services.AddScoped<ISnippetService, SnippetService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IRepository<Snippet>, SnippetRepository>();
-builder.Services.AddScoped<IRepository<Tag>, TagRepository>();
-builder.Services.AddScoped<IRepository<SnippetTag>, SnippetTagRepository>();
-builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddScoped<ISnippetRepository, SnippetRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ISnippetTagRepository, SnippetTagRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<SnippetRepository>();
+builder.Services.AddScoped<TagRepository>();
+builder.Services.AddScoped<SnippetTagRepository>();
+builder.Services.AddScoped<UserRepository>();
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -90,7 +95,6 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
-    
 });
 
 var app = builder.Build();
