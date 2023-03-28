@@ -1,34 +1,41 @@
-using System.Net;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using SnippetManagement.Api.Helper;
+using SnippetManagement.Data;
+using SnippetManagement.DataModel;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Requests;
 
 namespace SnippetManagement.Test.API;
 
-public class UnitTest1: IClassFixture<CustomWebApplicationFactory<Program>>
+public class SnippetTest: IClassFixture<CustomWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
-    private readonly CustomWebApplicationFactory<Program>
-        _factory;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly string _token;
+    private readonly IHttpRequestMessageHelper _httpRequestMessageHelper;
 
-    public UnitTest1(CustomWebApplicationFactory<Program> factory)
+    public SnippetTest(CustomWebApplicationFactory<Program> factory)
     {
-        _factory = factory;
+        _httpRequestMessageHelper = factory.Services.GetRequiredService<IHttpRequestMessageHelper>();
+        _serviceProvider = factory.Services;
         _client = factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false
         });
+
+        Seed(GetContext());
+        _token = GetToken();
     }
 
     [Fact]
     public async Task CreateSnippet_ShouldBeSuccessful()
     {
-        using var scope = _factory.Services.CreateScope();
-
+        //tạo cai object Snippet
         var snippet = new CreateSnippetRequest
         {
             Name = "test",
@@ -43,49 +50,105 @@ public class UnitTest1: IClassFixture<CustomWebApplicationFactory<Program>>
                 }
             }
         };
-        
-        //tạo cai oebject Snippet
-        var jsonSnippet = JsonSerializer.Serialize(snippet);
-        var result1 = JsonSerializer.Deserialize<CreateSnippetRequest>(jsonSnippet);
+        //goi toi Api
 
+        await _httpRequestMessageHelper.PostAsync(_client, _token, "https://localhost:44395/Snippet",
+            JsonSerializer.Serialize(snippet));
+        var result = await GetContext().Set<Snippet>().Include(x => x.Tags).SingleOrDefaultAsync(x => x.Name == snippet.Name);
+        //Expected result
+
+        snippet.Name.Should().Be(result.Name);
+        snippet.Content.Should().Be(result.Content);
+        snippet.Description.Should().Be(result.Description);
+        snippet.Origin.Should().Be(result.Origin);
+        result.Tags.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
+    }
+    
+    [Fact]
+    public async Task UpdateSnippet_ShouldBeSuccessful()
+    {
+        //tạo cai object Snippet
+        var snippetUpdate = new UpdateSnippetRequest()
+        {
+            Id = new Guid($"07785b4a-04e6-4435-b156-63fce124b314"),
+            Name = "updated",
+            Content = "updated",
+            Description = "updated",
+            Origin = "updated",
+            Tags = new List<CreateTagRequest>()
+            {
+                new()
+                {
+                    TagName = " new test"
+                },
+            }
+        };
         
         //goi toi Api
+        await _httpRequestMessageHelper.PutAsync(_client, _token, $"https://localhost:44395/Snippet/{snippetUpdate.Id}",
+            JsonSerializer.Serialize(snippetUpdate));
+
+        var result = await GetContext().Set<Snippet>().Include(x=> x.Tags).FirstOrDefaultAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
+        
+        //Expected result
+        snippetUpdate.Name.Should().Be(result.Name);
+        snippetUpdate.Content.Should().Be(result.Content);
+        snippetUpdate.Description.Should().Be(result.Description);
+        snippetUpdate.Origin.Should().Be(result.Origin);
+        result.Tags.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task DeleteSnippet_ShouldBeSuccessful()
+    {
+        //goi toi Api
+        await _httpRequestMessageHelper.DeleteAsync(_client, _token, $"https://localhost:44395/Snippet?id=07785b4a-04e6-4435-b156-63fce124b314",
+            null);
+        var result = await GetContext().Set<Snippet>().FirstOrDefaultAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
+        result.Deleted.Should().Be(true);
+    }
+
+    private string GetToken()
+    {
         var jsonCredentials = JsonSerializer.Serialize(new UserCredentials()
         {
             Email = "a@a.vn",
             Password = "a"
         });
         
-        var response = await _client.PostAsync("https://localhost:44395/Authentication", new StringContent(jsonCredentials, Encoding.UTF8, "application/json"));
-        var token = await response.Content.ReadAsStringAsync();
+        var response =  _client.PostAsync("https://localhost:44395/Authentication", new StringContent(jsonCredentials, Encoding.UTF8, "application/json")).Result;
+        return response.Content.ReadAsStringAsync().Result;
+    }
 
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);       
-        var responseSnippet = await _client.PostAsync("https://localhost:44395/Snippet",
-            new StringContent(jsonSnippet, Encoding.UTF8, "application/json"));
-        
-        var jsonResult = await responseSnippet.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<SnippetDto>(jsonResult, new JsonSerializerOptions
+    private  void Seed(SnippetManagementDbContext context)
+    {
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+            
+        context.Set<User>().Add(new User()
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true
+            Id = Guid.NewGuid(),
+            Email = "a@a.vn",
+            Password = BCrypt.Net.BCrypt.HashPassword("a")
         });
-        //Expected result
-        Assert.Equal(HttpStatusCode.OK, responseSnippet.StatusCode);
-        Assert.Equal(snippet.Name, result?.Name);
-        Assert.Equal(snippet.Content, result?.Content);
-        Assert.Equal(snippet.Description, result?.Description);
-        Assert.Equal(snippet.Origin, result?.Origin);
-        Assert.True(result?.Tags.ToList()[0].Id != null && result.Tags.ToList()[0].Id != Guid.Empty);
+        
+        context.Set<Snippet>().Add(new Snippet()
+        {
+            Id = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
+            Name = "testA",
+            Content = "testA",
+            Description = "testA",
+            Origin = "TestA",
+            Created = DateTimeOffset.UtcNow,
+            Deleted = false,
+        });
+        
+        context.SaveChanges();
     }
-
-    [Fact]
-    public void FailingTest()
+    
+    public SnippetManagementDbContext GetContext()
     {
-        Assert.Equal(5, Add(2, 2));
-    }
-
-    int Add(int x, int y)
-    {
-        return x + y;
+        var scope = _serviceProvider.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<SnippetManagementDbContext>();
     }
 }
