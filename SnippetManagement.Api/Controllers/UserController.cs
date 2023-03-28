@@ -8,7 +8,7 @@ namespace SnippetManagement.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
+// [Authorize]
 public class UserController: ControllerBase
 {
     private readonly IUserService _userService;

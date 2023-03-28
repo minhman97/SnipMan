@@ -26,10 +26,17 @@ public class CustomWebApplicationFactory<TProgram>
 
             services.Remove(dbConnectionDescriptor);
             
-            var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-            services.AddDbContext<SnippetManagementDbContext>(options =>
-                options.UseSqlServer(config.GetConnectionString("XUnitDbTestConnection")));
-         
+            // var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            // services.AddDbContext<SnippetManagementDbContext>(options =>
+            //     options.UseSqlServer(config.GetConnectionString("XUnitDbTestConnection")));
+            
+            // Add a database context (ApplicationDbContext) using an in-memory 
+            // database for testing.
+            services.AddDbContext<SnippetManagementDbContext>(options => 
+            {
+                options.UseInMemoryDatabase("InMemoryDbForTesting");
+            });
+            
         });
 
         builder.UseEnvironment("Development");

@@ -6,7 +6,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SnippetManagement.DataModel;
+using SnippetManagement.Api.Helper;
 using SnippetManagement.Service;
 using SnippetManagement.Service.Implementation;
 using SnippetManagement.Service.Repositories;
@@ -49,11 +49,13 @@ builder.Services.AddControllers().AddFluentValidation(opts =>
 });
 
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<IHttpRequestMessageHelper, HttpRequestMessageHelper>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISnippetTagService, SnippetTagService>();
 builder.Services.AddScoped<ISnippetService, SnippetService>();
 builder.Services.AddScoped<ITagService, TagService>();
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ISnippetRepository, SnippetRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ISnippetTagRepository, SnippetTagRepository>();
@@ -108,7 +110,8 @@ if (app.Environment.IsDevelopment())
 
 using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
 {
-    scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.Migrate();
+    if(scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+        scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.Migrate();
 }
 
 app.UseHttpsRedirection();
