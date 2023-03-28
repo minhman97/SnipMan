@@ -5,7 +5,7 @@ using SnippetManagement.Service.Model;
 namespace SnippetManagement.Service.Repositories.Implementation;
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly SnippetManagementDbContext _context;
+    public SnippetManagementDbContext Context { get; }
     private readonly TagRepository _tagRepository;
     private readonly SnippetRepository _snippetRepository;
     private readonly UserRepository _userRepository;
@@ -14,7 +14,7 @@ public class UnitOfWork : IUnitOfWork
 
     public UnitOfWork(SnippetManagementDbContext context, TagRepository tagRepository,  SnippetRepository snippetRepository, UserRepository userRepository, SnippetTagRepository snippetTagRepository)
     {
-        _context = context;
+        Context = context;
         _tagRepository = tagRepository;
         _snippetRepository = snippetRepository;
         _userRepository = userRepository;
@@ -30,7 +30,7 @@ public class UnitOfWork : IUnitOfWork
     public ISnippetTagRepository SnippetTagRepository => _snippetTagRepository;
 
     public Task SaveChangesAsync(CancellationToken ct = default)
-        => _context.SaveChangesAsync(ct);
+        => Context.SaveChangesAsync(ct);
     
     public SnippetDto Map(Snippet snippet)
     {

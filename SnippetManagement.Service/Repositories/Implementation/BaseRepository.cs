@@ -2,7 +2,7 @@ using SnippetManagement.Data;
 
 namespace SnippetManagement.Service.Repositories.Implementation;
 
-public class BaseRepository<T> :IRepository<T> where T : class
+public abstract class BaseRepository<T> : IRepository<T> where T : class
 {
     private readonly SnippetManagementDbContext _context;
 
@@ -10,13 +10,33 @@ public class BaseRepository<T> :IRepository<T> where T : class
     {
         _context = context;
     }
-    public void Add(T snippetTag)
+    public void Add(T entity)
     {
-        _context.Add(snippetTag);
+        _context.Add(entity);
     }
 
-    public void AddRange(List<T> snippetTags)
+    public void Update(T entity)
     {
-        _context.AddRange(snippetTags);
+        _context.Update(entity);
     }
+
+    public async Task<T> Find(Guid id)
+    {
+        return await _context.FindAsync<T>(id);
+    }
+
+    public void AddRange(List<T> entities)
+    {
+        _context.AddRange(entities);
+    }
+
+    public void RemoveRange(List<T> entities)
+    {
+        _context.RemoveRange(entities);
+    }
+}
+
+public class BaseEntity
+{
+    public bool IsDeleted { get; set; }
 }

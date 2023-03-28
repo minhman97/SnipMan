@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SnippetManagement.Data;
 using SnippetManagement.DataModel;
 
@@ -10,5 +11,15 @@ public class SnippetRepository: BaseRepository<Snippet>, ISnippetRepository
     public SnippetRepository(SnippetManagementDbContext context) : base(context)
     {
         _context = context;
+    }
+
+    public async Task<Snippet?> Find(Guid id)
+    {
+        return await _context.Set<Snippet>().Include(x => x.Tags).SingleOrDefaultAsync(x => x.Id == id && !x.Deleted);
+    }
+
+    public void Remove(Snippet snippet)
+    {
+        snippet.Deleted = true;
     }
 }
