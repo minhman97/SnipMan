@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SnippetManagement.DataModel;
 using SnippetManagement.Service;
 using SnippetManagement.Service.Repositories;
@@ -35,13 +36,9 @@ public class SnippetController : ControllerBase
             Origin = request.Origin,
         };
         
-        var newTags = request.Tags.Where(x => x.Id is null).Select(x => new Tag()
-        {
-            Id = Guid.NewGuid(),
-            TagName = x.TagName
-        }).ToList();
+        var newTags = GetNewTags(request.Tags);
 
-        var snippetTags = newTags.Concat(ExistedTags(request)).Select(x => new SnippetTag()
+        var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
         {
             SnippetId = snippet.Id,
             TagId = x.Id
@@ -58,9 +55,18 @@ public class SnippetController : ControllerBase
         return Ok(_unitOfWork.Map(snippet));
     }
 
-    private IEnumerable<Tag> ExistedTags(CreateSnippetRequest request)
+    private List<Tag> GetNewTags(IEnumerable<CreateTagRequest> tags)
     {
-        return request.Tags.Where(x => x.Id is not null).Select(x => new Tag()
+        return tags.Where(x => x.Id is null).Select(x => new Tag()
+        {
+            Id = Guid.NewGuid(),
+            TagName = x.TagName
+        }).ToList();
+    }
+
+    private IEnumerable<Tag> ExistedTags(IEnumerable<CreateTagRequest> tags)
+    {
+        return tags.Where(x => x.Id is not null).Select(x => new Tag()
         {
             Id = (Guid)x.Id,
             TagName = x.TagName
@@ -87,11 +93,34 @@ public class SnippetController : ControllerBase
     public async Task<IActionResult> Update(Guid id, UpdateSnippetRequest request)
     {
         request.Id = id;
-        var snippet = await _snippetService.Update(request);
+        var snippet = await _unitOfWork.SnippetRepository.Find(request.Id);
         if (snippet is null)
             return NotFound();
 
-        return Ok(snippet);
+        _unitOfWork.SnippetTagRepository.RemoveRange(snippet.Tags.ToList());
+        var newTags = GetNewTags(request.Tags);
+        _unitOfWork.TagRepository.AddRange(newTags);
+        
+        var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
+        {
+            SnippetId = snippet.Id,
+            TagId = x.Id
+        }).ToList();
+        
+        _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
+
+        snippet.Name = request.Name;
+        snippet.Content = request.Content;
+        snippet.Description = request.Description;
+        snippet.Modified = DateTimeOffset.UtcNow;
+        snippet.Origin = request.Origin;
+        snippet.Tags = snippetTags;
+        _unitOfWork.SnippetRepository.Update(snippet);
+
+        await _unitOfWork.SaveChangesAsync();
+        
+        snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
+        return Ok(_unitOfWork.Map(snippet));
     }
 
     [HttpGet]
@@ -111,10 +140,12 @@ public class SnippetController : ControllerBase
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var snippet = await _snippetService.Get(id);
+        var snippet = await _unitOfWork.SnippetRepository.Find(id);
+        var list = await _unitOfWork.Context.Set<Snippet>().ToListAsync();
         if (snippet is null)
             return NotFound();
-        await _snippetService.Delete(id);
+        _unitOfWork.SnippetRepository.Remove(snippet);
+        await _unitOfWork.SaveChangesAsync();
         return Ok();
     }
 }
