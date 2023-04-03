@@ -1,3 +1,5 @@
+using SnippetManagement.DataModel;
+
 namespace SnippetManagement.Service.Repositories;
 
 public interface IRepository<T> where T: class
@@ -7,4 +9,5 @@ public interface IRepository<T> where T: class
     void RemoveRange(List<T> entities);
     void Update(T entity);
     public Task<T> Find(Guid id);
+    void Remove(T entity);
 }

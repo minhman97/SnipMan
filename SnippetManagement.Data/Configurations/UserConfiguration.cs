@@ -11,5 +11,6 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Email);
         builder.Property(x => x.Password);
+        builder.Property(x => x.Deleted);
     }
 }

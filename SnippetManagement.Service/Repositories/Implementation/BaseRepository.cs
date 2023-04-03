@@ -1,8 +1,9 @@
 using SnippetManagement.Data;
+using SnippetManagement.DataModel;
 
 namespace SnippetManagement.Service.Repositories.Implementation;
 
-public abstract class BaseRepository<T> : IRepository<T> where T : class
+public abstract class BaseRepository<T> : IRepository<T> where T : BaseEntity
 {
     private readonly SnippetManagementDbContext _context;
 
@@ -10,6 +11,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
     {
         _context = context;
     }
+
     public void Add(T entity)
     {
         _context.Add(entity);
@@ -30,13 +32,16 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
         _context.AddRange(entities);
     }
 
+    public void Remove(T entity)
+    {
+        entity.Deleted = true;
+    }
+
     public void RemoveRange(List<T> entities)
     {
-        _context.RemoveRange(entities);
+        foreach (var entity in entities)
+        {
+            entity.Deleted = true;
+        }
     }
-}
-
-public class BaseEntity
-{
-    public bool IsDeleted { get; set; }
 }

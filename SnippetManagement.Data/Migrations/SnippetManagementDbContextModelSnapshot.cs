@@ -17,7 +17,7 @@ namespace SnippetManagement.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.1")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -70,6 +70,9 @@ namespace SnippetManagement.Data.Migrations
                     b.Property<Guid>("TagId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
                     b.HasKey("SnippetId", "TagId");
 
                     b.HasIndex("TagId");
@@ -82,6 +85,9 @@ namespace SnippetManagement.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("TagName")
                         .IsRequired()
@@ -98,6 +104,9 @@ namespace SnippetManagement.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .IsRequired()

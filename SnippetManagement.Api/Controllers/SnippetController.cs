@@ -141,7 +141,6 @@ public class SnippetController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var snippet = await _unitOfWork.SnippetRepository.Find(id);
-        var list = await _unitOfWork.Context.Set<Snippet>().ToListAsync();
         if (snippet is null)
             return NotFound();
         _unitOfWork.SnippetRepository.Remove(snippet);

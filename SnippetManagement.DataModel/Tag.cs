@@ -1,6 +1,6 @@
 namespace SnippetManagement.DataModel;
 
-public class Tag
+public class Tag: BaseEntity
 {
     public Guid Id { get; set; }
     public string TagName { get; set; }

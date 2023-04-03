@@ -1,6 +1,6 @@
 namespace SnippetManagement.DataModel;
 
-public class User
+public class User: BaseEntity
 {
     public Guid Id { get; set; }
     public string Email { get; set; }
