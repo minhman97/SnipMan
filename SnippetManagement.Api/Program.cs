@@ -55,7 +55,6 @@ builder.Services.AddTransient<IHttpRequestMessageHelper, HttpRequestMessageHelpe
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISnippetTagService, SnippetTagService>();
 builder.Services.AddScoped<ISnippetService, SnippetService>();
-builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ISnippetRepository, SnippetRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ISnippetTagRepository, SnippetTagRepository>();

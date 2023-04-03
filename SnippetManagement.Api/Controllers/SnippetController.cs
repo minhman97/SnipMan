@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SnippetManagement.DataModel;
 using SnippetManagement.Service;
 using SnippetManagement.Service.Repositories;
@@ -52,7 +51,7 @@ public class SnippetController : ControllerBase
 
         snippet.Tags = await _snippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
 
-        return Ok(_unitOfWork.Map(snippet));
+        return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }
 
     private List<Tag> GetNewTags(IEnumerable<CreateTagRequest> tags)
@@ -120,7 +119,7 @@ public class SnippetController : ControllerBase
         await _unitOfWork.SaveChangesAsync();
         
         snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
-        return Ok(_unitOfWork.Map(snippet));
+        return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }
 
     [HttpGet]

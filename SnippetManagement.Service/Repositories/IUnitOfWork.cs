@@ -1,6 +1,4 @@
 using SnippetManagement.Data;
-using SnippetManagement.DataModel;
-using SnippetManagement.Service.Model;
 
 namespace SnippetManagement.Service.Repositories;
 
@@ -11,6 +9,5 @@ public interface IUnitOfWork
     IUserRepository UserRepository { get; }
     ISnippetTagRepository SnippetTagRepository { get; }
     ITagRepository TagRepository { get; }
-    SnippetDto Map(Snippet snippet);
     Task SaveChangesAsync(CancellationToken ct = default);
 }
