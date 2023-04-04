@@ -3,7 +3,7 @@ using SnippetManagement.DataModel;
 
 namespace SnippetManagement.Service.Repositories.Implementation;
 
-public abstract class BaseRepository<T> : IRepository<T> where T : BaseEntity
+public abstract class BaseRepository<T> : IRepository<T> where T : BaseEntity<Guid>
 {
     private readonly SnippetManagementDbContext _context;
 

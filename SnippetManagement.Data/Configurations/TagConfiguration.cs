@@ -10,6 +10,8 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.TagName).HasMaxLength(255);
+        builder.Property(x => x.Created).HasDefaultValueSql("getutcdate()");
+        builder.Property(x => x.Modified);
         builder.Property(x => x.Deleted);
     }
 }

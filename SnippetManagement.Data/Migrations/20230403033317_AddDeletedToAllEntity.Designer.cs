@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SnippetManagement.Data;
 
@@ -11,9 +12,11 @@ using SnippetManagement.Data;
 namespace SnippetManagement.Data.Migrations
 {
     [DbContext(typeof(SnippetManagementDbContext))]
-    partial class SnippetManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230403033317_AddDeletedToAllEntity")]
+    partial class AddDeletedToAllEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,14 +89,8 @@ namespace SnippetManagement.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("TagName")
                         .IsRequired()
@@ -111,18 +108,12 @@ namespace SnippetManagement.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Password")
                         .IsRequired()

@@ -1,8 +1,7 @@
 namespace SnippetManagement.DataModel;
 
-public class Tag: BaseEntity
+public class Tag: BaseEntity<Guid>
 {
-    public Guid Id { get; set; }
     public string TagName { get; set; }
 
     public IEnumerable<SnippetTag> Snippets { get; set; }
