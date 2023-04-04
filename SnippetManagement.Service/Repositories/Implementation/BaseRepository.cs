@@ -22,7 +22,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : BaseEntity
         _context.Update(entity);
     }
 
-    public async Task<T> Find(Guid id)
+    public virtual async Task<T> Find(Guid id)
     {
         return await _context.FindAsync<T>(id);
     }

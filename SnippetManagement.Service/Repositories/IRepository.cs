@@ -2,7 +2,7 @@ using SnippetManagement.DataModel;
 
 namespace SnippetManagement.Service.Repositories;
 
-public interface IRepository<T> where T: class
+public interface IRepository<T> where T: BaseEntity
 {
     void Add(T entity);
     void AddRange(List<T> entities);
