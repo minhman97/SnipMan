@@ -6,7 +6,6 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SnippetManagement.Api.Helper;
 using SnippetManagement.Service;
 using SnippetManagement.Service.Implementation;
 using SnippetManagement.Service.Repositories;
@@ -50,21 +49,13 @@ builder.Services.AddControllers().AddFluentValidation(opts =>
 
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-builder.Services.AddTransient<IHttpRequestMessageHelper, HttpRequestMessageHelper>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISnippetTagService, SnippetTagService>();
-builder.Services.AddScoped<ISnippetService, SnippetService>();
 builder.Services.AddScoped<ISnippetRepository, SnippetRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ISnippetTagRepository, SnippetTagRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<SnippetRepository>();
-builder.Services.AddScoped<TagRepository>();
-builder.Services.AddScoped<SnippetTagRepository>();
-builder.Services.AddScoped<UserRepository>();
-
-
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

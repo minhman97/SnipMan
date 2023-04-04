@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SnippetManagement.DataModel;
-using SnippetManagement.Service;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Requests;
 
@@ -12,13 +11,11 @@ namespace SnippetManagement.Api.Controllers;
 [Authorize]
 public class SnippetController : ControllerBase
 {
-    private readonly ISnippetService _snippetService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISnippetTagRepository _snippetTagRepository;
 
-    public SnippetController(ISnippetService snippetService, IUnitOfWork unitOfWork, ISnippetTagRepository snippetTagRepository)
+    public SnippetController(IUnitOfWork unitOfWork, ISnippetTagRepository snippetTagRepository)
     {
-        _snippetService = snippetService;
         _unitOfWork = unitOfWork;
         _snippetTagRepository = snippetTagRepository;
     }
@@ -75,14 +72,14 @@ public class SnippetController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _snippetService.GetAll());
+        return Ok(await _unitOfWork.SnippetRepository.GetAll());
     }
 
     [HttpGet("{id}")]
 
     public async Task<IActionResult> Get(Guid id)
     {
-        var snippet = await _snippetService.Get(id);
+        var snippet = await _unitOfWork.SnippetRepository.Find(id);
         if (snippet is null)
             return NotFound();
         return Ok(snippet);
@@ -123,17 +120,10 @@ public class SnippetController : ControllerBase
     }
 
     [HttpGet]
-    [Route("search/{keyWord}", Name="Search")]
-    public async Task<IActionResult> Search(string keyWord)
+    [Route("search/", Name="Search")]
+    public async Task<IActionResult> Search([FromQuery]FilterSnippetRequest request)
     {
-        return Ok(await _snippetService.Search(keyWord));
-    }
-
-    [HttpGet]
-    [Route("filter/", Name="Filter")]
-    public async Task<IActionResult> Filter([FromQuery]FilterSnippetRequest request)
-    {
-        return Ok(await _snippetService.Filter(request));
+        return Ok(await _unitOfWork.SnippetRepository.Search(request));
     }
     
     [HttpDelete]

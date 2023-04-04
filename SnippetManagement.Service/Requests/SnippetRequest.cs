@@ -21,7 +21,8 @@ public class FilterSnippetRequest
     public string? KeyWord { get; set; }
     public DateTimeOffset? FromDate { get; set; }
     public DateTimeOffset? ToDate { get; set; }
-    public IEnumerable<FilterTag>? Tags { get; set; }
+    
+    public IEnumerable<Guid>? TagIds { get; set; }
     
 }
 
