@@ -27,7 +27,7 @@ public class SnippetTest: IClassFixture<CustomWebApplicationFactory<Program>>
         {
             AllowAutoRedirect = false
         });
-
+    
         Seed(GetContext());
         _token = GetToken();
         _httpRequestMessageHelper = new HttpRequestMessageHelper(new Mock<IHttpRequestMessageHelper>().Object);
@@ -108,6 +108,22 @@ public class SnippetTest: IClassFixture<CustomWebApplicationFactory<Program>>
         result.Deleted.Should().Be(true);
     }
 
+    [Fact]
+    public async Task SearchSnippet_ShouldBeSuccessful()
+    {
+        var result = await _httpRequestMessageHelper.GetAsync(_client, _token,
+            "https://localhost:44395/Snippet/search?TagIds=07785b4a-04e6-4435-b156-63fce124b315&KeyWord=a",
+            null);
+        var content = await result.Content.ReadAsStringAsync();
+        var snippets = JsonSerializer.Deserialize<List<SnippetDto>>(content, new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        });
+        snippets?.Count.Should().BeGreaterThan(0);
+        snippets?[0].Tags.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
+    } 
+
     private string GetToken()
     {
         var jsonCredentials = JsonSerializer.Serialize(new UserCredentials()
@@ -141,6 +157,20 @@ public class SnippetTest: IClassFixture<CustomWebApplicationFactory<Program>>
             Origin = "TestA",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
+        });
+        
+        context.Set<Tag>().Add(new Tag()
+        {
+            Id = new Guid("07785b4a-04e6-4435-b156-63fce124b315"),
+            TagName =  "tagA",
+            Created = DateTimeOffset.UtcNow,
+            Deleted = false,
+        });
+        
+        context.Set<SnippetTag>().Add(new SnippetTag()
+        {
+            SnippetId = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
+            TagId =  new Guid("07785b4a-04e6-4435-b156-63fce124b315"),
         });
         
         context.SaveChanges();
