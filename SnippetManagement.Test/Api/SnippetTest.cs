@@ -4,11 +4,12 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SnippetManagement.Api.Helper;
+using Moq;
 using SnippetManagement.Data;
 using SnippetManagement.DataModel;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Requests;
+using SnippetManagement.Test.Helper;
 
 namespace SnippetManagement.Test.API;
 
@@ -17,11 +18,10 @@ public class SnippetTest: IClassFixture<CustomWebApplicationFactory<Program>>
     private readonly HttpClient _client;
     private readonly IServiceProvider _serviceProvider;
     private readonly string _token;
-    private readonly IHttpRequestMessageHelper _httpRequestMessageHelper;
+    private readonly HttpRequestMessageHelper _httpRequestMessageHelper;
 
     public SnippetTest(CustomWebApplicationFactory<Program> factory)
     {
-        _httpRequestMessageHelper = factory.Services.GetRequiredService<IHttpRequestMessageHelper>();
         _serviceProvider = factory.Services;
         _client = factory.CreateClient(new WebApplicationFactoryClientOptions
         {
@@ -30,6 +30,7 @@ public class SnippetTest: IClassFixture<CustomWebApplicationFactory<Program>>
 
         Seed(GetContext());
         _token = GetToken();
+        _httpRequestMessageHelper = new HttpRequestMessageHelper(new Mock<IHttpRequestMessageHelper>().Object);
     }
 
     [Fact]
@@ -51,7 +52,6 @@ public class SnippetTest: IClassFixture<CustomWebApplicationFactory<Program>>
             }
         };
         //goi toi Api
-
         await _httpRequestMessageHelper.PostAsync(_client, _token, "https://localhost:44395/Snippet",
             JsonSerializer.Serialize(snippet));
         var result = await GetContext().Set<Snippet>().Include(x => x.Tags).SingleOrDefaultAsync(x => x.Name == snippet.Name);

@@ -1,10 +1,25 @@
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace SnippetManagement.Api.Helper;
+namespace SnippetManagement.Test.Helper;
 
-public class HttpRequestMessageHelper
+public interface IHttpRequestMessageHelper
 {
+    Task<HttpResponseMessage> PostAsync(HttpClient client, string? token, string uri, string data);
+    Task<HttpResponseMessage> PutAsync(HttpClient client, string? token, string uri, string data);
+    Task<HttpResponseMessage> GetAsync(HttpClient client, string? token, string uri, string data);
+    Task<HttpResponseMessage> DeleteAsync(HttpClient client, string? token, string uri, string data);
+}
+
+public class HttpRequestMessageHelper: IHttpRequestMessageHelper
+{
+    private readonly IHttpRequestMessageHelper _httpRequestMessageHelper;
+
+    public HttpRequestMessageHelper(IHttpRequestMessageHelper httpRequestMessageHelper)
+    {
+        _httpRequestMessageHelper = httpRequestMessageHelper;
+    }
+
     public HttpRequestMessage InitRequestMessage(string? token, string uri, HttpMethod method, string? data)
     {
         return new HttpRequestMessage()
