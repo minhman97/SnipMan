@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using SnippetManagement.Common;
 using SnippetManagement.Data;
 using SnippetManagement.DataModel;
 using SnippetManagement.Service.Model;
@@ -19,7 +20,6 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     private readonly IServiceProvider _serviceProvider;
     private readonly string _token;
     private readonly HttpRequestMessageHelper _httpRequestMessageHelper;
-    private HttpRequestMessageHelper _a;
 
     public SnippetTest(CustomWebApplicationFactory<Program> factory)
     {
@@ -134,19 +134,44 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task GetSnippetByPage_ShouldBeSuccessful()
+    {
+        var responseMessage = await _httpRequestMessageHelper.GetAsync(_client, _token,
+            "https://localhost:44395/Snippet?PageNumber=2&PageSize=1",
+            null);
+        var content = await responseMessage.Content.ReadAsStringAsync();
+        var pagedResponse = JsonSerializer.Deserialize<PagedResponse<IEnumerable<SnippetDto>>>(content,
+            new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            });
+
+        var result = await GetContext().Set<Snippet>().Include(x => x.Tags).Skip(1).Take(1).FirstOrDefaultAsync();
+
+        pagedResponse?.Data.Count().Should().BeGreaterThan(0);
+        pagedResponse?.Data.ToList()[0].Tags.ToList()[0].Id.Should().Be(result.Tags.ToList()[0].TagId);
+        pagedResponse?.TotalRecords.Should().Be(2);
+        pagedResponse?.TotalPages.Should().Be(2);
+    }
+
+    [Fact]
     public async Task SearchSnippet_ShouldBeSuccessful()
     {
-        var result = await _httpRequestMessageHelper.GetAsync(_client, _token,
-            "https://localhost:44395/Snippet/search?TagIds=07785b4a-04e6-4435-b156-63fce124b315&KeyWord=testA",
+        var responseMessage = await _httpRequestMessageHelper.GetAsync(_client, _token,
+            "https://localhost:44395/Snippet/search?TagIds=07785b4a-04e6-4435-b156-63fce124b315&KeyWord=testA&PageNumber=1&PageSize=10",
             null);
-        var content = await result.Content.ReadAsStringAsync();
-        var snippets = JsonSerializer.Deserialize<List<SnippetDto>>(content, new JsonSerializerOptions()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true
-        });
-        snippets?.Count.Should().BeGreaterThan(0);
-        snippets?[0].Tags.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
+        var content = await responseMessage.Content.ReadAsStringAsync();
+        var pagedResponse = JsonSerializer.Deserialize<PagedResponse<IEnumerable<SnippetDto>>>(content,
+            new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            });
+        pagedResponse?.Data.Count().Should().BeGreaterThan(0);
+        pagedResponse?.Data.ToList()[0].Tags.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
+        pagedResponse?.TotalRecords.Should().Be(1);
+        pagedResponse?.TotalPages.Should().Be(1);
     }
 
     private string GetToken()
@@ -174,30 +199,51 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             Password = BCrypt.Net.BCrypt.HashPassword("a")
         });
 
-        context.Set<Snippet>().Add(new Snippet()
+        context.Set<Snippet>().AddRange(new Snippet()
         {
-            Id = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
+            Id = new Guid("07785b4a-04e6-4435-b156-63fce124b313"),
             Name = "testA",
             Content = "testA",
             Description = "testA",
             Origin = "TestA",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
-        });
-
-        context.Set<Tag>().Add(new Tag()
+        }, new Snippet()
         {
-            Id = new Guid("07785b4a-04e6-4435-b156-63fce124b315"),
-            TagName = "tagA",
+            Id = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
+            Name = "testB",
+            Content = "testB",
+            Description = "testB",
+            Origin = "TestB",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
         });
 
-        context.Set<SnippetTag>().Add(new SnippetTag()
-        {
-            SnippetId = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
-            TagId = new Guid("07785b4a-04e6-4435-b156-63fce124b315"),
-        });
+        context.Set<Tag>().AddRange(new Tag()
+            {
+                Id = new Guid("07785b4a-04e6-4435-b156-63fce124b315"),
+                TagName = "tagA",
+                Created = DateTimeOffset.UtcNow,
+                Deleted = false,
+            },
+            new Tag()
+            {
+                Id = new Guid("07785b4a-04e6-4435-b156-63fce124b316"),
+                TagName = "tagb",
+                Created = DateTimeOffset.UtcNow,
+                Deleted = false,
+            });
+
+        context.Set<SnippetTag>().AddRange(new SnippetTag()
+            {
+                SnippetId = new Guid("07785b4a-04e6-4435-b156-63fce124b313"),
+                TagId = new Guid("07785b4a-04e6-4435-b156-63fce124b315"),
+            },
+            new SnippetTag()
+            {
+                SnippetId = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
+                TagId = new Guid("07785b4a-04e6-4435-b156-63fce124b316"),
+            });
 
         context.SaveChanges();
     }

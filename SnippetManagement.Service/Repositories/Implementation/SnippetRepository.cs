@@ -48,9 +48,9 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
     {
         var query = _context.Set<Snippet>().Where(x => !x.Deleted).Include(x => x.Tags).ThenInclude(x => x.Tag)
             .AsQueryable();
-
         if (!string.IsNullOrEmpty(request.KeyWord))
         {
+            request.KeyWord = request.KeyWord.ToLower();
             query = request.Terms.Aggregate(query,
                 (originalQuery, term) => originalQuery.Where(x => x.Name.ToLower().Contains(request.KeyWord)
                                                                   || x.Origin.ToLower().Contains(request.KeyWord)
