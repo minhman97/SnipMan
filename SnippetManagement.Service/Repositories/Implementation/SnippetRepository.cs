@@ -6,24 +6,32 @@ using SnippetManagement.Service.Requests;
 
 namespace SnippetManagement.Service.Repositories.Implementation;
 
-
-public class SnippetRepository: BaseRepository<Snippet>, ISnippetRepository
+public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
 {
     private readonly SnippetManagementDbContext _context;
+
     public SnippetRepository(SnippetManagementDbContext context) : base(context)
     {
         _context = context;
     }
+
     public async Task<Snippet?> Find(Guid id)
     {
-        return await _context.Set<Snippet>().Include(x => x.Tags).SingleOrDefaultAsync(x => x.Id == id && !x.Deleted);
+        return await _context.Set<Snippet>()
+            .Include(x => x.Tags)
+            .ThenInclude(xx => xx.Tag)
+            .SingleOrDefaultAsync(x => x.Id == id && !x.Deleted);
     }
-    
-    public async Task<IEnumerable<SnippetDto>> GetAll()
+
+    public async Task<IEnumerable<SnippetDto?>> GetAll()
     {
-        return (await _context.Set<Snippet>().AsNoTracking().ToListAsync()).Select(x => Map(x));
+        return (await _context.Set<Snippet>()
+                .Include(x => x.Tags)
+                .ThenInclude(xx => xx.Tag)
+                .AsNoTracking().ToListAsync())
+            .Select(x => Map(x));
     }
-    
+
     public async Task<List<SnippetDto>> Search(FilterSnippetRequest request)
     {
         var query = GetQueryableSnippetDtos();
@@ -36,45 +44,32 @@ public class SnippetRepository: BaseRepository<Snippet>, ISnippetRepository
                                                                   || x.Description.ToLower().Contains(request.KeyWord)
                                                                   || x.Content.ToLower().Contains(request.KeyWord)
                                                                   || x.Tags.Any(tagDto =>
-                                                                      tagDto.TagName.ToLower().Contains(request.KeyWord))
+                                                                      tagDto.TagName.ToLower()
+                                                                          .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
                                                                   || x.Modified.ToString().Contains(request.KeyWord)));
         }
-        
+
         if (request.TagIds is not null && request.TagIds.Any())
         {
             query = query.Where(x => x.Tags.Any(tag => request.TagIds.Contains(tag.Id)));
         }
-        
+
         if (request.FromDate is not null)
             query = query.Where(x => x.Created >= request.FromDate);
         if (request.ToDate is not null)
             query = query.Where(x => x.Created <= request.ToDate.Value.AddDays(1));
-        
+
 
         return await query.ToListAsync();
     }
-    
+
     private IQueryable<SnippetDto> GetQueryableSnippetDtos()
     {
-        return _context.Set<Snippet>().Where(x=> !x.Deleted).Include(x => x.Tags).Select(x => new SnippetDto()
-        {
-            Id = x.Id,
-            Name =x.Name,
-            Content = x.Content,
-            Description = x.Description,
-            Origin = x.Origin,
-            Created = x.Created,
-            Modified = x.Modified,
-            Tags = x.Tags.Select(tag => new TagDto()
-            {
-                Id = tag.TagId,
-                TagName = tag.Tag.TagName
-            })
-        });
+        return _context.Set<Snippet>().Where(x => !x.Deleted).Include(x => x.Tags).Select(x => Map(x));
     }
-    
-    public SnippetDto Map(Snippet snippet)
+
+    public SnippetDto? Map(Snippet snippet)
     {
         if (snippet is null)
             return null;

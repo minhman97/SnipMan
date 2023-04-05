@@ -12,14 +12,12 @@ namespace SnippetManagement.Api.Controllers;
 public class SnippetController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ISnippetTagRepository _snippetTagRepository;
 
-    public SnippetController(IUnitOfWork unitOfWork, ISnippetTagRepository snippetTagRepository)
+    public SnippetController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _snippetTagRepository = snippetTagRepository;
     }
-    //TODO: write unit test
+    
     [HttpPost]
     public async Task<IActionResult> Create(CreateSnippetRequest request)
     {
@@ -46,7 +44,7 @@ public class SnippetController : ControllerBase
         
         await _unitOfWork.SaveChangesAsync();
 
-        snippet.Tags = await _snippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
+        snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
 
         return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }
@@ -82,7 +80,7 @@ public class SnippetController : ControllerBase
         var snippet = await _unitOfWork.SnippetRepository.Find(id);
         if (snippet is null)
             return NotFound();
-        return Ok(snippet);
+        return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }
 
     [HttpPut("{id}")]
