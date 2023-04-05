@@ -1,8 +1,12 @@
 using SnippetManagement.DataModel;
+using SnippetManagement.Service.Model;
+using SnippetManagement.Service.Requests;
 
 namespace SnippetManagement.Service.Repositories;
 
-public interface IUserRepository: IRepository<User>
+public interface IUserRepository : IRepository<User>
 {
-    
+    Task<List<User>> GetUsers();
+    Task<UserCredentials> Create(CreateUserRequest request);
+    Task<UserCredentials> Get(string email);
 }

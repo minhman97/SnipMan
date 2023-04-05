@@ -1,6 +1,6 @@
 ﻿using SnippetManagement.Service.Model;
 
-namespace SnippetManagement.Service;
+namespace SnippetManagement.Service.Services;
 
 public interface IAuthenticationService
 {

@@ -3,8 +3,9 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SnippetManagement.Service.Model;
+using SnippetManagement.Service.Repositories;
 
-namespace SnippetManagement.Service.Implementation;
+namespace SnippetManagement.Service.Services.Implementation;
 
 public class JwtConfiguration
 {
@@ -17,17 +18,17 @@ public class JwtConfiguration
 public class AuthenticationService : IAuthenticationService
 {
     private readonly JwtConfiguration _jwtConfiguration;
-    private readonly IUserService _userService;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AuthenticationService(IOptions<JwtConfiguration> jwtConfiguration, IUserService userService)
+    public AuthenticationService(IOptions<JwtConfiguration> jwtConfiguration, IUnitOfWork unitOfWork)
     {
-        _userService = userService;
+        _unitOfWork = unitOfWork;
         _jwtConfiguration = jwtConfiguration.Value;
     }
 
     public async Task<string> GetToken(UserCredentials userCredentials)
     {
-        var user = await _userService.Get(userCredentials.Email);//test user: a@a.vn/a
+        var user = await _unitOfWork.UserRepository.Get(userCredentials.Email); //test user: a@a.vn/a
         if (user != null && BCrypt.Net.BCrypt.Verify(userCredentials.Password, user.Password))
         {
             SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor();
@@ -37,6 +38,7 @@ public class AuthenticationService : IAuthenticationService
 
             return token;
         }
+
         return string.Empty;
     }
 

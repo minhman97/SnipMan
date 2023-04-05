@@ -5,9 +5,9 @@ namespace SnippetManagement.Service.Repositories.Implementation;
 
 public abstract class BaseRepository<T> : IRepository<T> where T : BaseEntity<Guid>
 {
-    private readonly SnippetManagementDbContext _context;
+    protected readonly SnippetManagementDbContext _context;
 
-    public BaseRepository(SnippetManagementDbContext context)
+    protected BaseRepository(SnippetManagementDbContext context)
     {
         _context = context;
     }
