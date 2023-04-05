@@ -8,11 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SnippetManagement.Data\SnippetManagement.Data.csproj" />
+        <ProjectReference Include="..\SnippetManagement.Common\SnippetManagement.Common.csproj"/>
+        <ProjectReference Include="..\SnippetManagement.Data\SnippetManagement.Data.csproj"/>
     </ItemGroup>
 </Project>

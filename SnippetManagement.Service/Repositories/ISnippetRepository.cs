@@ -1,3 +1,4 @@
+using SnippetManagement.Common;
 using SnippetManagement.DataModel;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Requests;
@@ -8,6 +9,6 @@ public interface ISnippetRepository : IRepository<Snippet>
 {
     Task<Snippet?> Find(Guid id);
     SnippetDto? Map(Snippet snippet);
-    Task<IEnumerable<SnippetDto?>> GetAll();
-    Task<List<SnippetDto>> Search(FilterSnippetRequest request);
+    Task<PagedResponse<IEnumerable<SnippetDto>>> Search(SearchSnippetRequest request);
+    Task<PagedResponse<IEnumerable<SnippetDto?>>> GetAll(Pagination pagination);
 }

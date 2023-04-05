@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+using SnippetManagement.Common;
 
 namespace SnippetManagement.Service.Requests;
 
@@ -16,13 +16,13 @@ public class UpdateSnippetRequest : CreateSnippetRequest
     public Guid Id { get; set; }
 }
 
-public class FilterSnippetRequest
+public class SearchSnippetRequest : Pagination
 {
-    public string? KeyWord { get; set; }
+    public string KeyWord { get; set; }
+
+    public string[] Terms => KeyWord?.ToLower()?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
     public DateTimeOffset? FromDate { get; set; }
     public DateTimeOffset? ToDate { get; set; }
-    
-    public IEnumerable<Guid>? TagIds { get; set; }
-    
-}
 
+    public IEnumerable<Guid>? TagIds { get; set; }
+}

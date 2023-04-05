@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SnippetManagement.Common;
 using SnippetManagement.DataModel;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Requests;
@@ -17,7 +18,7 @@ public class SnippetController : ControllerBase
     {
         _unitOfWork = unitOfWork;
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateSnippetRequest request)
     {
@@ -29,7 +30,7 @@ public class SnippetController : ControllerBase
             Description = request.Description,
             Origin = request.Origin,
         };
-        
+
         var newTags = GetNewTags(request.Tags);
 
         var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
@@ -37,11 +38,11 @@ public class SnippetController : ControllerBase
             SnippetId = snippet.Id,
             TagId = x.Id
         }).ToList();
-        
+
         _unitOfWork.SnippetRepository.Add(snippet);
         _unitOfWork.TagRepository.AddRange(newTags);
         _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
-        
+
         await _unitOfWork.SaveChangesAsync();
 
         snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
@@ -68,13 +69,12 @@ public class SnippetController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] Pagination pagination)
     {
-        return Ok(await _unitOfWork.SnippetRepository.GetAll());
+        return Ok(await _unitOfWork.SnippetRepository.GetAll(pagination));
     }
 
     [HttpGet("{id}")]
-
     public async Task<IActionResult> Get(Guid id)
     {
         var snippet = await _unitOfWork.SnippetRepository.Find(id);
@@ -94,13 +94,13 @@ public class SnippetController : ControllerBase
         _unitOfWork.SnippetTagRepository.RemoveRange(snippet.Tags.ToList());
         var newTags = GetNewTags(request.Tags);
         _unitOfWork.TagRepository.AddRange(newTags);
-        
+
         var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
         {
             SnippetId = snippet.Id,
             TagId = x.Id
         }).ToList();
-        
+
         _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
 
         snippet.Name = request.Name;
@@ -112,18 +112,18 @@ public class SnippetController : ControllerBase
         _unitOfWork.SnippetRepository.Update(snippet);
 
         await _unitOfWork.SaveChangesAsync();
-        
+
         snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
         return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }
 
     [HttpGet]
-    [Route("search/", Name="Search")]
-    public async Task<IActionResult> Search([FromQuery]FilterSnippetRequest request)
+    [Route("search/", Name = "Search")]
+    public async Task<IActionResult> Search([FromQuery] SearchSnippetRequest request)
     {
         return Ok(await _unitOfWork.SnippetRepository.Search(request));
     }
-    
+
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
