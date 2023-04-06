@@ -6,6 +6,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SnippetManagement.Api.Middlewares;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Repositories.Implementation;
 using SnippetManagement.Service.Services;
@@ -37,7 +38,11 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.GetSection("Jwt").Bind(options));
 
-builder.Services.AddControllers().AddFluentValidation(opts =>
+builder.Services.AddControllers(opts =>
+{
+    opts.Filters.Add(new HandleApiExceptionAttribute());
+
+}).AddFluentValidation(opts =>
 {
     // Validate child properties and root collection elements
     opts.ImplicitlyValidateChildProperties = true;
