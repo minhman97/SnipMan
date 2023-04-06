@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SnippetManagement.Api.Model;
-using SnippetManagement.Service;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Requests;
 
@@ -9,7 +8,7 @@ namespace SnippetManagement.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-// [Authorize]
+[Authorize]
 public class UserController: ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -22,14 +21,6 @@ public class UserController: ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-
-        if (await _unitOfWork.UserRepository.Get(model.Email) != null)
-        {
-            ModelState.AddModelError(nameof(UserViewModel.Email),
-                "Sorry, this email address is already taken");
-            return BadRequest(ModelState);
-        }
-            
         
         return Ok(await _unitOfWork.UserRepository.Create(new CreateUserRequest()
         {
