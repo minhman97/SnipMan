@@ -4,15 +4,17 @@ using SnippetManagement.DataModel;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Requests;
 
-namespace SnippetManagement.Service.Implementation;
+namespace SnippetManagement.Service.Repositories.Implementation;
 
-public class UserService : IUserService
+public class UserRepository : BaseRepository<User>, IUserRepository
 {
-    private SnippetManagementDbContext _context;
-
-    public UserService(SnippetManagementDbContext context)
+    public UserRepository(SnippetManagementDbContext context) : base(context)
     {
-        _context = context;
+    }
+
+    public Task<List<User>> GetUsers()
+    {
+        return _context.Set<User>().ToListAsync();
     }
 
     public async Task<UserCredentials> Create(CreateUserRequest request)

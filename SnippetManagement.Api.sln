@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnippetManagement.DataModel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnippetManagement.Service", "SnippetManagement.Service\SnippetManagement.Service.csproj", "{8A617696-28A7-4367-8037-5E0A556AD211}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnippetManagement.Test", "SnippetManagement.Test\SnippetManagement.Test.csproj", "{E44D1D84-82D7-49EB-B78B-7463416178C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnippetManagement.Common", "SnippetManagement.Common\SnippetManagement.Common.csproj", "{FA88095A-7A44-4CED-BB1E-D498E1ECDED3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{8A617696-28A7-4367-8037-5E0A556AD211}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A617696-28A7-4367-8037-5E0A556AD211}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A617696-28A7-4367-8037-5E0A556AD211}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E44D1D84-82D7-49EB-B78B-7463416178C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E44D1D84-82D7-49EB-B78B-7463416178C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E44D1D84-82D7-49EB-B78B-7463416178C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E44D1D84-82D7-49EB-B78B-7463416178C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA88095A-7A44-4CED-BB1E-D498E1ECDED3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA88095A-7A44-4CED-BB1E-D498E1ECDED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA88095A-7A44-4CED-BB1E-D498E1ECDED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA88095A-7A44-4CED-BB1E-D498E1ECDED3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

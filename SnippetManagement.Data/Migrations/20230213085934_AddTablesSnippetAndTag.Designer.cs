@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SnippetManagement.Data;
 
@@ -11,13 +12,15 @@ using SnippetManagement.Data;
 namespace SnippetManagement.Data.Migrations
 {
     [DbContext(typeof(SnippetManagementDbContext))]
-    partial class SnippetManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230213085934_AddTablesSnippetAndTag")]
+    partial class AddTablesSnippetAndTag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -70,9 +73,6 @@ namespace SnippetManagement.Data.Migrations
                     b.Property<Guid>("TagId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("bit");
-
                     b.HasKey("SnippetId", "TagId");
 
                     b.HasIndex("TagId");
@@ -85,15 +85,6 @@ namespace SnippetManagement.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("TagName")
                         .IsRequired()
@@ -111,18 +102,9 @@ namespace SnippetManagement.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Password")
                         .IsRequired()
