@@ -38,6 +38,15 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.GetSection("Jwt").Bind(options));
 
+builder.Services.AddCors(opts =>
+{
+    opts.AddPolicy(name: "_myAllowSpecificOrigins",
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+        });
+});
+
 builder.Services.AddControllers(opts =>
 {
     opts.Filters.Add(new HandleApiExceptionAttribute());
@@ -104,6 +113,8 @@ using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().Creat
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("_myAllowSpecificOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
