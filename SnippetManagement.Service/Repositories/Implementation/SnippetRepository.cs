@@ -26,7 +26,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
 
     public async Task<PagedResponse<IEnumerable<SnippetDto?>>> GetAll(Pagination pagination)
     {
-        var snippets = (await _context.Set<Snippet>()
+        var snippets = (await _context.Set<Snippet>().Where(x => !x.Deleted)
                 .Include(x => x.Tags)
                 .ThenInclude(xx => xx.Tag)
                 .Skip((pagination.PageNumber - 1) * pagination.PageSize)
