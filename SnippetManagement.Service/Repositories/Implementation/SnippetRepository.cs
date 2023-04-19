@@ -44,6 +44,23 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
+    public async Task<PagedRangeResponse<IEnumerable<SnippetDto>>> GetRange(int startIndex, int endIndex)
+    {
+        var snippets = (await _context.Set<Snippet>()
+            .Where(x => !x.Deleted).Include(x => x.Tags)
+            .ThenInclude(xx => xx.Tag)
+            .Skip(startIndex)
+            .Take(endIndex - startIndex + 1)
+            .AsNoTracking().ToListAsync()).Select(x => Map(x));
+        
+        return new PagedRangeResponse<IEnumerable<SnippetDto>>()
+        {
+            Data = snippets,
+            StartIndex = startIndex,
+            EndIndex = endIndex
+        };
+    }
+
     public async Task<PagedResponse<IEnumerable<SnippetDto>>> Search(SearchSnippetRequest request)
     {
         var query = _context.Set<Snippet>().Where(x => !x.Deleted).Include(x => x.Tags).ThenInclude(x => x.Tag)

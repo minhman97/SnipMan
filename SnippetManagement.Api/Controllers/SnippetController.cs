@@ -73,6 +73,13 @@ public class SnippetController : ControllerBase
     {
         return Ok(await _unitOfWork.SnippetRepository.GetAll(pagination));
     }
+    
+    [HttpGet]
+    [Route("GetRange", Name = "GetRange")]
+    public async Task<IActionResult> GetRange(int startIndex, int endIndex)
+    {
+        return Ok(await _unitOfWork.SnippetRepository.GetRange(startIndex, endIndex));
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
