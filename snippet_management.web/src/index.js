@@ -1,13 +1,41 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import ErrorPage from './ErrorPage';
+import Snippet from './routes/Snippet/Snippet';
+import 'react-toastify/dist/ReactToastify.css';
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en.json'
+import "swiper/css";
+import 'swiper/css/navigation';
+import './index.css';
+
+
+TimeAgo.addDefaultLocale(en)
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <ErrorPage />,
+    
+  },
+  {
+    path: "snippet/create",
+    element: <Snippet />,
+  },
+]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} >
+    </RouterProvider >
   </React.StrictMode>
 );
 
