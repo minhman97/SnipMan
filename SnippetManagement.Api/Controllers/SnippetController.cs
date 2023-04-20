@@ -76,9 +76,9 @@ public class SnippetController : ControllerBase
     
     [HttpGet]
     [Route("GetRange", Name = "GetRange")]
-    public async Task<IActionResult> GetRange(int startIndex, int endIndex)
+    public async Task<IActionResult> GetRange(int startIndex, int endIndex, [FromQuery]SortOrder sortOrder)
     {
-        return Ok(await _unitOfWork.SnippetRepository.GetRange(startIndex, endIndex));
+        return Ok(await _unitOfWork.SnippetRepository.GetRange(startIndex, endIndex, sortOrder));
     }
 
     [HttpGet("{id}")]

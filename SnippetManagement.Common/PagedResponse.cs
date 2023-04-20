@@ -1,4 +1,6 @@
-﻿namespace SnippetManagement.Common;
+﻿using SnippetManagement.Common.Enum;
+
+namespace SnippetManagement.Common;
 
 public class PagedResponse<T>
 {
@@ -31,4 +33,10 @@ public class PagedRangeResponse<T>
     public T? Data { get; set; }
     public int StartIndex { get; set; } = 0;
     public int EndIndex { get; set; } = 6;
+}
+
+public class SortOrder
+{
+    public OrderWay OrderWay { get; set; } = OrderWay.Asc;
+    public string? Property { get; set; }
 }

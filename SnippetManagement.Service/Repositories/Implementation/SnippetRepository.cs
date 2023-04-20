@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SnippetManagement.Common;
+using SnippetManagement.Common.Enum;
+using SnippetManagement.Common.Extentions;
 using SnippetManagement.Data;
 using SnippetManagement.DataModel;
 using SnippetManagement.Service.Model;
@@ -44,18 +46,36 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
-    public async Task<PagedRangeResponse<IEnumerable<SnippetDto>>> GetRange(int startIndex, int endIndex)
+    public async Task<PagedRangeResponse<IEnumerable<SnippetDto>>> GetRange(int startIndex, int endIndex,
+        SortOrder sortOrder)
     {
-        var snippets = (await _context.Set<Snippet>()
-            .Where(x => !x.Deleted).Include(x => x.Tags)
+        var query = _context.Set<Snippet>()
+            .Where(x => !x.Deleted);
+        switch (sortOrder.Property.Capitalize())
+        {
+            case nameof(Snippet.Created):
+                query = sortOrder.OrderWay == OrderWay.Asc
+                    ? query.OrderBy(x => x.Created)
+                    : query.OrderByDescending(x => x.Created);
+                break;
+        }
+
+        query = query.Include(x => x.Tags)
             .ThenInclude(xx => xx.Tag)
             .Skip(startIndex)
             .Take(endIndex - startIndex + 1)
-            .AsNoTracking().ToListAsync()).Select(x => Map(x));
-        
+            .AsNoTracking();
+
+        // var snippets = (await _context.Set<Snippet>()
+        //     .Where(x => !x.Deleted).Include(x => x.Tags)
+        //     .ThenInclude(xx => xx.Tag)
+        //     .Skip(startIndex)
+        //     .Take(endIndex - startIndex + 1)
+        //     .AsNoTracking().ToListAsync()).Select(x => Map(x));
+
         return new PagedRangeResponse<IEnumerable<SnippetDto>>()
         {
-            Data = snippets,
+            Data = (await query.ToListAsync()).Select(Map),
             StartIndex = startIndex,
             EndIndex = endIndex
         };
