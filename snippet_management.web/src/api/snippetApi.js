@@ -32,10 +32,7 @@ export const deleteSnippet = async (token, id) => {
       "Content-Type": "application/json",
       Authorization: "Bearer " + token,
     },
-    body: JSON.stringify({
-      id: id,
-    }),
   });
 
-  return await res.json();
+  return await res.status;
 };

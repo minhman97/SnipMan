@@ -64,6 +64,11 @@ function App() {
       popupObject={popupObject}
       setPopupObject={setPopupObject}
       snippetId={snippet !== undefined ? snippet.id : undefined}
+      snippets={snippets}
+      currentCursor={currentCursor}
+      setCurrentCursor={setCurrentCursor}
+      setSnippets={setSnippets}
+      setSnippet={setSnippet}
     >
       <SearchBar />
       <MenuBar>
