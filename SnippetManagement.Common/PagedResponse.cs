@@ -33,6 +33,7 @@ public class PagedRangeResponse<T>
     public T? Data { get; set; }
     public int StartIndex { get; set; } = 0;
     public int EndIndex { get; set; } = 6;
+    public int TotalRecords { get; set; }
 }
 
 public class SortOrder

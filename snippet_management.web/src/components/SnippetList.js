@@ -15,6 +15,7 @@ const SnippetList = ({
   setCurrentCursor,
   setSnippet,
   token,
+  slidesPerView
 }) => {
   const [renameSnippet, setRenameSnippet] = useState(false);
   const swiperRef = useRef(null);
@@ -91,7 +92,7 @@ const SnippetList = ({
         </button>
         <Swiper
           ref={swiperRef}
-          slidesPerView={7}
+          slidesPerView={slidesPerView}
           spaceBetween={40}
           centeredSlides={true}
           slideToClickedSlide={true}
@@ -99,14 +100,14 @@ const SnippetList = ({
           className="mx-5 w-1/2"
           setWrapperSize={true}
           onSlideChange={(e) => {
-            if (e.activeIndex + 3 >= snippets.length) {
+            if (e.activeIndex + 3 >= snippets.data.length) {
               setRangeObject({
-                startIndex: snippets.length,
-                endIndex: snippets.length + pageSize - 1,
+                startIndex: snippets.data.length,
+                endIndex: snippets.data.length + pageSize - 1,
               });
             }
             setCurrentCursor(e.activeIndex);
-            setSnippet(snippets[e.activeIndex]);
+            setSnippet(snippets.data[e.activeIndex]);
           }}
           onSlideNextTransitionStart={(e) => {
             handleStyleSlider(e);
@@ -119,8 +120,8 @@ const SnippetList = ({
             // swiperRef.current.swiper.slideTo(currentCursor);
           }}
         >
-          {snippets.length > 0 &&
-            snippets.map((snippet, i) => {
+          {snippets.data.length > 0 &&
+            snippets.data.map((snippet, i) => {
               return (
                 <SwiperSlide key={snippet.id}>
                   <button

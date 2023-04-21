@@ -11,9 +11,13 @@ import SnippetList from "./components/SnippetList";
 function App() {
   const { token, setToken } = useToken();
   const [snippet, setSnippet] = useState({});
-  const [snippets, setSnippets] = useState([]);
+  const [snippets, setSnippets] = useState({
+    data: [],
+    totalRecords: 0
+  });
   const [popupObject, setPopupObject] = useState(undefined);
   const pageSize = 7;
+  const slidesPerView = 7;
 
   const [currentCursor, setCurrentCursor] = useState(0);
   const [rangeObject, setRangeObject] = useState({
@@ -25,11 +29,14 @@ function App() {
     orderWay: "desc",
     clicked: false,
   });
-
   useEffect(() => {
     if (token) {
       (async () => {
-        if (snippets.length === 0 || currentCursor + 3 >= snippets.length || sortOrder.clicked) {
+        if (
+          snippets.data.length === 0 ||
+          (currentCursor + slidesPerView / 2 >= snippets.data.length && currentCursor + slidesPerView / 2 < snippets.totalRecords) ||
+          sortOrder.clicked
+        ) {
           let rangeData = await getSnippets(
             token,
             rangeObject.startIndex,
@@ -37,19 +44,19 @@ function App() {
             sortOrder.sortProperty,
             sortOrder.orderWay
           );
-          if (snippets.length === 0) {
-            setSnippets(rangeData.data);
+          if (snippets.data.length === 0 || sortOrder.clicked) {
+            setSnippets({...snippets, data: rangeData.data, totalRecords: rangeData.totalRecords});
+            setSnippet(rangeData.data[currentCursor]);
           } else {
-            let tempData = snippets;
-            setSnippets(tempData.concat(rangeData.data));
+            setSnippets({...snippets, data: snippets.data.concat(rangeData.data)});
           }
-
-          setSnippet(rangeData.data[currentCursor]);
+          setSortOrder({ ...sortOrder, clicked: false });
         }
       })();
       return () => {};
     }
   }, [currentCursor, sortOrder]);
+
   return (
     <Layout
       token={token}
@@ -85,6 +92,8 @@ function App() {
         currentCursor={currentCursor}
         setCurrentCursor={setCurrentCursor}
         setSnippet={setSnippet}
+        slidesPerView={slidesPerView}
+        token={token}
       />
     </Layout>
   );

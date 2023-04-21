@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { updateSnippet } from "../api/snippetApi";
 import { toast } from "react-toastify";
 import {
-    Bars3BottomLeftIcon,
+  Bars3BottomLeftIcon,
   DocumentArrowDownIcon,
   PencilIcon,
   XMarkIcon,
@@ -66,7 +66,7 @@ export const SnippetText = ({ snippet, setSnippet, token }) => {
 
   var btnControlSnippetText = getBtnControlSnippetText(statusSnippetText);
 
-//   console.log(snippet);
+  //   console.log(snippet);
   return (
     <>
       {btnControlSnippetText}
@@ -83,8 +83,7 @@ export const SnippetText = ({ snippet, setSnippet, token }) => {
       ></textarea>
       <button
         className="p-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm absolute mt-5 mr-5 right-0 bottom-3 hover:bg-slate-700"
-        onClick={() => {
-        }}
+        onClick={() => {}}
       >
         <Bars3BottomLeftIcon className="h-6 w-6 text-white-500" />
       </button>

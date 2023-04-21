@@ -51,6 +51,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
     {
         var query = _context.Set<Snippet>()
             .Where(x => !x.Deleted);
+        var totalRecords = await query.CountAsync();
         switch (sortOrder.Property.Capitalize())
         {
             case nameof(Snippet.Created):
@@ -77,7 +78,8 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         {
             Data = (await query.ToListAsync()).Select(Map),
             StartIndex = startIndex,
-            EndIndex = endIndex
+            EndIndex = endIndex,
+            TotalRecords = totalRecords 
         };
     }
 
