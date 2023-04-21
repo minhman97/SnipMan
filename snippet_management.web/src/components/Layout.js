@@ -3,7 +3,7 @@ import Popup from "./Popup/Popup";
 import { deleteSnippet } from "../api/snippetApi";
 import { ToastContainer, toast } from "react-toastify";
 
-const Layout = ({ children, token, setToken, popupObject, snippetId }) => {
+const Layout = ({ children, token, setToken, popupObject, setPopupObject, snippetId }) => {
 
   if (!token) {
     return <Login setToken={setToken} />;
@@ -38,7 +38,7 @@ const Layout = ({ children, token, setToken, popupObject, snippetId }) => {
           </>
         )}
       </main>
-      <Popup popupObject={popupObject} />
+      <Popup popupObject={popupObject} setPopupObject={setPopupObject}/>
       <ToastContainer />
     </>
   );

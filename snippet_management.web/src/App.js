@@ -62,6 +62,7 @@ function App() {
       token={token}
       setToken={setToken}
       popupObject={popupObject}
+      setPopupObject={setPopupObject}
       snippetId={snippet !== undefined ? snippet.id : undefined}
     >
       <SearchBar />

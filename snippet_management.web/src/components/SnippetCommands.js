@@ -20,6 +20,7 @@ const SnippetCommands = ({
           setPopupObject({
             title: "Add Code Snippets & Developer Materials",
             contentName: "Add",
+            open: true
           });
         }}
       >
