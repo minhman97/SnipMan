@@ -82,11 +82,8 @@ function App() {
         setPopupObject={setPopupObject}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
-        setSnippets={setSnippets}
-        setSnippet={setSnippet}
         setRangeObject={setRangeObject}
         pageSize={pageSize}
-        setCurrentCursor={setCurrentCursor}
         currentCursor={currentCursor}
         token={token}
       />
@@ -99,7 +96,6 @@ function App() {
         setCurrentCursor={setCurrentCursor}
         setSnippet={setSnippet}
         slidesPerView={slidesPerView}
-        token={token}
       />
     </Layout>
   );

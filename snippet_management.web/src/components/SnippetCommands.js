@@ -4,11 +4,8 @@ const SnippetCommands = ({
   setPopupObject,
   sortOrder,
   setSortOrder,
-  setSnippets,
-  setSnippet,
   setRangeObject,
   pageSize,
-  setCurrentCursor,
   currentCursor,
 }) => {
   return (

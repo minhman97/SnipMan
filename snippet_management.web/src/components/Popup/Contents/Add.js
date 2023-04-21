@@ -1,6 +1,6 @@
 import React from "react";
 
-const Add = ({setPopupObject}) => {
+const Add = () => {
   return (
     <div>
       <a

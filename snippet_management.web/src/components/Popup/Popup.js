@@ -11,7 +11,7 @@ export default function Popup({ popupObject, setPopupObject }) {
 
   var popupContent = <div></div>;
   if (popupObject.contentName === "Add")
-    popupContent = <Add setPopupObject={setPopupObject} />;
+    popupContent = <Add />;
 
   return (
     <Transition.Root show={popupObject.open} as={Fragment}>
