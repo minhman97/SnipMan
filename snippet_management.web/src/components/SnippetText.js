@@ -66,13 +66,12 @@ export const SnippetText = ({ snippet, setSnippet, token }) => {
 
   var btnControlSnippetText = getBtnControlSnippetText(statusSnippetText);
 
-  //   console.log(snippet);
   return (
     <>
       {btnControlSnippetText}
       <textarea
         className="bg-slate-950  w-full min-h-full rounded-lg"
-        defaultValue={snippet.content}
+        defaultValue={snippet.content !== undefined ? snippet.content : "" }
         {...(statusSnippetText !== "exit" && statusSnippetText !== "save"
           ? { readOnly: true }
           : {})}

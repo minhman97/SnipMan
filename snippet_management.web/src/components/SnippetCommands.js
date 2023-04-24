@@ -4,6 +4,7 @@ const SnippetCommands = ({
   setPopupObject,
   sortOrder,
   setSortOrder,
+  rangeObject,
   setRangeObject,
   pageSize,
   currentCursor,
@@ -17,7 +18,7 @@ const SnippetCommands = ({
           setPopupObject({
             title: "Add Code Snippets & Developer Materials",
             contentName: "Add",
-            open: true
+            open: true,
           });
         }}
       >
@@ -40,10 +41,12 @@ const SnippetCommands = ({
         className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
         onClick={async (e) => {
           setRangeObject({
+            ...rangeObject,
             startIndex: 0,
             endIndex: currentCursor + pageSize,
           });
-          setSortOrder({...sortOrder,
+          setSortOrder({
+            ...sortOrder,
             orderWay: sortOrder.orderWay === "asc" ? "desc" : "asc",
             sortProperty: "created",
             clicked: true,

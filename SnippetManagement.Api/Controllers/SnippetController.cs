@@ -80,6 +80,13 @@ public class SnippetController : ControllerBase
     {
         return Ok(await _unitOfWork.SnippetRepository.GetRange(startIndex, endIndex, sortOrder));
     }
+    
+    [HttpGet]
+    [Route("SearchRange", Name = "SearchRange")]
+    public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery]SearchSnippetRequest request, [FromQuery]SortOrder sortOrder)
+    {
+        return Ok(await _unitOfWork.SnippetRepository.SearchRange(startIndex, endIndex, request, sortOrder));
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)

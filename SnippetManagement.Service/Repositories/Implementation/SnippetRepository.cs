@@ -83,6 +83,65 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
+    public async Task<PagedRangeResponse<IEnumerable<SnippetDto>>> SearchRange(int startIndex, int endIndex,
+        SearchSnippetRequest request, SortOrder sortOrder)
+    {
+        var query = _context.Set<Snippet>().Where(x => !x.Deleted).Include(x => x.Tags).ThenInclude(x => x.Tag)
+            .AsQueryable();
+        if (!string.IsNullOrEmpty(request.KeyWord))
+        {
+            request.KeyWord = request.KeyWord.ToLower();
+            query = request.Terms.Aggregate(query,
+                (originalQuery, term) => originalQuery.Where(x => x.Name.ToLower().Contains(request.KeyWord)
+                                                                  || x.Origin.ToLower().Contains(request.KeyWord)
+                                                                  || x.Description.ToLower().Contains(request.KeyWord)
+                                                                  || x.Content.ToLower().Contains(request.KeyWord)
+                                                                  || x.Tags.Any(tagDto =>
+                                                                      tagDto.Tag.TagName.ToLower()
+                                                                          .Contains(request.KeyWord))
+                                                                  || x.Created.ToString().Contains(request.KeyWord)
+                                                                  || x.Modified.ToString().Contains(request.KeyWord)));
+        }
+        
+        switch (sortOrder.Property.Capitalize())
+        {
+            case nameof(Snippet.Created):
+                query = sortOrder.OrderWay == OrderWay.Asc
+                    ? query.OrderBy(x => x.Created)
+                    : query.OrderByDescending(x => x.Created);
+                break;
+        }
+        
+        if (request.FromDate is not null)
+            query = query.Where(x => x.Created >= request.FromDate);
+        if (request.ToDate is not null)
+            query = query.Where(x => x.Created <= request.ToDate.Value.AddDays(1));
+        var totalRecords = await query.CountAsync();
+        var snippets = await query.Skip(startIndex).Take(endIndex - startIndex + 1)
+            .AsNoTracking().Select(snippet => new SnippetDto()
+            {
+                Id = snippet.Id,
+                Content = snippet.Content,
+                Name = snippet.Name,
+                Description = snippet.Description,
+                Origin = snippet.Origin,
+                Created = snippet.Created,
+                Modified = snippet.Modified,
+                Tags = snippet.Tags.Select(x => new TagDto()
+                {
+                    Id = x.TagId,
+                    TagName = x.Tag.TagName
+                })
+            }).ToListAsync();
+        return new PagedRangeResponse<IEnumerable<SnippetDto>>()
+        {
+            Data = snippets,
+            StartIndex = startIndex,
+            EndIndex = endIndex,
+            TotalRecords = totalRecords 
+        };
+    }
+
     public async Task<PagedResponse<IEnumerable<SnippetDto>>> Search(SearchSnippetRequest request)
     {
         var query = _context.Set<Snippet>().Where(x => !x.Deleted).Include(x => x.Tags).ThenInclude(x => x.Tag)

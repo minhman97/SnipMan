@@ -9,13 +9,14 @@ import { toast } from "react-toastify";
 const SnippetList = ({
   snippet,
   snippets,
+  rangeObject,
   setRangeObject,
   pageSize,
   currentCursor,
   setCurrentCursor,
   setSnippet,
   token,
-  slidesPerView
+  slidesPerView,
 }) => {
   const [renameSnippet, setRenameSnippet] = useState(false);
   const swiperRef = useRef(null);
@@ -101,7 +102,7 @@ const SnippetList = ({
           setWrapperSize={true}
           onSlideChange={(e) => {
             if (e.activeIndex + 3 >= snippets.data.length) {
-              setRangeObject({
+              setRangeObject({...rangeObject,
                 startIndex: snippets.data.length,
                 endIndex: snippets.data.length + pageSize - 1,
               });
@@ -117,15 +118,15 @@ const SnippetList = ({
           }}
           onUpdate={(e) => {
             handleStyleSlider(e);
-            // swiperRef.current.swiper.slideTo(currentCursor);
+            if(currentCursor === 0)
+              swiperRef.current.swiper.slideTo(currentCursor);
           }}
         >
-          {snippets.data.length > 0 &&
+          {(snippets.data && snippets.data.length > 0) &&
             snippets.data.map((snippet, i) => {
               return (
                 <SwiperSlide key={snippet.id}>
                   <button
-                    key={snippet.Id}
                     type="button"
                     className={`px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm `}
                   >
