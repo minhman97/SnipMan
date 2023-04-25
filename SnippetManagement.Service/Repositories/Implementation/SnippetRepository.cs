@@ -46,7 +46,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
-    public async Task<PagedRangeResponse<IEnumerable<SnippetDto>>> GetRange(int startIndex, int endIndex,
+    public async Task<RangeDataResponse<IEnumerable<SnippetDto>>> GetRange(int startIndex, int endIndex,
         SortOrder sortOrder)
     {
         var query = _context.Set<Snippet>()
@@ -65,16 +65,9 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
             .ThenInclude(xx => xx.Tag)
             .Skip(startIndex)
             .Take(endIndex - startIndex + 1)
-            .AsNoTracking();
-
-        // var snippets = (await _context.Set<Snippet>()
-        //     .Where(x => !x.Deleted).Include(x => x.Tags)
-        //     .ThenInclude(xx => xx.Tag)
-        //     .Skip(startIndex)
-        //     .Take(endIndex - startIndex + 1)
-        //     .AsNoTracking().ToListAsync()).Select(x => Map(x));
-
-        return new PagedRangeResponse<IEnumerable<SnippetDto>>()
+            .AsNoTracking(); 
+        
+        return new RangeDataResponse<IEnumerable<SnippetDto>>()
         {
             Data = (await query.ToListAsync()).Select(Map),
             StartIndex = startIndex,
@@ -83,7 +76,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
-    public async Task<PagedRangeResponse<IEnumerable<SnippetDto>>> SearchRange(int startIndex, int endIndex,
+    public async Task<RangeDataResponse<IEnumerable<SnippetDto>>> SearchRange(int startIndex, int endIndex,
         SearchSnippetRequest request, SortOrder sortOrder)
     {
         var query = _context.Set<Snippet>().Where(x => !x.Deleted).Include(x => x.Tags).ThenInclude(x => x.Tag)
@@ -133,7 +126,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                     TagName = x.Tag.TagName
                 })
             }).ToListAsync();
-        return new PagedRangeResponse<IEnumerable<SnippetDto>>()
+        return new RangeDataResponse<IEnumerable<SnippetDto>>()
         {
             Data = snippets,
             StartIndex = startIndex,

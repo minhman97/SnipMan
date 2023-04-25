@@ -11,8 +11,8 @@ public interface ISnippetRepository : IRepository<Snippet>
     SnippetDto? Map(Snippet snippet);
     Task<PagedResponse<IEnumerable<SnippetDto>>> Search(SearchSnippetRequest request);
     Task<PagedResponse<IEnumerable<SnippetDto?>>> GetAll(Pagination pagination);
-    Task<PagedRangeResponse<IEnumerable<SnippetDto>>> GetRange(int startIndex, int endIndex, SortOrder sortOrder);
+    Task<RangeDataResponse<IEnumerable<SnippetDto>>> GetRange(int startIndex, int endIndex, SortOrder sortOrder);
 
-    Task<PagedRangeResponse<IEnumerable<SnippetDto>>> SearchRange(int startIndex, int endIndex,
+    Task<RangeDataResponse<IEnumerable<SnippetDto>>> SearchRange(int startIndex, int endIndex,
         SearchSnippetRequest request, SortOrder sortOrder);
 }

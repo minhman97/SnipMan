@@ -28,7 +28,7 @@ public class Pagination
         PageSize = pageSize > 10 ? 10 : pageSize;
     }
 }
-public class PagedRangeResponse<T>
+public class RangeDataResponse<T>
 {
     public T? Data { get; set; }
     public int StartIndex { get; set; } = 0;
