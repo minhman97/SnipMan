@@ -13,7 +13,7 @@ export const getSnippets = async (token, startIndex, endIndex, sortProperty, ord
 };
 
 export const createSnippet = async (token, snippet) =>{
-  return await fetch("https://localhost:44395/Snippet", {
+  return await fetch(`${baseUrl}Snippet`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

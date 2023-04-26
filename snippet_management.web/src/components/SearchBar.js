@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/solid";
 import React, { Fragment, useState } from "react";
 import { getSnippets, searchSnippet } from "../api/snippetApi";
-import { searchTypes } from "../model/searchTypes";
+import { searchTypes } from "../data_model/searchTypes";
 
 const SearchBar = ({
   token,

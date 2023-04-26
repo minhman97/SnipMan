@@ -29,6 +29,7 @@ public class SnippetController : ControllerBase
             Name = request.Name,
             Description = request.Description,
             Origin = request.Origin,
+            Language = request.Language
         };
 
         var newTags = GetNewTags(request.Tags);
