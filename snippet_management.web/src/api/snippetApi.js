@@ -1,7 +1,7 @@
 const baseUrl = "https://localhost:44395/";
 
 export const getSnippets = async (token, startIndex, endIndex, sortProperty, orderWay) => {
-  let res = await fetch(`${baseUrl}Snippet/GetRange?startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`, {
+  let res = await fetch(`${baseUrl}Snippet?startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -11,6 +11,20 @@ export const getSnippets = async (token, startIndex, endIndex, sortProperty, ord
 
   return await res.json();
 };
+
+export const createSnippet = async (token, snippet) =>{
+  return await fetch("https://localhost:44395/Snippet", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify(snippet),
+    }).catch((err) => {
+      console.log(err.message);
+   });
+  };
+
 
 export const updateSnippet = async (token, snippet) => {
   let res = await fetch(baseUrl + "Snippet/" + snippet.id, {
@@ -22,7 +36,7 @@ export const updateSnippet = async (token, snippet) => {
     body: JSON.stringify(snippet),
   });
 
-  return await res.json();
+  return await res;
 };
 
 export const deleteSnippet = async (token, id) => {

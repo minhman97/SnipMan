@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 
-const Login = ({ setToken }) => {
+const LoginForm = ({ setToken }) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
 
@@ -85,4 +85,4 @@ async function loginUser(credentials) {
   }).then((data) => data.json());
 }
 
-export default Login;
+export default LoginForm;

@@ -1,26 +1,16 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import Add from "./Contents/Add";
 
-export default function Popup({ popupObject, setPopupObject }) {
+export default function Popup({ children, title, isOpen, setIsOpen }) {
   const cancelButtonRef = useRef(null);
-
-  if (popupObject === undefined) {
-    return;
-  }
-
-  var popupContent = <div></div>;
-  if (popupObject.contentName === "Add")
-    popupContent = <Add />;
-
   return (
-    <Transition.Root show={popupObject.open} as={Fragment}>
+    <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
         className="absolute z-10"
         initialFocus={cancelButtonRef}
         onClose={(e) => {
-          setPopupObject({...popupObject, open: false});
+          setIsOpen(false)
         }}
       >
         <Transition.Child
@@ -54,9 +44,9 @@ export default function Popup({ popupObject, setPopupObject }) {
                         as="h3"
                         className="text-base font-semibold leading-6 text-gray-900"
                       >
-                        {popupObject.title}
+                        {title}
                       </Dialog.Title>
-                      <div className="mt-2">{popupContent}</div>
+                      <div className="mt-2">{children}</div>
                     </div>
                   </div>
                 </div>

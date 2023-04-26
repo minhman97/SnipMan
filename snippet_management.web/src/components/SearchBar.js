@@ -7,24 +7,7 @@ import {
 } from "@heroicons/react/24/solid";
 import React, { Fragment, useState } from "react";
 import { getSnippets, searchSnippet } from "../api/snippetApi";
-
-const typeObjects = [
-  {
-    id: "blended",
-    name: "Blended",
-    detail: "Search code, tags, description, links, and more",
-  },
-  {
-    id: "fts",
-    name: "Full Text Search (FTS)",
-    detail: "Search code or text value...",
-  },
-  {
-    id: "ncs",
-    name: "Neural Code Search (NCS)",
-    detail: "Use natural languege to describe what you're looking for",
-  },
-];
+import { searchTypes } from "../model/searchTypes";
 
 const SearchBar = ({
   token,
@@ -38,7 +21,7 @@ const SearchBar = ({
   setcurrentCurson,
   pageSize
 }) => {
-  const [searchType, setSearchType] = useState(typeObjects[0].id);
+  const [searchType, setSearchType] = useState(searchTypes[0]);
 
   return (
     <div className="py-5 flex justify-center items-center">
@@ -69,7 +52,7 @@ const SearchBar = ({
           >
             <Menu.Items className="absolute w-[50rem] mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-slate-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
               <div className="px-1 py-1 ">
-                {typeObjects.map((item, i) => {
+                {searchTypes.map((item, i) => {
                   return (
                     <Menu.Item key={item.id}>
                       {({ active }) => (
@@ -77,12 +60,12 @@ const SearchBar = ({
                           className={`${
                             active
                               ? "bg-gray-500"
-                              : searchType === item.id
+                              : searchType.id === item.id
                               ? "bg-gray-600"
                               : ""
                           } text-white group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm text-left`}
                           onClick={() => {
-                            setSearchType(item.id);
+                            setSearchType(item);
                           }}
                         >
                           <div className="flex items-center">
@@ -110,7 +93,7 @@ const SearchBar = ({
       <input
         type="text"
         className="rounded-full w-8/12 h-12 bg-slate-950 px-20"
-        placeholder={getDetail(searchType)}
+        placeholder={searchType.placeholder}
         onChange={async (e) => {
           let rangeData = {};
           if (e.target.value !== "") {
@@ -164,17 +147,6 @@ const SearchBar = ({
       </button>
     </div>
   );
-};
-
-const getDetail = (searchType) => {
-  switch (searchType) {
-    case "fts":
-      return typeObjects[1].detail;
-    case "ncs":
-      return typeObjects[2].detail;
-    default:
-      return "Search anything...";
-  }
 };
 
 export default SearchBar;

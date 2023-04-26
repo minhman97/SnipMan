@@ -7,7 +7,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import ErrorPage from './ErrorPage';
-import Snippet from './routes/Snippet/Snippet';
+import CreateSnippet from './routes/Snippet/CreateSnippet';
 import 'react-toastify/dist/ReactToastify.css';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en.json'
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
   },
   {
     path: "snippet/create",
-    element: <Snippet />,
+    element: <CreateSnippet />,
   },
 ]);
 

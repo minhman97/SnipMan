@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import useToken from "../../hooks/useToken";
+import { createSnippet } from "../../api/snippetApi";
 
-const Snippet = () => {
+const CreateSnippet = () => {
   const { token } = useToken();
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
@@ -16,18 +17,9 @@ const Snippet = () => {
       tags:[]
     };
 
-    var res = await fetch("https://localhost:44395/Snippet", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify(snippet),
-    }).catch((err) => {
-      console.log(err.message);
-   });
+    var res = createSnippet(token, snippet);
     if(res.status === 200)
-      return window.location.href = "/"
+      window.location.href = "/"
   };
 
   return (
@@ -55,9 +47,7 @@ const Snippet = () => {
           <button
             type="button"
             className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm"
-            onClick={(e) => {
-              handleCreate(e);
-            }}
+            onClick={handleCreate}
           >
             Create
           </button>
@@ -67,4 +57,4 @@ const Snippet = () => {
   );
 };
 
-export default Snippet;
+export default CreateSnippet;

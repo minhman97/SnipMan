@@ -1,6 +1,6 @@
 import React from "react";
 
-const Add = () => {
+const AddSnippetButton = () => {
   return (
     <div>
       <a
@@ -14,4 +14,4 @@ const Add = () => {
   );
 };
 
-export default Add;
+export default AddSnippetButton;
