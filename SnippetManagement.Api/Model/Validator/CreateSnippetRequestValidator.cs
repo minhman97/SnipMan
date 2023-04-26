@@ -9,5 +9,6 @@ public class CreateSnippetRequestValidator : AbstractValidator<CreateSnippetRequ
     {
         RuleFor(x => x.Content).NotNull().NotEmpty().WithMessage("Please inter Content");
         RuleFor(x => x.Name).NotNull().NotEmpty().WithMessage("Please inter Name").MaximumLength(255).WithMessage("Length not over 255 characters");
+        RuleFor(x => x.Language).Length(1, 255).When(s => !string.IsNullOrEmpty(s.Language));
     }
 }

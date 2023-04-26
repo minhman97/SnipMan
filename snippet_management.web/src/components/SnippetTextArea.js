@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { updateSnippet } from "../api/snippetApi";
+import { updateSnippet } from "../api/SnippetApi";
 import { toast } from "react-toastify";
 import {
   Bars3BottomLeftIcon,

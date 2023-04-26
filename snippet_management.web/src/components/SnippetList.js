@@ -3,9 +3,10 @@ import React, { useRef, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 import { Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { updateSnippet } from "../api/snippetApi";
+import { updateSnippet } from "../api/SnippetApi";
 import { toast } from "react-toastify";
 import { handleStyleSlider } from "../utils/SliderExtentions";
+import { GetErrorMessage } from "../api/StatusCode";
 
 const SnippetList = ({
   snippet,
@@ -46,7 +47,8 @@ const SnippetList = ({
           setWrapperSize={true}
           onSlideChange={(e) => {
             if (e.activeIndex + 3 >= snippets.data.length) {
-              setRangeObject({...rangeObject,
+              setRangeObject({
+                ...rangeObject,
                 startIndex: snippets.data.length,
                 endIndex: snippets.data.length + pageSize - 1,
               });
@@ -62,11 +64,12 @@ const SnippetList = ({
           }}
           onUpdate={(e) => {
             handleStyleSlider(e);
-            if(currentCursor === 0)
+            if (currentCursor === 0)
               swiperRef.current.swiper.slideTo(currentCursor);
           }}
         >
-          {(snippets.data && snippets.data.length > 0) &&
+          {snippets.data &&
+            snippets.data.length > 0 &&
             snippets.data.map((snippet, i) => {
               return (
                 <SwiperSlide key={snippet.id}>
@@ -103,16 +106,30 @@ const SnippetList = ({
               }}
               onBlur={async (e) => {
                 if (renameSnippet) {
-                  await updateSnippet(token, snippet);
-                  toast.success("Snippet updated successfully", {
-                    position: "top-center",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: false,
-                    theme: "light",
-                  });
+                  let res = await updateSnippet(token, snippet);
+                  if (res.status && res.status === 200 || res) {
+                    toast.success("Snippet updated successfully", {
+                      position: "top-center",
+                      autoClose: 2000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      theme: "light",
+                    });
+                    
+                  } else {
+                    toast.error(`${GetErrorMessage(res.status)}. Can't rename snippet`, {
+                      position: "top-center",
+                      autoClose: 2000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      theme: "light",
+                    });
+                  }
+
                   setRenameSnippet(false);
                 }
               }}

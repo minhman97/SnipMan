@@ -204,6 +204,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
             Origin = snippet.Origin,
             Created = snippet.Created,
             Modified = snippet.Modified,
+            Language = snippet.Language,
             Tags = MapTag(snippet.Tags)
         };
     }

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import useToken from "../../hooks/useToken";
-import { createSnippet } from "../../api/snippetApi";
+import { createSnippet } from "../../api/SnippetApi";
 import { Listbox, Transition } from "@headlessui/react";
-import { langueges } from "../../data_model/languages";
+import { langueges } from "../../data_model/Languages";
 import { Fragment } from "react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { GetErrorMessage } from "../../api/StatusCode";
+import { toast } from "react-toastify";
 
 const CreateSnippet = () => {
   const [token] = useToken();
@@ -24,7 +26,9 @@ const CreateSnippet = () => {
     };
 
     var res = createSnippet(token, snippet);
-    if (res.status === 200) window.location.href = "/";
+
+    if (res.status && res.status !== 200) return toast.error(GetErrorMessage(res.status));
+    if (res) window.location.href = "/";
   };
 
   return (

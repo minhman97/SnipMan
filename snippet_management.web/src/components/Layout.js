@@ -1,14 +1,14 @@
 import LoginForm from "./LoginForm";
 import Popup from "./Popup/Popup";
-import { deleteSnippet } from "../api/snippetApi";
+import { deleteSnippet } from "../api/SnippetApi";
 import { ToastContainer, toast } from "react-toastify";
 import AddSnippetButton from "./Popup/Contents/AddSnippetButton";
 import { useState } from "react";
 import SearchBar from "./SearchBar";
 import SideBar from "./SideBar";
-import { SnippetTextArea } from "./SnippetTextArea";
-import SnippetCommands from "./SnippetCommands";
 import SnippetList from "./SnippetList";
+import Button from "./Elements/Button";
+import { GetErrorMessage } from "../api/StatusCode";
 
 const Layout = ({
   children,
@@ -45,15 +45,15 @@ const Layout = ({
             e.target.localName === "main" &&
             snippet.id
           ) {
-            let status = await deleteSnippet(token, snippet.id);
-            let tempData = snippets.data.filter(
-              (item) => item.id !== snippet.id
-            );
-            let cursor = currentCursor - 1 < 0 ? 0 : currentCursor - 1;
-            setSnippets({ ...snippets, data: tempData });
-            setSnippet(tempData[cursor]);
-            setCurrentCursor(cursor);
-            if (status === 200) {
+            let res = await deleteSnippet(token, snippet.id);
+            if (res.status && res.status === 200) {
+              let tempData = snippets.data.filter(
+                (item) => item.id !== snippet.id
+              );
+              let cursor = currentCursor - 1 < 0 ? 0 : currentCursor - 1;
+              setSnippets({ ...snippets, data: tempData });
+              setSnippet(tempData[cursor]);
+              setCurrentCursor(cursor);
               toast.success("Snippet deleted successfully", {
                 position: "top-center",
                 autoClose: 2000,
@@ -65,7 +65,9 @@ const Layout = ({
               });
             } else {
               toast.error(
-                `Something wrong can't delete snippet id: ${snippet.id}`,
+                `${GetErrorMessage(res.status)}. Can't delete snippet: ${
+                  snippet.name
+                }`,
                 {
                   position: "top-center",
                   autoClose: 2000,
@@ -98,16 +100,52 @@ const Layout = ({
             <SideBar></SideBar>
           </div>
         </div>
-        <SnippetCommands
-          sortOrder={sortOrder}
-          setSortOrder={setSortOrder}
-          rangeObject={rangeObject}
-          setRangeObject={setRangeObject}
-          pageSize={pageSize}
-          currentCursor={currentCursor}
-          setIsOpen={setIsOpen}
-        />
+        <div className="flex justify-center">
+          <Button
+            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+            onClick={(e) => {
+              setIsOpen(true);
+            }}
+            type="button"
+          >
+            Add
+          </Button>
+          <Button
+            type="button"
+            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+          >
+            Discover
+          </Button>
+          <Button
+            type="button"
+            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+          >
+            Paste
+          </Button>
+          <Button
+            type="button"
+            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+            onClick={async (e) => {
+              setRangeObject({
+                ...rangeObject,
+                startIndex: 0,
+                endIndex: currentCursor + pageSize,
+              });
+              setSortOrder({
+                ...sortOrder,
+                orderWay: sortOrder.orderWay === "asc" ? "desc" : "asc",
+                sortProperty: "created",
+                clicked: true,
+              });
+            }}
+            title="Sort by Last Added"
+          >
+            Sort
+          </Button>
+        </div>
+
         <SnippetList
+          token={token}
           snippet={snippet}
           snippets={snippets}
           rangeObject={rangeObject}

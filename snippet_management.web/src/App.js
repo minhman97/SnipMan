@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import Layout from "./components/Layout";
 import useToken from "./hooks/useToken";
-import { getSnippets, searchSnippet } from "./api/snippetApi";
+import { getSnippets, searchSnippet } from "./api/SnippetApi";
 import { SnippetTextArea } from "./components/SnippetTextArea";
+import { toast } from "react-toastify";
+import { GetErrorMessage } from "./api/StatusCode";
 
 function App() {
   const [token, setToken] = useToken();
@@ -56,6 +58,9 @@ function App() {
             );
           }
 
+          if (rangeData.status && rangeData.status !== 200)
+            return toast.error(GetErrorMessage(rangeData.status));
+
           if (snippets.data.length === 0 || sortOrder.clicked) {
             setSnippets({
               ...snippets,
@@ -74,6 +79,7 @@ function App() {
       })();
       return () => {};
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCursor, sortOrder]);
 
   return (

@@ -9,6 +9,6 @@ public class SnippetDto
     public string Origin { get; set; }
     public DateTimeOffset Created { get; set; }
     public DateTimeOffset? Modified { get; set; }
-    
+    public string Language { get; set; }
     public IEnumerable<TagDto> Tags { get; set; }
 }

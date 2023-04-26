@@ -6,8 +6,10 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/solid";
 import React, { Fragment, useState } from "react";
-import { getSnippets, searchSnippet } from "../api/snippetApi";
-import { searchTypes } from "../data_model/searchTypes";
+import { getSnippets, searchSnippet } from "../api/SnippetApi";
+import { searchTypes } from "../data_model/SearchTypes";
+import { toast } from "react-toastify";
+import { GetErrorMessage } from "../api/StatusCode";
 
 const SearchBar = ({
   token,
@@ -19,7 +21,7 @@ const SearchBar = ({
   setRangeObject,
   setFilterKeyWork,
   setcurrentCurson,
-  pageSize
+  pageSize,
 }) => {
   const [searchType, setSearchType] = useState(searchTypes[0]);
 
@@ -126,6 +128,9 @@ const SearchBar = ({
               filter: false,
             });
           }
+          
+          if (rangeData.status && rangeData.status !== 200)
+            return toast.error(GetErrorMessage(rangeData.status));
 
           setSnippets({
             ...snippets,
@@ -135,7 +140,6 @@ const SearchBar = ({
           setSnippet(rangeData.data.length > 0 ? rangeData.data[0] : {});
           setcurrentCurson(0);
           setFilterKeyWork(e.target.value);
-          
         }}
       />
       <button
