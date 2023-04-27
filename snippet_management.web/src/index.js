@@ -1,41 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import ErrorPage from './ErrorPage';
-import CreateSnippet from './routes/Snippet/CreateSnippet';
-import 'react-toastify/dist/ReactToastify.css';
-import TimeAgo from 'javascript-time-ago'
-import en from 'javascript-time-ago/locale/en.json'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import "react-toastify/dist/ReactToastify.css";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en.json";
 import "swiper/css";
-import 'swiper/css/navigation';
-import './index.css';
+import "swiper/css/navigation";
+import "./index.css";
 
-
-TimeAgo.addDefaultLocale(en)
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <ErrorPage />,
-    
-  },
-  {
-    path: "snippet/create",
-    element: <CreateSnippet />,
-  },
-]);
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+TimeAgo.addDefaultLocale(en);
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} >
-    </RouterProvider >
+    <App/>
   </React.StrictMode>
 );
 

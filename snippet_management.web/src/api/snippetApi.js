@@ -1,5 +1,4 @@
-import { GetErrorMessage } from "./StatusCode";
-const baseUrl = "https://localhost:44395/";
+import { GetErrorMessage, baseUrl } from "./StatusCode";
 
 export const getSnippets = async (
   token,

@@ -1,114 +1,44 @@
-import { useEffect, useState } from "react";
-import Layout from "./components/Layout";
+import {
+  Navigate,
+  Route,
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+} from "react-router-dom";
 import useToken from "./hooks/useToken";
-import { getSnippets, searchSnippet } from "./api/SnippetApi";
-import { SnippetTextArea } from "./components/SnippetTextArea";
-import { toast } from "react-toastify";
-import { GetErrorMessage } from "./api/StatusCode";
-
+import LoginForm from "./components/LoginForm";
+import Snippet from "./routes/Snippet/Snippet";
+import CreateSnippet from "./routes/Snippet/CreateSnippet";
+import ErrorPage from "./ErrorPage";
 function App() {
-  const [token, setToken] = useToken();
-  const [snippet, setSnippet] = useState({});
-  const [snippets, setSnippets] = useState({
-    data: [],
-    totalRecords: 0,
-  });
-  const pageSize = 7;
-  const slidesPerView = 7;
+  const [token, saveToken] = useToken();
 
-  const [currentCursor, setCurrentCursor] = useState(0);
-  const [rangeObject, setRangeObject] = useState({
-    startIndex: 0,
-    endIndex: pageSize - 1,
-    filter: false,
-  });
-  const [sortOrder, setSortOrder] = useState({
-    sortProperty: "created",
-    orderWay: "desc",
-    clicked: false,
-  });
-  const [filterKeyWord, setFilterKeyWord] = useState("");
-
-  useEffect(() => {
-    if (token) {
-      (async () => {
-        if (
-          snippets.data.length === 0 ||
-          (currentCursor + slidesPerView / 2 >= snippets.data.length &&
-            currentCursor + slidesPerView / 2 < snippets.totalRecords) ||
-          sortOrder.clicked
-        ) {
-          let rangeData = {};
-          if (rangeObject.filter) {
-            rangeData = await searchSnippet(
-              token,
-              rangeObject.startIndex,
-              rangeObject.endIndex,
-              filterKeyWord,
-              sortOrder.sortProperty,
-              sortOrder.orderWay
-            );
-          } else {
-            rangeData = await getSnippets(
-              token,
-              rangeObject.startIndex,
-              rangeObject.endIndex,
-              sortOrder.sortProperty,
-              sortOrder.orderWay
-            );
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <>
+        <Route
+          path="/"
+          element={
+            token ? (
+              <Navigate to={`/snippet`} />
+            ) : (
+              <LoginForm token={token} setToken={saveToken} />
+            )
           }
-
-          if (rangeData.status && rangeData.status !== 200)
-            return toast.error(GetErrorMessage(rangeData.status));
-
-          if (snippets.data.length === 0 || sortOrder.clicked) {
-            setSnippets({
-              ...snippets,
-              data: rangeData.data,
-              totalRecords: rangeData.totalRecords,
-            });
-            setSnippet(rangeData.data[currentCursor]);
-          } else {
-            setSnippets({
-              ...snippets,
-              data: snippets.data.concat(rangeData.data),
-            });
-          }
-          setSortOrder({ ...sortOrder, clicked: false });
-        }
-      })();
-      return () => {};
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCursor, sortOrder]);
-
-  return (
-    <Layout
-      token={token}
-      setToken={setToken}
-      snippets={snippets}
-      currentCursor={currentCursor}
-      setCurrentCursor={setCurrentCursor}
-      setSnippets={setSnippets}
-      setSnippet={setSnippet}
-      sortOrder={sortOrder}
-      rangeObject={rangeObject}
-      setRangeObject={setRangeObject}
-      setFilterKeyWord={setFilterKeyWord}
-      pageSize={pageSize}
-      snippet={snippet}
-      slidesPerView={slidesPerView}
-    >
-      <SnippetTextArea
-        snippet={snippet}
-        setSnippet={setSnippet}
-        priviousSnippetContent={
-          snippets.data.length > 0 ? snippets.data[currentCursor].content : snippet.content
-        }
-        token={token}
-      ></SnippetTextArea>
-    </Layout>
+          errorElement={<ErrorPage/>}
+        />
+        <Route
+          path="/snippet"
+          element={token ? <Snippet /> : <Navigate to={`/`} />}
+        />
+        <Route
+          path="/snippet/create"
+          element={token ? <CreateSnippet /> : <Navigate to={`/`} />}
+        />
+      </>
+    )
   );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

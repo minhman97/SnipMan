@@ -1,4 +1,5 @@
 import { React, useState } from "react";
+import { login } from "../api/UserApi";
 
 const LoginForm = ({ setToken }) => {
   const [email, setEmail] = useState(null);
@@ -6,7 +7,7 @@ const LoginForm = ({ setToken }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = await loginUser({
+    const token = await login({
       email,
       password,
     });
@@ -29,7 +30,7 @@ const LoginForm = ({ setToken }) => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker"
               id="email"
               type="text"
-            //   value={"a@a.vn"}
+              //   value={"a@a.vn"}
               placeholder="Email"
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -48,7 +49,7 @@ const LoginForm = ({ setToken }) => {
               id="password"
               type="password"
               placeholder="******************"
-            //   value={"a"}
+              //   value={"a"}
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
@@ -74,15 +75,5 @@ const LoginForm = ({ setToken }) => {
     </>
   );
 };
-
-async function loginUser(credentials) {
-  return fetch("https://localhost:44395/Authentication", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
-  }).then((data) => data.json());
-}
 
 export default LoginForm;

@@ -12,3 +12,5 @@ export const GetErrorMessage = (statusCode) => {
       return "Interner server error";
   }
 };
+
+export const baseUrl = "https://localhost:44395/";

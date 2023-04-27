@@ -1,4 +1,3 @@
-import LoginForm from "./LoginForm";
 import Popup from "./Popup/Popup";
 import { deleteSnippet } from "../api/SnippetApi";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,11 +8,10 @@ import SideBar from "./SideBar";
 import SnippetList from "./SnippetList";
 import Button from "./Elements/Button";
 import { GetErrorMessage } from "../api/StatusCode";
+import { useSnippetContext } from "../context/SnippetContext";
 
 const Layout = ({
   children,
-  token,
-  setToken,
   snippets,
   currentCursor,
   setCurrentCursor,
@@ -28,11 +26,8 @@ const Layout = ({
   snippet,
   slidesPerView,
 }) => {
+  const { token } = useSnippetContext();
   let [isOpen, setIsOpen] = useState(false);
-
-  if (!token) {
-    return <LoginForm setToken={setToken} />;
-  }
 
   return (
     <>
