@@ -11,6 +11,7 @@ import { GetErrorMessage } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
 
 const Layout = ({
+  token,
   children,
   snippets,
   currentCursor,
@@ -26,7 +27,6 @@ const Layout = ({
   snippet,
   slidesPerView,
 }) => {
-  const { token } = useSnippetContext();
   let [isOpen, setIsOpen] = useState(false);
 
   return (
