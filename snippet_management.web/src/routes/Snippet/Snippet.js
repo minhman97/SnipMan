@@ -4,31 +4,11 @@ import { SnippetTextArea } from "../../components/SnippetTextArea";
 import { toast } from "react-toastify";
 import { GetErrorMessage } from "../../api/StatusCode";
 import Layout from "../../components/Layout";
-import useToken from "../../hooks/useToken";
 import { getSnippets, searchSnippet } from "../../api/SnippetApi";
+import { useSnippetContext } from "../../context/SnippetContext";
 
 const Snippet = () => {
-  const [token] = useToken();
-  const [snippet, setSnippet] = useState({});
-  const [snippets, setSnippets] = useState({
-    data: [],
-    totalRecords: 0,
-  });
-  const pageSize = 7;
-  const slidesPerView = 7;
-
-  const [currentCursor, setCurrentCursor] = useState(0);
-  const [rangeObject, setRangeObject] = useState({
-    startIndex: 0,
-    endIndex: pageSize - 1,
-    filter: false,
-  });
-  const [sortOrder, setSortOrder] = useState({
-    sortProperty: "created",
-    orderWay: "desc",
-    clicked: false,
-  });
-  const [filterKeyWord, setFilterKeyWord] = useState("");
+const { token, snippet, setSnippet, snippets, setSnippets, currentCursor, sortOrder, setSortOrder, rangeObject, filterKeyWord, slidesPerView } = useSnippetContext();
 
   useEffect(() => {
     if (token) {
@@ -83,30 +63,13 @@ const Snippet = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCursor, sortOrder]);
   return (
-      <Layout
-        token={token}
-        snippets={snippets}
-        currentCursor={currentCursor}
-        setCurrentCursor={setCurrentCursor}
-        setSnippets={setSnippets}
-        setSnippet={setSnippet}
-        sortOrder={sortOrder}
-        rangeObject={rangeObject}
-        setRangeObject={setRangeObject}
-        setFilterKeyWord={setFilterKeyWord}
-        pageSize={pageSize}
-        snippet={snippet}
-        slidesPerView={slidesPerView}
-      >
+      <Layout>
         <SnippetTextArea
-          snippet={snippet}
-          setSnippet={setSnippet}
           priviousSnippetContent={
             snippets.data.length > 0
               ? snippets.data[currentCursor].content
               : snippet.content
           }
-          token={token}
         ></SnippetTextArea>
       </Layout>
   );

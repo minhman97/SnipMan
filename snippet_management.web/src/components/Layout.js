@@ -11,22 +11,9 @@ import { GetErrorMessage } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
 
 const Layout = ({
-  token,
-  children,
-  snippets,
-  currentCursor,
-  setCurrentCursor,
-  setSnippets,
-  setSnippet,
-  sortOrder,
-  setSortOrder,
-  rangeObject,
-  setRangeObject,
-  setFilterKeyWord,
-  pageSize,
-  snippet,
-  slidesPerView,
+  children
 }) => {
+  const { token, snippet, setSnippet, snippets, setSnippets, currentCursor, setCurrentCursor, sortOrder, setSortOrder, rangeObject, setRangeObject, pageSize, slidesPerView } = useSnippetContext();
   let [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -77,18 +64,7 @@ const Layout = ({
           }
         }}
       >
-        <SearchBar
-          token={token}
-          sortOrder={sortOrder}
-          snippets={snippets}
-          setSnippets={setSnippets}
-          setSnippet={setSnippet}
-          rangeObject={rangeObject}
-          setRangeObject={setRangeObject}
-          setFilterKeyWork={setFilterKeyWord}
-          setcurrentCurson={setCurrentCursor}
-          pageSize={pageSize}
-        />
+        <SearchBar/>
         <div className="flex justify-center mx-10">
           <div className="w-full mx-5 ">{children}</div>
           <div>
@@ -139,18 +115,7 @@ const Layout = ({
           </Button>
         </div>
 
-        <SnippetList
-          token={token}
-          snippet={snippet}
-          snippets={snippets}
-          rangeObject={rangeObject}
-          setRangeObject={setRangeObject}
-          pageSize={pageSize}
-          currentCursor={currentCursor}
-          setCurrentCursor={setCurrentCursor}
-          setSnippet={setSnippet}
-          slidesPerView={slidesPerView}
-        />
+        <SnippetList />
       </main>
       <Popup
         title={"Add Code Snippets & Developer Materials"}

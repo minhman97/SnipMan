@@ -10,6 +10,7 @@ import LoginForm from "./components/LoginForm";
 import Snippet from "./routes/Snippet/Snippet";
 import CreateSnippet from "./routes/Snippet/CreateSnippet";
 import ErrorPage from "./ErrorPage";
+import { SnippetContext } from "./context/SnippetContext";
 function App() {
   const [token, saveToken] = useToken();
 
@@ -25,11 +26,19 @@ function App() {
               <LoginForm token={token} setToken={saveToken} />
             )
           }
-          errorElement={<ErrorPage/>}
+          errorElement={<ErrorPage />}
         />
         <Route
           path="/snippet"
-          element={token ? <Snippet /> : <Navigate to={`/`} />}
+          element={
+            token ? (
+              <SnippetContext>
+                <Snippet />
+              </SnippetContext>
+            ) : (
+              <Navigate to={`/`} />
+            )
+          }
         />
         <Route
           path="/snippet/create"

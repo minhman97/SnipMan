@@ -7,19 +7,10 @@ import { updateSnippet } from "../api/SnippetApi";
 import { toast } from "react-toastify";
 import { handleStyleSlider } from "../utils/SliderExtentions";
 import { GetErrorMessage } from "../api/StatusCode";
+import { useSnippetContext } from "../context/SnippetContext";
 
-const SnippetList = ({
-  snippet,
-  snippets,
-  rangeObject,
-  setRangeObject,
-  pageSize,
-  currentCursor,
-  setCurrentCursor,
-  setSnippet,
-  token,
-  slidesPerView,
-}) => {
+const SnippetList = () => {
+  const { token, snippet, setSnippet, snippets,  currentCursor, setCurrentCursor, rangeObject, setRangeObject, pageSize, slidesPerView } = useSnippetContext();
   const [renameSnippet, setRenameSnippet] = useState(false);
   const swiperRef = useRef(null);
 

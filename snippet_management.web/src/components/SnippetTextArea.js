@@ -7,8 +7,10 @@ import {
   PencilIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
+import { useSnippetContext } from "../context/SnippetContext";
 
-export const SnippetTextArea = ({ snippet, setSnippet, priviousSnippetContent,token }) => {
+export const SnippetTextArea = ({ priviousSnippetContent }) => {
+  const { token, snippet, setSnippet } = useSnippetContext();
   const [statusSnippetTextArea, setStatusSnippetTextArea] =
     useState("edit_status");
   const getBtnControlSnippetTextArea = (status) => {
@@ -33,7 +35,7 @@ export const SnippetTextArea = ({ snippet, setSnippet, priviousSnippetContent,to
             onClick={async () => {
               setStatusSnippetTextArea("edit_status");
               var res = await updateSnippet(token, snippet);
-              if (res.status === 200) {
+              if ((res.status && res.status === 200) || res) {
                 toast.success("Snippet updated successfully", {
                   position: "top-center",
                   autoClose: 2000,

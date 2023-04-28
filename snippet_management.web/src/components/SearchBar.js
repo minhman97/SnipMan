@@ -10,19 +10,10 @@ import { getSnippets, searchSnippet } from "../api/SnippetApi";
 import { searchTypes } from "../data_model/SearchTypes";
 import { toast } from "react-toastify";
 import { GetErrorMessage } from "../api/StatusCode";
+import { useSnippetContext } from "../context/SnippetContext";
 
-const SearchBar = ({
-  token,
-  sortOrder,
-  snippets,
-  setSnippets,
-  setSnippet,
-  rangeObject,
-  setRangeObject,
-  setFilterKeyWork,
-  setcurrentCurson,
-  pageSize,
-}) => {
+const SearchBar = () => {
+  const { token,  setSnippet, snippets, setSnippets, setCurrentCursor, sortOrder, rangeObject, setRangeObject, setFilterKeyWord, pageSize } = useSnippetContext();
   const [searchType, setSearchType] = useState(searchTypes[0]);
 
   return (
@@ -128,7 +119,7 @@ const SearchBar = ({
               filter: false,
             });
           }
-          
+
           if (rangeData.status && rangeData.status !== 200)
             return toast.error(GetErrorMessage(rangeData.status));
 
@@ -138,8 +129,8 @@ const SearchBar = ({
             totalRecords: rangeData.totalRecords,
           });
           setSnippet(rangeData.data.length > 0 ? rangeData.data[0] : {});
-          setcurrentCurson(0);
-          setFilterKeyWork(e.target.value);
+          setCurrentCursor(0);
+          setFilterKeyWord(e.target.value);
         }}
       />
       <button
