@@ -10,10 +10,22 @@ import Button from "./Elements/Button";
 import { GetErrorMessage } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
 
-const Layout = ({
-  children
-}) => {
-  const { token, snippet, setSnippet, snippets, setSnippets, currentCursor, setCurrentCursor, sortOrder, setSortOrder, rangeObject, setRangeObject, pageSize, slidesPerView } = useSnippetContext();
+const Layout = ({ children }) => {
+  const {
+    token,
+    snippet,
+    setSnippet,
+    snippets,
+    setSnippets,
+    currentCursor,
+    setCurrentCursor,
+    sortOrder,
+    setSortOrder,
+    rangeObject,
+    setRangeObject,
+    pageSize,
+    slidesPerView,
+  } = useSnippetContext();
   let [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -64,58 +76,59 @@ const Layout = ({
           }
         }}
       >
-        <SearchBar/>
-        <div className="flex justify-center mx-10">
-          <div className="w-full mx-5 ">{children}</div>
+        <SearchBar />
+        <div className="flex flex-col sm:flex-row w-full">
+          <div className="w-full">
+            <div className="mx-5 ">{children}</div>
+            <div className="flex justify-center">
+              <Button
+                className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+                onClick={(e) => {
+                  setIsOpen(true);
+                }}
+                type="button"
+              >
+                Add
+              </Button>
+              <Button
+                type="button"
+                className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+              >
+                Discover
+              </Button>
+              <Button
+                type="button"
+                className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+              >
+                Paste
+              </Button>
+              <Button
+                type="button"
+                className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+                onClick={async (e) => {
+                  setRangeObject({
+                    ...rangeObject,
+                    startIndex: 0,
+                    endIndex: currentCursor + pageSize,
+                  });
+                  setSortOrder({
+                    ...sortOrder,
+                    orderWay: sortOrder.orderWay === "asc" ? "desc" : "asc",
+                    sortProperty: "created",
+                    clicked: true,
+                  });
+                }}
+                title="Sort by Last Added"
+              >
+                Sort
+              </Button>
+            </div>
+            <SnippetList />
+          </div>
           <div>
             <SideBar></SideBar>
           </div>
         </div>
-        <div className="flex justify-center">
-          <Button
-            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
-            onClick={(e) => {
-              setIsOpen(true);
-            }}
-            type="button"
-          >
-            Add
-          </Button>
-          <Button
-            type="button"
-            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
-          >
-            Discover
-          </Button>
-          <Button
-            type="button"
-            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
-          >
-            Paste
-          </Button>
-          <Button
-            type="button"
-            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
-            onClick={async (e) => {
-              setRangeObject({
-                ...rangeObject,
-                startIndex: 0,
-                endIndex: currentCursor + pageSize,
-              });
-              setSortOrder({
-                ...sortOrder,
-                orderWay: sortOrder.orderWay === "asc" ? "desc" : "asc",
-                sortProperty: "created",
-                clicked: true,
-              });
-            }}
-            title="Sort by Last Added"
-          >
-            Sort
-          </Button>
-        </div>
-
-        <SnippetList />
       </main>
       <Popup
         title={"Add Code Snippets & Developer Materials"}
