@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: default
+  name: snippet management
 
 variables:
   buildConfiguration: 'Release'
