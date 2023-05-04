@@ -1,5 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
+using Newtonsoft.Json;
+using SnippetManagement.Service.Model;
 
 namespace SnippetManagement.Test.Helper;
 
@@ -20,11 +22,12 @@ public class HttpRequestMessageHelper: IHttpRequestMessageHelper
         _httpRequestMessageHelper = httpRequestMessageHelper;
     }
 
-    public HttpRequestMessage InitRequestMessage(string? token, string uri, HttpMethod method, string? data)
+    public HttpRequestMessage InitRequestMessage(string? jsonToken, string uri, HttpMethod method, string? data)
     {
+        var token = JsonConvert.DeserializeObject<TokenDto>(jsonToken);
         return new HttpRequestMessage()
         {
-            Headers = { Authorization =  string.IsNullOrEmpty(token) ? null : new AuthenticationHeaderValue("Bearer", token) },
+            Headers = { Authorization =  string.IsNullOrEmpty(token.Token) ? null : new AuthenticationHeaderValue("Bearer", token.Token) },
             RequestUri = new Uri(uri),
             Method = method,
             Content = string.IsNullOrEmpty(data) ? null : new StringContent(data, Encoding.UTF8, "application/json")

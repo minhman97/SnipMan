@@ -43,6 +43,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             Name = "test",
             Content = "test",
             Description = "test",
+            Language = "C#",
             Origin = "Chrome",
             Tags = new[]
             {
@@ -96,6 +97,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             Name = "updated",
             Content = "updated",
             Description = "updated",
+            Language = "C#",
             Origin = "updated",
             Tags = new List<CreateTagRequest>()
             {
@@ -137,7 +139,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     public async Task GetSnippetByPage_ShouldBeSuccessful()
     {
         var responseMessage = await _httpRequestMessageHelper.GetAsync(_client, _token,
-            "https://localhost:44395/Snippet?PageNumber=2&PageSize=1",
+            "https://localhost:44395/Snippet?startIndex=0&endIndex=7&property=created&orderWay=0",
             null);
         var content = await responseMessage.Content.ReadAsStringAsync();
         var pagedResponse = JsonSerializer.Deserialize<PagedResponse<IEnumerable<SnippetDto>>>(content,
@@ -152,7 +154,6 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
         pagedResponse?.Data.Count().Should().BeGreaterThan(0);
         pagedResponse?.Data.ToList()[0].Tags.ToList()[0].Id.Should().Be(result.Tags.ToList()[0].TagId);
         pagedResponse?.TotalRecords.Should().Be(2);
-        pagedResponse?.TotalPages.Should().Be(2);
     }
 
     [Fact]
@@ -171,7 +172,6 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
         pagedResponse?.Data.Count().Should().BeGreaterThan(0);
         pagedResponse?.Data.ToList()[0].Tags.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
         pagedResponse?.TotalRecords.Should().Be(1);
-        pagedResponse?.TotalPages.Should().Be(1);
     }
 
     private string GetToken()
@@ -205,6 +205,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             Name = "testA",
             Content = "testA",
             Description = "testA",
+            Language = "C#",
             Origin = "TestA",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
@@ -214,6 +215,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             Name = "testB",
             Content = "testB",
             Description = "testB",
+            Language = "C#",
             Origin = "TestB",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
