@@ -8,7 +8,6 @@ trigger:
 
 pool:
   vmImage: 'window-latest' 
-  name: snippet management
 
 variables:
   buildConfiguration: 'Release'
