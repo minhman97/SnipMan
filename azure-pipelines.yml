@@ -33,7 +33,12 @@ steps:
       !**\*TestAdapter.dll
       !**\obj\**
     searchFolder: '$(System.DefaultWorkingDirectory)'
-
+- task: MSBuild@1
+  inputs:
+    solution: '**/*.sln'
+    platform: 'Any CPU'
+    msbuildArguments: '/p:SkipInvalidConfigurations=true /p:DeployOnBuild=true /p:WebPublishMethod=Package /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\SnippetManagementWebApp.zip" /p:DeployDefaultTarget=WebPublish'
+    configuration: '$(buildConfiguration)'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
