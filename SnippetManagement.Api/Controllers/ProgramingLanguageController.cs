@@ -10,6 +10,7 @@ public class ProgramingLanguageController : ControllerBase
 {
     // GET
     [HttpGet]
+    [Route("GetLanguage", Name = "GetLanguage")]
     public IActionResult GetLanguage()
     {
         return Ok( new List<ProgramingLanguageDto>()
@@ -22,12 +23,12 @@ public class ProgramingLanguageController : ControllerBase
             new ()
             {
                 Name = "html",
-                Url = "Assets/Icons/classifications/c-sharp.png"
+                Url = "Assets/Icons/classifications/html.png"
             },
             new ()
             {
                 Name = "css",
-                Url = "Assets/Icons/classifications/c-sharp.png"
+                Url = "Assets/Icons/classifications/css.png"
             }
         });
     }

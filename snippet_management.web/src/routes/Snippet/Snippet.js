@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { SnippetTextArea } from "../../components/SnippetTextArea";
 import { toast } from "react-toastify";
-import { GetErrorMessage } from "../../api/StatusCode";
+import { GetErrorMessage, baseUrl } from "../../api/StatusCode";
 import Layout from "../../components/Layout";
 import { getSnippets, searchSnippet } from "../../api/SnippetApi";
 import { useSnippetContext } from "../../context/SnippetContext";

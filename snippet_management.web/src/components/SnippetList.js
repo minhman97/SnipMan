@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { updateSnippet } from "../api/SnippetApi";
 import { toast } from "react-toastify";
 import { handleStyleSlider } from "../utils/SliderExtentions";
-import { GetErrorMessage } from "../api/StatusCode";
+import { GetErrorMessage, baseUrl } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
 import useToken from "../hooks/useToken";
 import { usePaginationContext } from "../context/PaginationContext";
@@ -78,12 +78,13 @@ const SnippetList = () => {
                 snippets.data.map((snippet, i) => {
                   return (
                     <SwiperSlide key={snippet.id}>
-                      <button
-                        type="button"
-                        className={`px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm `}
-                      >
-                        Icon{i}
-                      </button>
+                      <img
+                        alt="programing language name"
+                        src={`${
+                          baseUrl + `Assets/Icons/classifications/${snippet.language === '' ? 'text': snippet.language}.png`
+                        }`}
+                        className="w-10 h-10 cursor-pointer"
+                      />
                     </SwiperSlide>
                   );
                 })}

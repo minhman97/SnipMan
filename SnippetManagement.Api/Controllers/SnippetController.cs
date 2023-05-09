@@ -76,7 +76,7 @@ public class SnippetController : ControllerBase
     }
     
     [HttpGet]
-    [Route("search", Name = "Search")]
+    [Route("Search", Name = "Search")]
     public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery]SearchSnippetRequest request, [FromQuery]SortOrder sortOrder)
     {
         return Ok(await _unitOfWork.SnippetRepository.SearchRange(startIndex, endIndex, request, sortOrder));

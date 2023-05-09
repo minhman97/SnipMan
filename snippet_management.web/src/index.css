@@ -8,6 +8,7 @@
 .slide-size {
   display: flex;
     height: 26px;
+    width: 26px;
     align-items: center;
     font-size: 10px;
 }
@@ -15,6 +16,7 @@
 .slide-size-1 {
   display: flex;
     height: 20px;
+    width: 20px;
     align-items: center;
     font-size: 11px;
 }
@@ -22,6 +24,7 @@
 .slide-size-2 {
   display: flex;
     height: 12px;
+    width: 12px;
     align-items: center;
     font-size: 10px;
 }
