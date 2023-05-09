@@ -25,6 +25,6 @@ public class AuthenticationController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        return Ok(token);
+        return Ok(new {token});
     }
 }

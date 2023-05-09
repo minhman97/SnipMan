@@ -39,9 +39,6 @@ public abstract class BaseRepository<T> : IRepository<T> where T : BaseEntity<Gu
 
     public void RemoveRange(List<T> entities)
     {
-        foreach (var entity in entities)
-        {
-            entity.Deleted = true;
-        }
+        _context.RemoveRange(entities);
     }
 }

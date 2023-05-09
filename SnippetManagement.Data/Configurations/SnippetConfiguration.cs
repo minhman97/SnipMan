@@ -16,5 +16,7 @@ public class SnippetConfiguration : IEntityTypeConfiguration<Snippet>
         builder.Property(x => x.Created).HasDefaultValueSql("getutcdate()");
         builder.Property(x => x.Modified);
         builder.Property(x => x.Deleted);
+        builder.Property(x => x.Language);
+
     }
 }

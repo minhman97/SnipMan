@@ -44,6 +44,10 @@ namespace SnippetManagement.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("datetimeoffset");
 
@@ -87,7 +91,9 @@ namespace SnippetManagement.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
@@ -112,7 +118,9 @@ namespace SnippetManagement.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");

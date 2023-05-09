@@ -4,6 +4,7 @@ using SnippetManagement.Data;
 using System.Text;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SnippetManagement.Api.Middlewares;
@@ -37,6 +38,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.GetSection("Jwt").Bind(options));
+
+builder.Services.AddCors(opts =>
+{
+    opts.AddPolicy(name: "_myAllowSpecificOrigins",
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+        });
+});
 
 builder.Services.AddControllers(opts =>
 {
@@ -105,10 +115,18 @@ using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().Creat
 
 app.UseHttpsRedirection();
 
+app.UseCors("_myAllowSpecificOrigins");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseFileServer( new FileServerOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),"Assets")),
+    RequestPath = "/Assets",
+    EnableDefaultFiles = true
+});
 
 app.Run();
 

@@ -29,6 +29,7 @@ public class SnippetController : ControllerBase
             Name = request.Name,
             Description = request.Description,
             Origin = request.Origin,
+            Language = request.Language
         };
 
         var newTags = GetNewTags(request.Tags);
@@ -67,11 +68,18 @@ public class SnippetController : ControllerBase
             TagName = x.TagName
         });
     }
-
+    
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] Pagination pagination)
+    public async Task<IActionResult> GetSnippets(int startIndex, int endIndex, [FromQuery]SortOrder sortOrder)
     {
-        return Ok(await _unitOfWork.SnippetRepository.GetAll(pagination));
+        return Ok(await _unitOfWork.SnippetRepository.GetRange(startIndex, endIndex, sortOrder));
+    }
+    
+    [HttpGet]
+    [Route("Search", Name = "Search")]
+    public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery]SearchSnippetRequest request, [FromQuery]SortOrder sortOrder)
+    {
+        return Ok(await _unitOfWork.SnippetRepository.SearchRange(startIndex, endIndex, request, sortOrder));
     }
 
     [HttpGet("{id}")]
@@ -116,14 +124,7 @@ public class SnippetController : ControllerBase
         snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
         return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }
-
-    [HttpGet]
-    [Route("search/", Name = "Search")]
-    public async Task<IActionResult> Search([FromQuery] SearchSnippetRequest request)
-    {
-        return Ok(await _unitOfWork.SnippetRepository.Search(request));
-    }
-
+    
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
