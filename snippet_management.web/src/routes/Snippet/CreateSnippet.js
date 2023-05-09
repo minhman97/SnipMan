@@ -22,7 +22,7 @@ const CreateSnippet = () => {
       name: name,
       content: content,
       description: "",
-      language: language,
+      language: language.name,
       origin: "",
       tags: [],
     };
@@ -147,7 +147,7 @@ const CreateSnippet = () => {
         <div className="mt-5">
           <button
             type="button"
-            className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm"
+            className="px-4 py-2 font-semibold text-sm bg-slate-700  text-white rounded-full shadow-sm"
             onClick={handleCreate}
           >
             Create

@@ -82,7 +82,7 @@ const Layout = ({ children }) => {
             <div className="mx-5 ">{children}</div>
             <div className="flex justify-center">
               <Button
-                className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+                className="px-4 py-2 font-semibold text-sm bg-slate-700 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-500"
                 onClick={(e) => {
                   setIsOpen(true);
                 }}
@@ -92,19 +92,21 @@ const Layout = ({ children }) => {
               </Button>
               <Button
                 type="button"
-                className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+                className="px-4 py-2 font-semibold text-sm bg-slate-700 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-500 disabled:opacity-50 cursor-not-allowed"
+                disabled
               >
                 Discover
               </Button>
               <Button
                 type="button"
-                className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+                className="px-4 py-2 font-semibold text-sm bg-slate-700 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-500 disabled:opacity-50 cursor-not-allowed"
+                disabled
               >
                 Paste
               </Button>
               <Button
                 type="button"
-                className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-700"
+                className="px-4 py-2 font-semibold text-sm bg-slate-700 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-500"
                 onClick={async (e) => {
                   setRangeObject({
                     ...rangeObject,

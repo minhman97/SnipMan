@@ -23,7 +23,7 @@ export const SnippetTextArea = ({ priviousSnippetContent }) => {
       case "exit_status":
         btn = (
           <button
-            className="p-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm absolute right-8 top-8 hover:bg-slate-700"
+            className="p-2 font-semibold text-sm bg-slate-700  text-white rounded-full shadow-sm absolute right-8 top-8 hover:bg-slate-700"
             onClick={() => {
               setStatusSnippetTextArea("edit_status");
             }}
@@ -35,7 +35,7 @@ export const SnippetTextArea = ({ priviousSnippetContent }) => {
       case "save_status":
         btn = (
           <button
-            className="p-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm absolute right-8 top-8 hover:bg-slate-700"
+            className="p-2 font-semibold text-sm bg-slate-700  text-white rounded-full shadow-sm absolute right-8 top-8 hover:bg-slate-700"
             onClick={async () => {
               setStatusSnippetTextArea("edit_status");
               var res = await updateSnippet(token, snippet);
@@ -73,7 +73,7 @@ export const SnippetTextArea = ({ priviousSnippetContent }) => {
       default:
         btn = (
           <button
-            className="p-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm absolute right-8 top-8 hover:bg-slate-700"
+            className="p-2 font-semibold text-sm bg-slate-700  text-white rounded-full shadow-sm absolute right-8 top-8 hover:bg-slate-700"
             onClick={() => {
               setStatusSnippetTextArea("exit_status");
             }}
@@ -127,7 +127,7 @@ export const SnippetTextArea = ({ priviousSnippetContent }) => {
         </div>
       </div>
       {getBtnControlSnippetTextArea(statusSnippetTextArea)}
-      <button className="p-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm absolute right-8 bottom-8 hover:bg-slate-700">
+      <button className="p-2 font-semibold text-sm bg-slate-700  text-white rounded-full shadow-sm absolute right-8 bottom-8 hover:bg-slate-700">
         <Bars3BottomLeftIcon className="h-6 w-6 text-white-500" />
       </button>
     </div>

@@ -17,7 +17,7 @@ export default function ErrorPage() {
           <div className="mt-4">
             <Link
               to="/"
-              className="px-5 py-2 bg-cyan-500 rounded-md hover:bg-slate-100"
+              className="px-5 py-2 bg-slate-700  rounded-md hover:bg-slate-100"
             >
               Home
             </Link>

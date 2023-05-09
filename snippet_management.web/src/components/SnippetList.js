@@ -31,7 +31,7 @@ const SnippetList = () => {
           <div className="flex justify-center mt-5">
             <button
               type="button"
-              className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm"
+              className="px-4 py-2 font-semibold text-sm bg-slate-700 hover:bg-slate-400 text-white rounded-full shadow-sm"
               onClick={(e) => {
                 swiperRef.current.swiper.slidePrev();
               }}
@@ -91,7 +91,7 @@ const SnippetList = () => {
             </Swiper>
             <button
               type="button"
-              className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm"
+              className="px-4 py-2 font-semibold text-sm bg-slate-700 hover:bg-slate-400 text-white rounded-full shadow-sm"
               onClick={(e) => {
                 swiperRef.current.swiper.slideNext();
               }}

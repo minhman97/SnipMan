@@ -30,14 +30,14 @@ const SearchBar = () => {
   return (
     <div className="py-5 flex justify-center items-center">
       <button
-        className="p-2 font-semibold text-sm bg-cyan-500 text-white rounded-full relative h-10 left-10 shadow-sm hover:bg-slate-700 flex items-center"
+        className="p-2 font-semibold text-sm bg-slate-900  text-white rounded-full relative h-10 left-10 shadow-sm hover:bg-slate-700 flex items-center"
         onClick={() => {}}
         title="Select search mode - Current: Blended"
       >
         <RectangleStackIcon className="h-6 w-6 text-white" />
         <ChevronDownIcon className="h-4 w-4 text-white" />
       </button>
-      <div className="p-2 font-semibold text-sm bg-cyan-500 text-white rounded-full relative h-10 left-16 shadow-sm hover:bg-slate-700 flex items-center">
+      <div className="p-2 font-semibold text-sm bg-slate-900  text-white rounded-full relative h-10 left-16 shadow-sm hover:bg-slate-700 flex items-center">
         <Menu as="div" className="relative inline-block text-left">
           <div>
             <Menu.Button className="inline-flex justify-center items-center text-white ">
@@ -145,7 +145,7 @@ const SearchBar = () => {
         }}
       />
       <button
-        className="p-2 font-semibold text-sm bg-cyan-500 text-white rounded-full relative right-12 h-10 shadow-sm hover:bg-slate-700"
+        className="p-2 font-semibold text-sm bg-slate-900  text-white rounded-full relative right-12 h-10 shadow-sm hover:bg-slate-700"
         onClick={() => {}}
         title="Settings [ , ]"
       >
