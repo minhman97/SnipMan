@@ -4,6 +4,7 @@ using SnippetManagement.Data;
 using System.Text;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SnippetManagement.Api.Middlewares;
@@ -120,6 +121,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseFileServer( new FileServerOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),"Assets")),
+    RequestPath = "/Assets",
+    EnableDefaultFiles = true
+});
 
 app.Run();
 
