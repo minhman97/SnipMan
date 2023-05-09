@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { SnippetTextArea } from "../../components/SnippetTextArea";
 import { toast } from "react-toastify";
@@ -6,9 +6,22 @@ import { GetErrorMessage } from "../../api/StatusCode";
 import Layout from "../../components/Layout";
 import { getSnippets, searchSnippet } from "../../api/SnippetApi";
 import { useSnippetContext } from "../../context/SnippetContext";
+import { usePaginationContext } from "../../context/PaginationContext";
+import useToken from "../../hooks/useToken";
 
 const Snippet = () => {
-const { token, snippet, setSnippet, snippets, setSnippets, currentCursor, sortOrder, setSortOrder, rangeObject, filterKeyWord, slidesPerView } = useSnippetContext();
+  const {
+    snippet,
+    setSnippet,
+    snippets,
+    setSnippets,
+    currentCursor,
+    filterKeyWord,
+  } = useSnippetContext();
+
+  const { sortOrder, setSortOrder, rangeObject, slidesPerView } =
+    usePaginationContext();
+  const [token] = useToken();
 
   useEffect(() => {
     if (token) {
@@ -63,15 +76,15 @@ const { token, snippet, setSnippet, snippets, setSnippets, currentCursor, sortOr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCursor, sortOrder]);
   return (
-      <Layout>
-        <SnippetTextArea
-          priviousSnippetContent={
-            snippets.data.length > 0
-              ? snippets.data[currentCursor].content
-              : snippet.content
-          }
-        ></SnippetTextArea>
-      </Layout>
+    <Layout>
+      <SnippetTextArea
+        priviousSnippetContent={
+          snippets.data.length > 0
+            ? snippets.data[currentCursor].content
+            : snippet.content
+        }
+      ></SnippetTextArea>
+    </Layout>
   );
 };
 

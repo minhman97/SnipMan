@@ -9,24 +9,24 @@ import SnippetList from "./SnippetList";
 import Button from "./Elements/Button";
 import { GetErrorMessage } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
+import useToken from "../hooks/useToken";
+import { usePaginationContext } from "../context/PaginationContext";
 
 const Layout = ({ children }) => {
   const {
-    token,
     snippet,
     setSnippet,
     snippets,
     setSnippets,
     currentCursor,
     setCurrentCursor,
-    sortOrder,
-    setSortOrder,
-    rangeObject,
-    setRangeObject,
-    pageSize,
-    slidesPerView,
   } = useSnippetContext();
+  // su dung pagination state dung voi pagination component
+  const { sortOrder, setSortOrder, rangeObject, setRangeObject, pageSize } =
+    usePaginationContext();
+
   let [isOpen, setIsOpen] = useState(false);
+  const [token] = useToken();
 
   return (
     <>
@@ -77,8 +77,8 @@ const Layout = ({ children }) => {
         }}
       >
         <SearchBar />
-        <div className="flex flex-col sm:flex-row w-full">
-          <div className="w-full">
+        <div className="flex flex-col sm:flex-row">
+          <div className="w-full overflow-hidden">
             <div className="mx-5 ">{children}</div>
             <div className="flex justify-center">
               <Button

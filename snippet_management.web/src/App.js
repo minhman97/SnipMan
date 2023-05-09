@@ -11,6 +11,7 @@ import Snippet from "./routes/Snippet/Snippet";
 import CreateSnippet from "./routes/Snippet/CreateSnippet";
 import ErrorPage from "./ErrorPage";
 import { SnippetContext } from "./context/SnippetContext";
+import { PaginationContext } from "./context/PaginationContext";
 function App() {
   const [token, saveToken] = useToken();
 
@@ -33,7 +34,9 @@ function App() {
           element={
             token ? (
               <SnippetContext>
-                <Snippet />
+                <PaginationContext>
+                  <Snippet />
+                </PaginationContext>
               </SnippetContext>
             ) : (
               <Navigate to={`/`} />

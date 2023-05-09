@@ -8,9 +8,11 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { useSnippetContext } from "../context/SnippetContext";
+import useToken from "../hooks/useToken";
 
 export const SnippetTextArea = ({ priviousSnippetContent }) => {
-  const { token, snippet, setSnippet } = useSnippetContext();
+  const [token] = useToken();
+  const { snippet, setSnippet } = useSnippetContext();
   const [statusSnippetTextArea, setStatusSnippetTextArea] =
     useState("edit_status");
   const refTextArea = useRef();

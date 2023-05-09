@@ -8,11 +8,19 @@ import { toast } from "react-toastify";
 import { handleStyleSlider } from "../utils/SliderExtentions";
 import { GetErrorMessage } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
+import useToken from "../hooks/useToken";
+import { usePaginationContext } from "../context/PaginationContext";
 
 const SnippetList = () => {
-  const { token, snippet, setSnippet, snippets,  currentCursor, setCurrentCursor, rangeObject, setRangeObject, pageSize, slidesPerView } = useSnippetContext();
+  const { snippet, setSnippet, snippets, currentCursor, setCurrentCursor } =
+    useSnippetContext();
+
+  const { rangeObject, setRangeObject, pageSize, slidesPerView } =
+    usePaginationContext();
+
   const [renameSnippet, setRenameSnippet] = useState(false);
   const swiperRef = useRef(null);
+  const [token] = useToken();
 
   return (
     <>
@@ -61,7 +69,7 @@ const SnippetList = () => {
                 if (currentCursor === 0)
                   swiperRef.current.swiper.slideTo(currentCursor);
               }}
-              onAfterInit={e => {
+              onAfterInit={(e) => {
                 handleStyleSlider(e);
               }}
             >

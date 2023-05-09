@@ -11,10 +11,21 @@ import { searchTypes } from "../data_model/SearchTypes";
 import { toast } from "react-toastify";
 import { GetErrorMessage } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
+import useToken from "../hooks/useToken";
+import { usePaginationContext } from "../context/PaginationContext";
 
 const SearchBar = () => {
-  const { token,  setSnippet, snippets, setSnippets, setCurrentCursor, sortOrder, rangeObject, setRangeObject, setFilterKeyWord, pageSize } = useSnippetContext();
+  const {
+    setSnippet,
+    snippets,
+    setSnippets,
+    setCurrentCursor,
+    setFilterKeyWord,
+  } = useSnippetContext();
+  const { rangeObject, setRangeObject, pageSize, sortOrder } =
+    usePaginationContext();
   const [searchType, setSearchType] = useState(searchTypes[0]);
+  const [token] = useToken();
 
   return (
     <div className="py-5 flex justify-center items-center">
