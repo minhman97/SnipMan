@@ -120,6 +120,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                 Origin = snippet.Origin,
                 Created = snippet.Created,
                 Modified = snippet.Modified,
+                Language = snippet.Language,
                 Tags = snippet.Tags.Select(x => new TagDto()
                 {
                     Id = x.TagId,
