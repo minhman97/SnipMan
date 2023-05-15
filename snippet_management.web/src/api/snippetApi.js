@@ -1,42 +1,31 @@
 import { GetErrorMessage, baseUrl } from "./StatusCode";
-import { pageSize } from "../context/PaginationContext";
 
 export const getSnippets = async (
   token,
   filterKeyWord,
-  cursorIndex,
+  startIndex,
+  endIndex,
   sortProperty,
   orderWay
 ) => {
   let url =
     filterKeyWord.trim() === ""
-      ? `${baseUrl}Snippet?startIndex=${cursorIndex}&endIndex=${
-          cursorIndex + pageSize
-        }&property=${sortProperty}&orderWay=${orderWay}`
-      : `${baseUrl}Snippet/Search?keyWord=${filterKeyWord.trim()}&startIndex=${cursorIndex}&endIndex=${
-          cursorIndex + pageSize
-        }&property=${sortProperty}&orderWay=${orderWay}`;
+      ? `${baseUrl}Snippet?startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`
+      : `${baseUrl}Snippet/Search?keyWord=${filterKeyWord.trim()}&startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`;
   return await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + token,
     },
-  })
-    .then((res) => {
-      if (!res.ok)
-        throw new Error(
-          `StatusCode:${res.status}. ErrorMessage:${GetErrorMessage(
-            res.status
-          )}`,
-          { cause: { status: res.status } }
-        );
-      return res.json();
-    })
-    .catch((err) => {
-      console.error(err);
-      return err.cause;
-    });
+  }).then((res) => {
+    if (res.ok) return res.json();
+
+    throw new Error(
+      `StatusCode: ${res.status}. ErrorMessage: ${GetErrorMessage(res.status)}`,
+      { cause: { status: res.status } }
+    );
+  });
 };
 
 export const createSnippet = async (token, snippet) => {
@@ -49,14 +38,12 @@ export const createSnippet = async (token, snippet) => {
     body: JSON.stringify(snippet),
   })
     .then((res) => {
-      if (!res.ok)
-        throw new Error(
-          `StatusCode:${res.status}. ErrorMessage:${GetErrorMessage(
-            res.status
-          )}`,
-          { cause: { status: res.status } }
-        );
-      return res.json();
+      if (res.ok) return res.json();
+
+      throw new Error(
+        `StatusCode:${res.status}. ErrorMessage:${GetErrorMessage(res.status)}`,
+        { cause: { status: res.status } }
+      );
     })
     .catch((err) => {
       console.error(err);
@@ -64,51 +51,35 @@ export const createSnippet = async (token, snippet) => {
     });
 };
 
-export const updateSnippet = async (token, snippet) => {
-  return await fetch(baseUrl + "Snippet/" + snippet.id, {
+export const updateSnippet = async ({ token, snippet }) => {
+  return await fetch(baseUrl + "Snippet123/" + snippet.id, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + token,
     },
     body: JSON.stringify(snippet),
-  })
-    .then((res) => {
-      if (!res.ok)
-        throw new Error(
-          `StatusCode:${res.status}. ErrorMessage:${GetErrorMessage(
-            res.status
-          )}`,
-          { cause: { status: res.status } }
-        );
-      return res.json();
-    })
-    .catch((err) => {
-      console.error(err);
-      return err.cause;
-    });
+  }).then((res) => {
+    if (res.ok) return res.json();
+    throw new Error(
+      `StatusCode: ${res.status}. ErrorMessage: ${GetErrorMessage(res.status)}`,
+      { cause: { status: res.status } }
+    );
+  });
 };
 
-export const deleteSnippet = async (token, id) => {
+export const deleteSnippet = async ({ token, id }) => {
   return await fetch(baseUrl + "Snippet?id=" + id, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + token,
     },
-  })
-    .then((res) => {
-      if (!res.ok)
-        throw new Error(
-          `StatusCode:${res.status}. ErrorMessage:${GetErrorMessage(
-            res.status
-          )}`,
-          { cause: { status: res.status } }
-        );
-      return res;
-    })
-    .catch((err) => {
-      console.error(err);
-      return err.cause;
-    });
+  }).then((res) => {
+    if (res.ok) return res.json();
+    throw new Error(
+      `StatusCode: ${res.status}. ErrorMessage: ${GetErrorMessage(res.status)}`,
+      { cause: { status: res.status } }
+    );
+  });
 };
