@@ -52,7 +52,7 @@ export const createSnippet = async (token, snippet) => {
 };
 
 export const updateSnippet = async ({ token, snippet }) => {
-  return await fetch(baseUrl + "Snippet123/" + snippet.id, {
+  return await fetch(baseUrl + "Snippet/" + snippet.id, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
