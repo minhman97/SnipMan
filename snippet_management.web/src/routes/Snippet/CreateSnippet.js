@@ -5,7 +5,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { GetErrorMessage, baseUrl } from "../../api/StatusCode";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { getProgramingLanguages } from "../../api/ProgramingLanguageApi";
 
 const CreateSnippet = () => {
@@ -27,7 +27,7 @@ const CreateSnippet = () => {
       tags: [],
     };
 
-    var res = createSnippet(token, snippet);
+    var res = await createSnippet(token, snippet);
 
     if (res.status && res.status !== 200)
       return toast.error(GetErrorMessage(res.status));
