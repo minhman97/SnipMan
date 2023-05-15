@@ -1,30 +1,23 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import React, { useRef, useState } from "react";
+import React, { Fragment, useRef, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 import { Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { updateSnippet } from "../api/SnippetApi";
-import { toast } from "react-toastify";
 import { handleStyleSlider } from "../utils/SliderExtentions";
-import { GetErrorMessage, baseUrl } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
-import useToken from "../hooks/useToken";
-import { usePaginationContext } from "../context/PaginationContext";
+import { slidesPerView } from "../context/PaginationContext";
+import { baseUrl } from "../api/StatusCode";
 
-const SnippetList = () => {
-  const { snippet, setSnippet, snippets, currentCursor, setCurrentCursor } =
+const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
+  const { snippet, setSnippet, currentCursor, setCurrentCursor } =
     useSnippetContext();
-
-  const { rangeObject, setRangeObject, pageSize, slidesPerView } =
-    usePaginationContext();
 
   const [renameSnippet, setRenameSnippet] = useState(false);
   const swiperRef = useRef(null);
-  const [token] = useToken();
 
   return (
     <>
-      {snippets.data.length === 0 ? (
+      {pages === null || pages === undefined ? (
         <div className="flex justify-center mt-5">Loading...</div>
       ) : (
         <>
@@ -48,15 +41,16 @@ const SnippetList = () => {
               className="mx-5 w-1/2"
               setWrapperSize={true}
               onSlideChange={(e) => {
-                if (e.activeIndex + 3 >= snippets.data.length) {
-                  setRangeObject({
-                    ...rangeObject,
-                    startIndex: snippets.data.length,
-                    endIndex: snippets.data.length + pageSize - 1,
-                  });
+                if (e.activeIndex + 3 >= e.slides.length) {
+                  fetchNextPage();
                 }
                 setCurrentCursor(e.activeIndex);
-                setSnippet(snippets.data[e.activeIndex]);
+
+                let snippets = [];
+                pages.forEach((page) => {
+                  snippets = snippets.concat(page.data);
+                });
+                setSnippet(snippets[e.activeIndex]);
               }}
               onSlideNextTransitionStart={(e) => {
                 handleStyleSlider(e);
@@ -66,28 +60,42 @@ const SnippetList = () => {
               }}
               onUpdate={(e) => {
                 handleStyleSlider(e);
-                if (currentCursor === 0)
-                  swiperRef.current.swiper.slideTo(currentCursor);
+                swiperRef.current.swiper.slideTo(currentCursor);
+                let snippets = [];
+                pages.forEach((page) => {
+                  snippets = snippets.concat(page.data);
+                });
+                setSnippet(snippets[currentCursor]);
               }}
               onAfterInit={(e) => {
                 handleStyleSlider(e);
               }}
             >
-              {snippets.data &&
-                snippets.data.length > 0 &&
-                snippets.data.map((snippet, i) => {
-                  return (
-                    <SwiperSlide key={snippet.id}>
-                      <img
-                        alt="programing language name"
-                        src={`${
-                          baseUrl + `Assets/Icons/classifications/${snippet.language === '' ? 'text': snippet.language}.png`
-                        }`}
-                        className="w-10 h-10 cursor-pointer"
-                      />
-                    </SwiperSlide>
-                  );
-                })}
+              {pages.map((page, i) => {
+                return (
+                  <Fragment key={i}>
+                    {page.data.map((snippet) => {
+                      return (
+                        <SwiperSlide key={snippet.id}>
+                          <img
+                            alt="programing language name"
+                            src={`${
+                              baseUrl +
+                              `Assets/Icons/classifications/${
+                                snippet.language === ""
+                                  ? "text"
+                                  : snippet.language
+                              }.png`
+                            }`}
+                            className="w-10 h-10 cursor-pointer"
+                            title={snippet.language}
+                          />
+                        </SwiperSlide>
+                      );
+                    })}
+                  </Fragment>
+                );
+              })}
             </Swiper>
             <button
               type="button"
@@ -112,33 +120,7 @@ const SnippetList = () => {
                   }}
                   onBlur={async (e) => {
                     if (renameSnippet) {
-                      let res = await updateSnippet(token, snippet);
-                      if ((res.status && res.status === 200) || res) {
-                        toast.success("Snippet updated successfully", {
-                          position: "top-center",
-                          autoClose: 2000,
-                          hideProgressBar: false,
-                          closeOnClick: true,
-                          pauseOnHover: true,
-                          draggable: false,
-                          theme: "light",
-                        });
-                      } else {
-                        toast.error(
-                          `${GetErrorMessage(
-                            res.status
-                          )}. Can't rename snippet`,
-                          {
-                            position: "top-center",
-                            autoClose: 2000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: false,
-                            theme: "light",
-                          }
-                        );
-                      }
+                      handleUpdateSnippet();
 
                       setRenameSnippet(false);
                     }

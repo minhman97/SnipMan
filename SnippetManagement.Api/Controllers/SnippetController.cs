@@ -68,16 +68,17 @@ public class SnippetController : ControllerBase
             TagName = x.TagName
         });
     }
-    
+
     [HttpGet]
-    public async Task<IActionResult> GetSnippets(int startIndex, int endIndex, [FromQuery]SortOrder sortOrder)
+    public async Task<IActionResult> GetSnippets(int startIndex, int endIndex, [FromQuery] SortOrder sortOrder)
     {
         return Ok(await _unitOfWork.SnippetRepository.GetRange(startIndex, endIndex, sortOrder));
     }
-    
+
     [HttpGet]
     [Route("Search", Name = "Search")]
-    public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery]SearchSnippetRequest request, [FromQuery]SortOrder sortOrder)
+    public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery] SearchSnippetRequest request,
+        [FromQuery] SortOrder sortOrder)
     {
         return Ok(await _unitOfWork.SnippetRepository.SearchRange(startIndex, endIndex, request, sortOrder));
     }
@@ -124,7 +125,7 @@ public class SnippetController : ControllerBase
         snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
         return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }
-    
+
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -133,6 +134,6 @@ public class SnippetController : ControllerBase
             return NotFound();
         _unitOfWork.SnippetRepository.Remove(snippet);
         await _unitOfWork.SaveChangesAsync();
-        return Ok();
+        return Ok(new { success = true, message = "Snippet:" + snippet.Name + " deleted successfully" });
     }
 }

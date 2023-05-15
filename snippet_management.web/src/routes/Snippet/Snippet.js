@@ -1,88 +1,97 @@
-import React, { useEffect } from "react";
-
 import { SnippetTextArea } from "../../components/SnippetTextArea";
-import { toast } from "react-toastify";
-import { GetErrorMessage, baseUrl } from "../../api/StatusCode";
 import Layout from "../../components/Layout";
-import { getSnippets, searchSnippet } from "../../api/SnippetApi";
+import { getSnippets, updateSnippet } from "../../api/SnippetApi";
 import { useSnippetContext } from "../../context/SnippetContext";
-import { usePaginationContext } from "../../context/PaginationContext";
+import {
+  pageSize,
+  usePaginationContext,
+} from "../../context/PaginationContext";
 import useToken from "../../hooks/useToken";
+import { useDeleteSnippet, useUpdateSnippet, } from "../../hooks/SnippetHooks";
+import { useInfiniteQuery } from "@tanstack/react-query";
+
 
 const Snippet = () => {
   const {
     snippet,
-    setSnippet,
-    snippets,
-    setSnippets,
     currentCursor,
+    setCurrentCursor,
     filterKeyWord,
   } = useSnippetContext();
 
-  const { sortOrder, setSortOrder, rangeObject, slidesPerView } =
-    usePaginationContext();
+  const { sortOrder, setSortOrder } = usePaginationContext();
+
   const [token] = useToken();
 
-  useEffect(() => {
-    if (token) {
-      (async () => {
-        if (
-          snippets.data.length === 0 ||
-          (currentCursor + slidesPerView / 2 >= snippets.data.length &&
-            currentCursor + slidesPerView / 2 < snippets.totalRecords) ||
-          sortOrder.clicked
-        ) {
-          let rangeData = {};
-          if (rangeObject.filter) {
-            rangeData = await searchSnippet(
-              token,
-              rangeObject.startIndex,
-              rangeObject.endIndex,
-              filterKeyWord,
-              sortOrder.sortProperty,
-              sortOrder.orderWay
-            );
-          } else {
-            rangeData = await getSnippets(
-              token,
-              rangeObject.startIndex,
-              rangeObject.endIndex,
-              sortOrder.sortProperty,
-              sortOrder.orderWay
-            );
-          }
+  const { mutate: muateDeleteSnippet } = useDeleteSnippet();
+  const { mutate: muateUpdateSnippet } = useUpdateSnippet();
 
-          if (rangeData.status && rangeData.status !== 200)
-            return toast.error(GetErrorMessage(rangeData.status));
+  const handleUpdateSnippet = () => {
+    muateUpdateSnippet({ token, snippet });
+  };
 
-          if (snippets.data.length === 0 || sortOrder.clicked) {
-            setSnippets({
-              ...snippets,
-              data: rangeData.data,
-              totalRecords: rangeData.totalRecords,
-            });
-            setSnippet(rangeData.data[currentCursor]);
-          } else {
-            setSnippets({
-              ...snippets,
-              data: snippets.data.concat(rangeData.data),
-            });
-          }
-          setSortOrder({ ...sortOrder, clicked: false });
-        }
-      })();
-      return () => {};
+  const handleDeleteSnippet = (id) => {
+    let cursor = currentCursor - 1 < 0 ? 0 : currentCursor - 1;
+
+    muateDeleteSnippet({ token, id });
+    setCurrentCursor(cursor);
+  };
+
+  const handleSortSnippets = () =>{
+    setSortOrder({
+      ...sortOrder,
+      orderWay: sortOrder.orderWay === "asc" ? "desc" : "asc",
+      sortProperty: "created",
+    });
+    setCurrentCursor(0);
+    refetch();
+  }
+
+  const {
+    data,
+    error,
+    fetchNextPage,
+    refetch,
+  } = useInfiniteQuery(
+    ["list-snippet", sortOrder, filterKeyWord],
+    async ({ pageParam = 0 }) => {
+      const snippets = await getSnippets(
+        token,
+        filterKeyWord,
+        pageParam,
+        pageParam + pageSize,
+        sortOrder.sortProperty,
+        sortOrder.orderWay
+      );
+      return snippets;
+    },
+    {
+      getNextPageParam: (lastPage) => {
+        return lastPage.endIndex < lastPage.totalRecords
+          ? lastPage?.endIndex + 1
+          : undefined;
+      },
+      refetchOnWindowFocus: false,
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCursor, sortOrder]);
+  );
+  
+  if (error) {
+    return (
+      <div className="flex justify-center mt-5">{`An error has occured: ${error.message}`}</div>
+    );
+  }
+  
   return (
-    <Layout>
+    <Layout
+      pages={data?.pages}
+      fetchNextPage={fetchNextPage}
+      refetch={refetch}
+      handleUpdateSnippet={handleUpdateSnippet}
+      handleDeleteSnippet={handleDeleteSnippet}
+      handleSortSnippets={handleSortSnippets}
+    >
       <SnippetTextArea
-        priviousSnippetContent={
-          snippets.data.length > 0
-            ? snippets.data[currentCursor].content
-            : snippet.content
-        }
+        handleUpdateSnippet={handleUpdateSnippet}
       ></SnippetTextArea>
     </Layout>
   );
