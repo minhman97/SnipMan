@@ -4,5 +4,5 @@ namespace SnippetManagement.Service.Services;
 
 public interface IAuthenticationService
 {
-    Task<string> GetToken(UserCredentials userCredentials);
+    Task<string> GetToken(UserDto userDto);
 }

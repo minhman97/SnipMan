@@ -176,7 +176,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
 
     private string GetToken()
     {
-        var jsonCredentials = JsonSerializer.Serialize(new UserCredentials()
+        var jsonCredentials = JsonSerializer.Serialize(new UserDto()
         {
             Email = "a@a.vn",
             Password = "a"

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SnippetManagement.Common;
@@ -72,7 +73,9 @@ public class SnippetController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetSnippets(int startIndex, int endIndex, [FromQuery] SortOrder sortOrder)
     {
-        return Ok(await _unitOfWork.SnippetRepository.GetRange(startIndex, endIndex, sortOrder));
+        var userId = User.Claims.Where(c => c.Type == "UserId")
+            .Select(c => c.Value).SingleOrDefault();
+        return Ok(await _unitOfWork.SnippetRepository.GetRange(string.IsNullOrEmpty(userId) ? Guid.Empty: new Guid(userId), startIndex, endIndex, sortOrder));
     }
 
     [HttpGet]
@@ -80,7 +83,9 @@ public class SnippetController : ControllerBase
     public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery] SearchSnippetRequest request,
         [FromQuery] SortOrder sortOrder)
     {
-        return Ok(await _unitOfWork.SnippetRepository.SearchRange(startIndex, endIndex, request, sortOrder));
+        var userId = User.Claims.Where(c => c.Type == "UserId")
+            .Select(c => c.Value).SingleOrDefault();
+        return Ok(await _unitOfWork.SnippetRepository.SearchRange(string.IsNullOrEmpty(userId) ? Guid.Empty: new Guid(userId), startIndex, endIndex, request, sortOrder));
     }
 
     [HttpGet("{id}")]

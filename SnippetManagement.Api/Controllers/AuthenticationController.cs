@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SnippetManagement.Api.Model;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Services;
 
@@ -16,9 +17,13 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> GetAuthToken(UserCredentials userCredentials)
+    public async Task<IActionResult> GetAuthToken(LoginRequest request)
     {
-        var token = await _authenticationService.GetToken(userCredentials);
+        var token = await _authenticationService.GetToken(new UserDto()
+        {
+            Email = request.Email,
+            Password = request.Password
+        });
         if (string.IsNullOrEmpty(token))
         {
             ModelState.AddModelError(string.Empty, "Invalid login");
@@ -28,3 +33,4 @@ public class AuthenticationController : ControllerBase
         return Ok(new {token});
     }
 }
+
