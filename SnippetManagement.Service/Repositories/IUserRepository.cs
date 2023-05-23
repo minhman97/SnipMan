@@ -7,6 +7,6 @@ namespace SnippetManagement.Service.Repositories;
 public interface IUserRepository : IRepository<User>
 {
     Task<List<User>> GetUsers();
-    Task<UserCredentials> Create(CreateUserRequest request);
-    Task<UserCredentials> Get(string email);
+    Task<UserDto> Create(CreateUserRequest request);
+    Task<UserDto> Get(string email);
 }

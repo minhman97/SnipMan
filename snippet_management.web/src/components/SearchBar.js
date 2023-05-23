@@ -6,26 +6,12 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/solid";
 import React, { Fragment, useState } from "react";
-import { getSnippets, searchSnippet } from "../api/SnippetApi";
-import { searchTypes } from "../data_model/SearchTypes";
-import { toast } from "react-toastify";
-import { GetErrorMessage } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
-import useToken from "../hooks/useToken";
-import { usePaginationContext } from "../context/PaginationContext";
+import { searchTypes } from "../data_model/SearchTypes";
 
-const SearchBar = () => {
-  const {
-    setSnippet,
-    snippets,
-    setSnippets,
-    setCurrentCursor,
-    setFilterKeyWord,
-  } = useSnippetContext();
-  const { rangeObject, setRangeObject, pageSize, sortOrder } =
-    usePaginationContext();
+const SearchBar = ({ refetch }) => {
+  const { setCurrentCursor, setFilterKeyWord } = useSnippetContext();
   const [searchType, setSearchType] = useState(searchTypes[0]);
-  const [token] = useToken();
 
   return (
     <div className="py-5 flex justify-center items-center">
@@ -99,49 +85,9 @@ const SearchBar = () => {
         className="rounded-full w-8/12 h-12 bg-slate-950 px-20"
         placeholder={searchType.placeholder}
         onChange={async (e) => {
-          let rangeData = {};
-          if (e.target.value !== "") {
-            rangeData = await searchSnippet(
-              token,
-              0,
-              pageSize,
-              e.target.value,
-              sortOrder.sortProperty,
-              sortOrder.orderWay
-            );
-            setRangeObject({
-              ...rangeObject,
-              startIndex: 0,
-              endIndex: pageSize,
-              filter: true,
-            });
-          } else {
-            rangeData = await getSnippets(
-              token,
-              0,
-              pageSize,
-              sortOrder.sortProperty,
-              sortOrder.orderWay
-            );
-            setRangeObject({
-              ...rangeObject,
-              startIndex: 0,
-              endIndex: pageSize,
-              filter: false,
-            });
-          }
-
-          if (rangeData.status && rangeData.status !== 200)
-            return toast.error(GetErrorMessage(rangeData.status));
-
-          setSnippets({
-            ...snippets,
-            data: rangeData.data,
-            totalRecords: rangeData.totalRecords,
-          });
-          setSnippet(rangeData.data.length > 0 ? rangeData.data[0] : {});
           setCurrentCursor(0);
           setFilterKeyWord(e.target.value);
+          refetch();
         }}
       />
       <button

@@ -1,6 +1,6 @@
-﻿namespace SnippetManagement.Service.Model;
+namespace SnippetManagement.Api.Model;
 
-public class UserCredentials
+public class LoginRequest
 {
     public string Email { get; set; }
     public string Password { get; set; }

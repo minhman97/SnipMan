@@ -46,11 +46,11 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
-    public async Task<RangeDataResponse<IEnumerable<SnippetDto>>> GetRange(int startIndex, int endIndex,
+    public async Task<RangeDataResponse<IEnumerable<SnippetDto>>> GetRange(Guid userId, int startIndex, int endIndex,
         SortOrder sortOrder)
     {
         var query = _context.Set<Snippet>()
-            .Where(x => !x.Deleted);
+            .Where(x => !x.Deleted && x.UserId == userId);
         var totalRecords = await query.CountAsync();
         switch (sortOrder.Property.Capitalize())
         {
@@ -76,10 +76,10 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
-    public async Task<RangeDataResponse<IEnumerable<SnippetDto>>> SearchRange(int startIndex, int endIndex,
+    public async Task<RangeDataResponse<IEnumerable<SnippetDto>>> SearchRange(Guid userId,int startIndex, int endIndex,
         SearchSnippetRequest request, SortOrder sortOrder)
     {
-        var query = _context.Set<Snippet>().Where(x => !x.Deleted).Include(x => x.Tags).ThenInclude(x => x.Tag)
+        var query = _context.Set<Snippet>().Where(x => !x.Deleted && x.UserId == userId).Include(x => x.Tags).ThenInclude(x => x.Tag)
             .AsQueryable();
         if (!string.IsNullOrEmpty(request.KeyWord))
         {
@@ -120,6 +120,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                 Origin = snippet.Origin,
                 Created = snippet.Created,
                 Modified = snippet.Modified,
+                Language = snippet.Language,
                 Tags = snippet.Tags.Select(x => new TagDto()
                 {
                     Id = x.TagId,
@@ -205,6 +206,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
             Created = snippet.Created,
             Modified = snippet.Modified,
             Language = snippet.Language,
+            UserId = snippet.UserId,
             Tags = MapTag(snippet.Tags)
         };
     }

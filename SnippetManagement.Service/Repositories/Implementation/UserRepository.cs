@@ -17,12 +17,14 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         return _context.Set<User>().ToListAsync();
     }
 
-    public async Task<UserCredentials> Create(CreateUserRequest request)
+    public async Task<UserDto> Create(CreateUserRequest request)
     {
         var user = new User()
         {
+            Id = new Guid(),
             Email = request.Email,
-            Password = BCrypt.Net.BCrypt.HashPassword(request.Password)
+            Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+            Created = DateTimeOffset.UtcNow,
         };
         await _context.AddAsync(user);
 
@@ -31,17 +33,18 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         return Map(user);
     }
 
-    public async Task<UserCredentials> Get(string email)
+    public async Task<UserDto> Get(string email)
     {
         return Map(await _context.Set<User>().FirstOrDefaultAsync(x => x.Email == email));
     }
 
-    private UserCredentials Map(User user)
+    private UserDto Map(User user)
     {
         if (user is null)
             return null;
-        return new UserCredentials()
+        return new UserDto()
         {
+            Id = user.Id,
             Email = user.Email,
             Password = user.Password
         };

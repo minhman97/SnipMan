@@ -4,10 +4,6 @@ const Context = createContext();
 
 export const SnippetContext = ({ children }) => {
   const [snippet, setSnippet] = useState({});
-  const [snippets, setSnippets] = useState({
-    data: [],
-    totalRecords: 0,
-  });
   const [currentCursor, setCurrentCursor] = useState(0);
 
   const [filterKeyWord, setFilterKeyWord] = useState("");
@@ -17,8 +13,6 @@ export const SnippetContext = ({ children }) => {
       value={{
         snippet,
         setSnippet,
-        snippets,
-        setSnippets,
         currentCursor,
         setCurrentCursor,
         filterKeyWord,

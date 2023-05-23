@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SnippetManagement.Common;
@@ -68,18 +69,23 @@ public class SnippetController : ControllerBase
             TagName = x.TagName
         });
     }
-    
+
     [HttpGet]
-    public async Task<IActionResult> GetSnippets(int startIndex, int endIndex, [FromQuery]SortOrder sortOrder)
+    public async Task<IActionResult> GetSnippets(int startIndex, int endIndex, [FromQuery] SortOrder sortOrder)
     {
-        return Ok(await _unitOfWork.SnippetRepository.GetRange(startIndex, endIndex, sortOrder));
+        var userId = User.Claims.Where(c => c.Type == "UserId")
+            .Select(c => c.Value).SingleOrDefault();
+        return Ok(await _unitOfWork.SnippetRepository.GetRange(string.IsNullOrEmpty(userId) ? Guid.Empty: new Guid(userId), startIndex, endIndex, sortOrder));
     }
-    
+
     [HttpGet]
     [Route("Search", Name = "Search")]
-    public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery]SearchSnippetRequest request, [FromQuery]SortOrder sortOrder)
+    public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery] SearchSnippetRequest request,
+        [FromQuery] SortOrder sortOrder)
     {
-        return Ok(await _unitOfWork.SnippetRepository.SearchRange(startIndex, endIndex, request, sortOrder));
+        var userId = User.Claims.Where(c => c.Type == "UserId")
+            .Select(c => c.Value).SingleOrDefault();
+        return Ok(await _unitOfWork.SnippetRepository.SearchRange(string.IsNullOrEmpty(userId) ? Guid.Empty: new Guid(userId), startIndex, endIndex, request, sortOrder));
     }
 
     [HttpGet("{id}")]
@@ -124,7 +130,7 @@ public class SnippetController : ControllerBase
         snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
         return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }
-    
+
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -133,6 +139,6 @@ public class SnippetController : ControllerBase
             return NotFound();
         _unitOfWork.SnippetRepository.Remove(snippet);
         await _unitOfWork.SaveChangesAsync();
-        return Ok();
+        return Ok(new { success = true, message = "Snippet:" + snippet.Name + " deleted successfully" });
     }
 }

@@ -26,12 +26,12 @@ public class AuthenticationService : IAuthenticationService
         _jwtConfiguration = jwtConfiguration.Value;
     }
 
-    public async Task<string> GetToken(UserCredentials userCredentials)
+    public async Task<string> GetToken(UserDto userDto)
     {
-        var user = await _unitOfWork.UserRepository.Get(userCredentials.Email); //test user: a@a.vn/a
-        if (user != null && BCrypt.Net.BCrypt.Verify(userCredentials.Password, user.Password))
+        var user = await _unitOfWork.UserRepository.Get(userDto.Email); //test user: a@a.vn/a
+        if (user != null && BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
         {
-            SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor();
+            SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(user);
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
             string token = tokenHandler.WriteToken(securityToken);
@@ -42,7 +42,7 @@ public class AuthenticationService : IAuthenticationService
         return string.Empty;
     }
 
-    private SecurityTokenDescriptor GetTokenDescriptor()
+    private SecurityTokenDescriptor GetTokenDescriptor(UserDto user)
     {
         byte[] securityKey = Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey);
         var symmetricSecurityKey = new SymmetricSecurityKey(securityKey);
@@ -52,7 +52,11 @@ public class AuthenticationService : IAuthenticationService
             Expires = DateTime.UtcNow.AddDays(_jwtConfiguration.ExpiringDays),
             SigningCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature),
             Audience = _jwtConfiguration.ValidAudience,
-            Issuer = _jwtConfiguration.ValidIssuer
+            Issuer = _jwtConfiguration.ValidIssuer,
+            Claims = new Dictionary<string, object>()
+            {
+                { "UserId", user.Id }
+            }
         };
 
         return tokenDescriptor;

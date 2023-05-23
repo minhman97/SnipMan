@@ -1,33 +1,25 @@
 import Popup from "./Popup/Popup";
-import { deleteSnippet } from "../api/SnippetApi";
-import { ToastContainer, toast } from "react-toastify";
 import AddSnippetButton from "./Popup/Contents/AddSnippetButton";
 import { useState } from "react";
 import SearchBar from "./SearchBar";
 import SideBar from "./SideBar";
 import SnippetList from "./SnippetList";
 import Button from "./Elements/Button";
-import { GetErrorMessage } from "../api/StatusCode";
 import { useSnippetContext } from "../context/SnippetContext";
-import useToken from "../hooks/useToken";
-import { usePaginationContext } from "../context/PaginationContext";
+import { Toaster } from 'react-hot-toast';
 
-const Layout = ({ children }) => {
-  const {
-    snippet,
-    setSnippet,
-    snippets,
-    setSnippets,
-    currentCursor,
-    setCurrentCursor,
-  } = useSnippetContext();
-  // su dung pagination state dung voi pagination component
-  const { sortOrder, setSortOrder, rangeObject, setRangeObject, pageSize } =
-    usePaginationContext();
+const Layout = ({
+  children,
+  pages,
+  fetchNextPage,
+  refetch,
+  handleUpdateSnippet,
+  handleDeleteSnippet,
+  handleSortSnippets
+}) => {
+  const { snippet } = useSnippetContext();
 
   let [isOpen, setIsOpen] = useState(false);
-  const [token] = useToken();
-
   return (
     <>
       <main
@@ -39,44 +31,11 @@ const Layout = ({ children }) => {
             e.target.localName === "main" &&
             snippet.id
           ) {
-            let res = await deleteSnippet(token, snippet.id);
-            if (res.status && res.status === 200) {
-              let tempData = snippets.data.filter(
-                (item) => item.id !== snippet.id
-              );
-              let cursor = currentCursor - 1 < 0 ? 0 : currentCursor - 1;
-              setSnippets({ ...snippets, data: tempData });
-              setSnippet(tempData[cursor]);
-              setCurrentCursor(cursor);
-              toast.success("Snippet deleted successfully", {
-                position: "top-center",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                theme: "light",
-              });
-            } else {
-              toast.error(
-                `${GetErrorMessage(res.status)}. Can't delete snippet: ${
-                  snippet.name
-                }`,
-                {
-                  position: "top-center",
-                  autoClose: 2000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: false,
-                  theme: "light",
-                }
-              );
-            }
+            handleDeleteSnippet(snippet.id);
           }
         }}
       >
-        <SearchBar />
+        <SearchBar refetch={refetch} />
         <div className="flex flex-col sm:flex-row">
           <div className="w-full overflow-hidden">
             <div className="mx-5 ">{children}</div>
@@ -107,25 +66,17 @@ const Layout = ({ children }) => {
               <Button
                 type="button"
                 className="px-4 py-2 font-semibold text-sm bg-slate-700 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-500"
-                onClick={async (e) => {
-                  setRangeObject({
-                    ...rangeObject,
-                    startIndex: 0,
-                    endIndex: currentCursor + pageSize,
-                  });
-                  setSortOrder({
-                    ...sortOrder,
-                    orderWay: sortOrder.orderWay === "asc" ? "desc" : "asc",
-                    sortProperty: "created",
-                    clicked: true,
-                  });
-                }}
+                onClick={handleSortSnippets}
                 title="Sort by Last Added"
               >
                 Sort
               </Button>
             </div>
-            <SnippetList />
+            <SnippetList
+              pages={pages}
+              fetchNextPage={fetchNextPage}
+              handleUpdateSnippet={handleUpdateSnippet}
+            />
           </div>
           <div>
             <SideBar></SideBar>
@@ -139,7 +90,7 @@ const Layout = ({ children }) => {
       >
         <AddSnippetButton></AddSnippetButton>
       </Popup>
-      <ToastContainer />
+      <Toaster />
     </>
   );
 };

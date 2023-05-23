@@ -1,6 +1,4 @@
 import React, { useRef, useState } from "react";
-import { updateSnippet } from "../api/SnippetApi";
-import { toast } from "react-toastify";
 import {
   Bars3BottomLeftIcon,
   DocumentArrowDownIcon,
@@ -8,10 +6,8 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { useSnippetContext } from "../context/SnippetContext";
-import useToken from "../hooks/useToken";
 
-export const SnippetTextArea = ({ priviousSnippetContent }) => {
-  const [token] = useToken();
+export const SnippetTextArea = ({ handleUpdateSnippet }) => {
   const { snippet, setSnippet } = useSnippetContext();
   const [statusSnippetTextArea, setStatusSnippetTextArea] =
     useState("edit_status");
@@ -38,32 +34,7 @@ export const SnippetTextArea = ({ priviousSnippetContent }) => {
             className="p-2 font-semibold text-sm bg-slate-700  text-white rounded-full shadow-sm absolute right-8 top-8 hover:bg-slate-700"
             onClick={async () => {
               setStatusSnippetTextArea("edit_status");
-              var res = await updateSnippet(token, snippet);
-              if ((res.status && res.status === 200) || res) {
-                toast.success("Snippet updated successfully", {
-                  position: "top-center",
-                  autoClose: 2000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: false,
-                  theme: "light",
-                });
-              } else {
-                setSnippet({ ...snippet, content: priviousSnippetContent });
-                toast.error(
-                  `Something wrong cannot save snippet. Error status: ${res.status}`,
-                  {
-                    position: "top-center",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: false,
-                    theme: "light",
-                  }
-                );
-              }
+              handleUpdateSnippet();
             }}
           >
             <DocumentArrowDownIcon className="h-6 w-6 text-white-500" />
@@ -127,7 +98,7 @@ export const SnippetTextArea = ({ priviousSnippetContent }) => {
         </div>
       </div>
       {getBtnControlSnippetTextArea(statusSnippetTextArea)}
-      <button className="p-2 font-semibold text-sm bg-slate-700  text-white rounded-full shadow-sm absolute right-8 bottom-8 hover:bg-slate-700">
+      <button className="p-2 font-semibold text-sm bg-slate-700  text-white rounded-full shadow-sm absolute right-8 bottom-14 hover:bg-slate-700">
         <Bars3BottomLeftIcon className="h-6 w-6 text-white-500" />
       </button>
     </div>
