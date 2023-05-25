@@ -14,6 +14,24 @@ const LoginForm = ({ setToken }) => {
     setToken(token);
   };
 
+  const handleCredentialResponse = async (response) => {
+    const token = await login(response.credential, true);
+    setToken(token);
+  };
+
+  window.onload = () => {
+    /*global google*/
+    google.accounts.id.initialize({
+      client_id: "448086775090-g62vpn8qbig7gqt2qiin9m6ok5sgislk",
+      callback: handleCredentialResponse,
+    });
+    google.accounts.id.renderButton(
+      document.getElementById("btn-signin-gg"),
+      { theme: "outline", size: "large" } // customization attributes
+    );
+    google.accounts.id.prompt(); // also display the One Tap dialog
+  };
+
   return (
     <>
       <div>Login</div>
@@ -63,6 +81,7 @@ const LoginForm = ({ setToken }) => {
             >
               Sign In
             </button>
+            <div id="btn-signin-gg"></div>
             <a
               className="inline-block align-baseline font-bold text-sm text-blue hover:text-blue-darker"
               href="/"

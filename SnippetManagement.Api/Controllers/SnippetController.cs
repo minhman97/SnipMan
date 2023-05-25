@@ -23,6 +23,8 @@ public class SnippetController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateSnippetRequest request)
     {
+        var userId = User.Claims.Where(c => c.Type == "UserId")
+            .Select(c => c.Value).SingleOrDefault();
         var snippet = new Snippet()
         {
             Id = Guid.NewGuid(),
@@ -30,7 +32,8 @@ public class SnippetController : ControllerBase
             Name = request.Name,
             Description = request.Description,
             Origin = request.Origin,
-            Language = request.Language
+            Language = request.Language,
+            UserId = new Guid(userId)
         };
 
         var newTags = GetNewTags(request.Tags);
@@ -75,7 +78,8 @@ public class SnippetController : ControllerBase
     {
         var userId = User.Claims.Where(c => c.Type == "UserId")
             .Select(c => c.Value).SingleOrDefault();
-        return Ok(await _unitOfWork.SnippetRepository.GetRange(string.IsNullOrEmpty(userId) ? Guid.Empty: new Guid(userId), startIndex, endIndex, sortOrder));
+        return Ok(await _unitOfWork.SnippetRepository.GetRange(
+            string.IsNullOrEmpty(userId) ? Guid.Empty : new Guid(userId), startIndex, endIndex, sortOrder));
     }
 
     [HttpGet]
@@ -85,7 +89,8 @@ public class SnippetController : ControllerBase
     {
         var userId = User.Claims.Where(c => c.Type == "UserId")
             .Select(c => c.Value).SingleOrDefault();
-        return Ok(await _unitOfWork.SnippetRepository.SearchRange(string.IsNullOrEmpty(userId) ? Guid.Empty: new Guid(userId), startIndex, endIndex, request, sortOrder));
+        return Ok(await _unitOfWork.SnippetRepository.SearchRange(
+            string.IsNullOrEmpty(userId) ? Guid.Empty : new Guid(userId), startIndex, endIndex, request, sortOrder));
     }
 
     [HttpGet("{id}")]

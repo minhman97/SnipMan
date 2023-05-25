@@ -2,8 +2,10 @@
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SnippetManagement.Common.Enum;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Repositories;
+using SnippetManagement.Service.Requests;
 
 namespace SnippetManagement.Service.Services.Implementation;
 
@@ -34,12 +36,34 @@ public class AuthenticationService : IAuthenticationService
             SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(user);
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
-            string token = tokenHandler.WriteToken(securityToken);
-
-            return token;
+            return tokenHandler.WriteToken(securityToken);
         }
 
         return string.Empty;
+    }
+
+    public async Task<string> GetTokenForExternalProvider(string externalToken)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(externalToken);
+        var email = jwtToken.Payload["email"].ToString();
+
+        if (string.IsNullOrEmpty(email)) return string.Empty;
+
+        var userDto = await _unitOfWork.UserRepository.Get(email);
+        if (userDto is null)
+        {
+            userDto = await _unitOfWork.UserRepository.Create(new CreateUserRequest()
+            {
+                Email = email,
+                SocialProvider = SocialProvider.Google
+            });
+        }
+
+        SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(userDto);
+        var tokenHandler = new JwtSecurityTokenHandler();
+        SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(securityToken);
     }
 
     private SecurityTokenDescriptor GetTokenDescriptor(UserDto user)
