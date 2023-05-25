@@ -6,4 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <OutputType>Library</OutputType>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SnippetManagement.Common\SnippetManagement.Common.csproj" />
+    </ItemGroup>
 </Project>

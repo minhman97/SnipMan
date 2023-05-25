@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SnippetManagement.Data;
 
@@ -11,9 +12,11 @@ using SnippetManagement.Data;
 namespace SnippetManagement.Data.Migrations
 {
     [DbContext(typeof(SnippetManagementDbContext))]
-    partial class SnippetManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230525062704_AddSocialProviderToUser")]
+    partial class AddSocialProviderToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
