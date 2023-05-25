@@ -1,9 +1,24 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { login } from "../api/UserApi";
 
 const LoginForm = ({ setToken }) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      /*global google*/
+      google.accounts.id.initialize({
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse,
+      });
+      google.accounts.id.renderButton(
+        document.getElementById("btn-signin-gg"),
+        { theme: "outline", size: "large" } // customization attributes
+      );
+      google.accounts.id.prompt(); // also display the One Tap dialog
+    }, 200);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,19 +32,6 @@ const LoginForm = ({ setToken }) => {
   const handleCredentialResponse = async (response) => {
     const token = await login(response.credential, true);
     setToken(token);
-  };
-
-  window.onload = () => {
-    /*global google*/
-    google.accounts.id.initialize({
-      client_id: "448086775090-g62vpn8qbig7gqt2qiin9m6ok5sgislk",
-      callback: handleCredentialResponse,
-    });
-    google.accounts.id.renderButton(
-      document.getElementById("btn-signin-gg"),
-      { theme: "outline", size: "large" } // customization attributes
-    );
-    google.accounts.id.prompt(); // also display the One Tap dialog
   };
 
   return (
