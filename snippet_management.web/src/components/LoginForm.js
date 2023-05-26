@@ -17,7 +17,7 @@ const LoginForm = ({ setToken }) => {
         { theme: "outline", size: "large" } // customization attributes
       );
       google.accounts.id.prompt(); // also display the One Tap dialog
-    }, 200);
+    }, 300);
   }, []);
 
   const handleSubmit = async (e) => {
