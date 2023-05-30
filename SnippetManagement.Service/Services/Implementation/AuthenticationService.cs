@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using FluentResults;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SnippetManagement.Common.Enum;
@@ -28,7 +29,7 @@ public class AuthenticationService : IAuthenticationService
         _jwtConfiguration = jwtConfiguration.Value;
     }
 
-    public async Task<string> GetToken(UserDto userDto)
+    public async Task<Result> GetToken(UserDto userDto)
     {
         var user = await _unitOfWork.UserRepository.Get(userDto.Email); //test user: a@a.vn/a
         if (user != null && BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
@@ -36,10 +37,10 @@ public class AuthenticationService : IAuthenticationService
             SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(user);
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(securityToken);
+            return Result.Ok().WithSuccess(tokenHandler.WriteToken(securityToken));
         }
 
-        return string.Empty;
+        return Result.Fail("Wrong username or password");
     }
 
     public async Task<string> GetTokenForExternalProvider(string externalToken)
@@ -73,7 +74,7 @@ public class AuthenticationService : IAuthenticationService
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Expires = DateTime.UtcNow.AddDays(_jwtConfiguration.ExpiringDays),
+            Expires = DateTime.UtcNow.AddSeconds(30),
             SigningCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature),
             Audience = _jwtConfiguration.ValidAudience,
             Issuer = _jwtConfiguration.ValidIssuer,

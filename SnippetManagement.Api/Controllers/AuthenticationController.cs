@@ -19,18 +19,17 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> GetAuthToken(LoginRequest request)
     {
-        var token = await _authenticationService.GetToken(new UserDto()
+        var result = await _authenticationService.GetToken(new UserDto()
         {
             Email = request.Email,
             Password = request.Password
         });
-        if (string.IsNullOrEmpty(token))
+        if (result.IsFailed)
         {
-            ModelState.AddModelError(string.Empty, "Invalid login");
-            return BadRequest(ModelState);
+            return BadRequest(result);
         }
 
-        return Ok(new { token });
+        return Ok(new { token = result.Successes.FirstOrDefault()?.Message });
     }
 
     [HttpPost]

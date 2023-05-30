@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SnippetManagement.Common.Enum;
 using SnippetManagement.DataModel;
 
 namespace SnippetManagement.Data.Configurations;
 
-public class UserConfiguration: IEntityTypeConfiguration<User>
+public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
@@ -14,6 +15,8 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
         builder.Property(x => x.Created).HasDefaultValueSql("getutcdate()");
         builder.Property(x => x.Modified);
         builder.Property(x => x.Deleted);
-        builder.Property(x => x.SocialProvider);
+        builder.Property(x => x.SocialProvider)
+            .HasConversion(v => v.ToString(), v => Enum.Parse(typeof(SocialProvider), v) as SocialProvider?)
+            .HasMaxLength(150);
     }
 }

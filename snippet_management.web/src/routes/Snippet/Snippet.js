@@ -1,12 +1,11 @@
 import { SnippetTextArea } from "../../components/SnippetTextArea";
 import Layout from "../../components/Layout";
-import { getSnippets, updateSnippet } from "../../api/SnippetApi";
+import { getSnippets } from "../../api/SnippetApi";
 import { useSnippetContext } from "../../context/SnippetContext";
 import {
   pageSize,
   usePaginationContext,
 } from "../../context/PaginationContext";
-import useToken from "../../hooks/useToken";
 import { useDeleteSnippet, useUpdateSnippet, } from "../../hooks/SnippetHooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
@@ -21,19 +20,17 @@ const Snippet = () => {
 
   const { sortOrder, setSortOrder } = usePaginationContext();
 
-  const [token] = useToken();
-
-  const { mutate: muateDeleteSnippet } = useDeleteSnippet();
-  const { mutate: muateUpdateSnippet } = useUpdateSnippet();
+  const { mutate: muatateDeleteSnippet } = useDeleteSnippet();
+  const { mutate: muatateUpdateSnippet } = useUpdateSnippet();
 
   const handleUpdateSnippet = () => {
-    muateUpdateSnippet({ token, snippet });
+    muatateUpdateSnippet({ snippet });
   };
 
   const handleDeleteSnippet = (id) => {
     let cursor = currentCursor - 1 < 0 ? 0 : currentCursor - 1;
 
-    muateDeleteSnippet({ token, id });
+    muatateDeleteSnippet({ id });
     setCurrentCursor(cursor);
   };
 
@@ -56,7 +53,6 @@ const Snippet = () => {
     ["list-snippet", sortOrder, filterKeyWord],
     async ({ pageParam = 0 }) => {
       const snippets = await getSnippets(
-        token,
         filterKeyWord,
         pageParam,
         pageParam + pageSize,

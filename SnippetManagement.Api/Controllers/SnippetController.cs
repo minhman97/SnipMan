@@ -78,8 +78,8 @@ public class SnippetController : ControllerBase
     {
         var userId = User.Claims.Where(c => c.Type == "UserId")
             .Select(c => c.Value).SingleOrDefault();
-        return Ok(await _unitOfWork.SnippetRepository.GetRange(
-            string.IsNullOrEmpty(userId) ? Guid.Empty : new Guid(userId), startIndex, endIndex, sortOrder));
+        
+        return Ok(await _unitOfWork.SnippetRepository.GetRange(new Guid(userId), startIndex, endIndex, sortOrder));
     }
 
     [HttpGet]
@@ -89,8 +89,7 @@ public class SnippetController : ControllerBase
     {
         var userId = User.Claims.Where(c => c.Type == "UserId")
             .Select(c => c.Value).SingleOrDefault();
-        return Ok(await _unitOfWork.SnippetRepository.SearchRange(
-            string.IsNullOrEmpty(userId) ? Guid.Empty : new Guid(userId), startIndex, endIndex, request, sortOrder));
+        return Ok(await _unitOfWork.SnippetRepository.SearchRange(new Guid(userId), startIndex, endIndex, request, sortOrder));
     }
 
     [HttpGet("{id}")]

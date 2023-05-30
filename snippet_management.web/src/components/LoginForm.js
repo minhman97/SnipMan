@@ -4,28 +4,44 @@ import { login } from "../api/UserApi";
 const LoginForm = ({ setToken }) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [Auth, setAuth] = useState({ isAuth: false, message: "" });
 
   useEffect(() => {
-    setTimeout(() => {
-      /*global google*/
-      google.accounts.id.initialize({
-        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-        callback: handleCredentialResponse,
-      });
-      google.accounts.id.renderButton(
-        document.getElementById("btn-signin-gg"),
-        { theme: "outline", size: "large" } // customization attributes
-      );
-      google.accounts.id.prompt(); // also display the One Tap dialog
-    }, 300);
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (window.google) {
+        /*global google*/
+
+        google.accounts.id.initialize({
+          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse,
+        });
+        google.accounts.id.renderButton(
+          document.getElementById("btn-signin-gg"),
+          { theme: "outline", size: "large" } // customization attributes
+        );
+        google.accounts.id.prompt(); // also display the One Tap dialog
+      }
+    };
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = await login({
+    let token = await login({
       email,
       password,
     });
+    if (token.isFailed) {
+      setAuth({ ...Auth, message: token.reasons[0].message });
+      return;
+    }
     setToken(token);
   };
 
@@ -38,6 +54,14 @@ const LoginForm = ({ setToken }) => {
     <>
       <div>Login</div>
       <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
+        {!Auth.isAuth && Auth.message !== "" && (
+          <div
+            class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
+            <span class="block sm:inline">{Auth.message}</span>
+          </div>
+        )}
         <form onSubmit={(e) => handleSubmit(e)}>
           <div className="mb-4">
             <label
