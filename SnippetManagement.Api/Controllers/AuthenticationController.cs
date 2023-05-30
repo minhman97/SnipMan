@@ -36,13 +36,12 @@ public class AuthenticationController : ControllerBase
     [Route("External", Name = "External")]
     public async Task<IActionResult> GetAuthTokenForExternal([FromBody] string externalToken)
     {
-        var token = await _authenticationService.GetTokenForExternalProvider(externalToken);
-        if (string.IsNullOrEmpty(token))
+        var result = await _authenticationService.GetTokenForExternalProvider(externalToken);
+        if (result.IsFailed)
         {
-            ModelState.AddModelError(string.Empty, "Invalid login");
-            return BadRequest(ModelState);
+            return BadRequest(result);
         }
 
-        return Ok(new { token });
+        return Ok(new { token = result.Successes.FirstOrDefault()?.Message });
     }
 }

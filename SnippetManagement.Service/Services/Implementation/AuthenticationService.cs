@@ -43,13 +43,13 @@ public class AuthenticationService : IAuthenticationService
         return Result.Fail("Wrong username or password");
     }
 
-    public async Task<string> GetTokenForExternalProvider(string externalToken)
+    public async Task<Result> GetTokenForExternalProvider(string externalToken)
     {
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(externalToken);
         var email = jwtToken.Payload["email"].ToString();
 
-        if (string.IsNullOrEmpty(email)) return string.Empty;
+        if (string.IsNullOrEmpty(email)) return Result.Fail("Wrong username or password");
 
         var userDto = await _unitOfWork.UserRepository.Get(email);
         if (userDto is null)
@@ -64,7 +64,7 @@ public class AuthenticationService : IAuthenticationService
         SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(userDto);
         var tokenHandler = new JwtSecurityTokenHandler();
         SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(securityToken);
+        return Result.Ok().WithSuccess(tokenHandler.WriteToken(securityToken));
     }
 
     private SecurityTokenDescriptor GetTokenDescriptor(UserDto user)
