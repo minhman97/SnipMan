@@ -15,6 +15,8 @@ using SnippetManagement.Service.Services.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
 // Add services to the container.
 builder.Services.AddDbContext<SnippetManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
