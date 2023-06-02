@@ -46,7 +46,7 @@ builder.Services.AddCors(opts =>
     opts.AddPolicy(name: "_myAllowSpecificOrigins",
         policy  =>
         {
-            policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         });
 });
 
@@ -115,10 +115,8 @@ using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().Creat
         scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.Migrate();
 }
 
-app.UseHttpsRedirection();
-
 app.UseCors("_myAllowSpecificOrigins");
-
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 

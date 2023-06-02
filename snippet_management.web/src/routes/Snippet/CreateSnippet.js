@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import useToken from "../../hooks/useToken";
 import { createSnippet } from "../../api/SnippetApi";
 import { Listbox, Transition } from "@headlessui/react";
 import { Fragment } from "react";
@@ -9,7 +8,6 @@ import { toast } from "react-hot-toast";
 import { getProgramingLanguages } from "../../api/ProgramingLanguageApi";
 
 const CreateSnippet = () => {
-  const [token] = useToken();
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
   const [languages, setLanguages] = useState([]);
@@ -27,7 +25,7 @@ const CreateSnippet = () => {
       tags: [],
     };
 
-    var res = await createSnippet(token, snippet);
+    var res = await createSnippet(snippet);
 
     if (res.status && res.status !== 200)
       return toast.error(GetErrorMessage(res.status));
@@ -36,7 +34,7 @@ const CreateSnippet = () => {
 
   useEffect(() => {
     (async () => {
-      let languages = await getProgramingLanguages(token);
+      let languages = await getProgramingLanguages();
       if (languages.status && languages.status !== 200)
         return toast.error(GetErrorMessage(languages.status));
 

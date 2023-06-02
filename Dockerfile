@@ -14,4 +14,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 as runtime
 WORKDIR /app
 COPY --from=build-env /publish .
 EXPOSE 80
+EXPOSE 443
 ENTRYPOINT ["dotnet", "SnippetManagement.Api.dll"]

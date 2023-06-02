@@ -3,14 +3,31 @@ version: '3.9'
 services:
   api:
     image: snippet-management
+    volumes:
+      - snippet-management-vol:/my-vol
     ports:
       - "5001:80"
     depends_on:
       - db
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=SnippetManagement;User Id=sa;Password=MyPassword123!;TrustServerCertificate=true
+      - ConnectionStrings__DefaultConnection=Server=db;Database=SnippetManagement;User Id=sa;Password=MyPassword123!;TrustServerCertificate=true      
+      - Jwt__ValidAudience=http://localhost:5001
+      - Jwt__ValidIssuer=http://localhost:5001
+      - Jwt__IssuerSigningKey=ByYM000OLlMQG6VVVp1OH7Xzyr7gHuw1qvUC5dcGt3SNM
+      - Jwt__ExpiringDays=1
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "5000:1433"
     environment:
-      SA_PASSWORD: MyPassword123!
-      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: MyPassword123!
+      ACCEPT_EULA: Y    
+  web:
+    image: snippet-management-web
+    ports:
+      - "5002:3000"
+    environment:
+      - REACT_APP_GOOGLE_CLIENT_ID=448086775090-g62vpn8qbig7gqt2qiin9m6ok5sgislk
+      - REACT_APP_BASE_URL=http://localhost:5001/
+volumes:
+    snippet-management-vol:
