@@ -4,7 +4,7 @@ services:
   api:
     image: snippet-management
     volumes:
-      - snippet-management-vol:/my-vol
+      - snippet-management-vol:/var/lib/docker/volumes/snippetmanagement_snippet-management-vol/_data
     ports:
       - "5001:80"
     depends_on:
