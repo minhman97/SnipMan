@@ -27,7 +27,8 @@ jobs:
       run: ls /home/runner/work/SnipMan/SnipMan/SnippetManagement.Test/bin/Debug/net7.0
     - name: asdfh1
       if: always()
-      run: ls /home/runner/work/SnipMan/SnipMan/SnippetManagement.Test/bin/Debug/net7.0
+      run: ls /home/runner/work/SnipMan/SnipMan/SnippetManagement.Test/bin/
       
     - name: Test
+      if: always()
       run: dotnet test SnippetManagement.Api.sln --configuration Release --no-build --verbosity normal
