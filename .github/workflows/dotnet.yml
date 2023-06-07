@@ -21,14 +21,6 @@ jobs:
       with:
         dotnet-version: 7.0.x
     - name: Build
-      run: dotnet build SnippetManagement.Api.sln --configuration Release    
-    - name: asdfh
-      if: always()
-      run: ls /home/runner/work/SnipMan/SnipMan/SnippetManagement.Test/bin/Debug/net7.0
-    - name: asdfh1
-      if: always()
-      run: ls /home/runner/work/SnipMan/SnipMan/SnippetManagement.Test/bin/
-      
+      run: dotnet build BackEnd/SnippetManagement.Api.sln --configuration Release    
     - name: Test
-      if: always()
-      run: dotnet test SnippetManagement.Api.sln --configuration Release --no-build --verbosity normal
+      run: dotnet test BackEnd/SnippetManagement.Api.sln --configuration Release --no-build --verbosity normal
