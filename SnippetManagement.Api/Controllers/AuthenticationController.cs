@@ -23,7 +23,7 @@ public class AuthenticationController : ControllerBase
         {
             Email = request.Email,
             Password = request.Password
-        });
+        }, string.Empty);
         if (result.IsFailed)
         {
             return BadRequest(result);
@@ -32,11 +32,11 @@ public class AuthenticationController : ControllerBase
         return Ok(new { token = result.Successes.FirstOrDefault()?.Message });
     }
 
-    [HttpPost]
     [Route("External", Name = "External")]
+    [HttpPost]
     public async Task<IActionResult> GetAuthTokenForExternal([FromBody] string externalToken)
     {
-        var result = await _authenticationService.GetTokenForExternalProvider(externalToken);
+        var result = await _authenticationService.GetToken(new UserDto(), externalToken);
         if (result.IsFailed)
         {
             return BadRequest(result);

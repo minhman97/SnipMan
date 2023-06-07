@@ -16,7 +16,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Modified);
         builder.Property(x => x.Deleted);
         builder.Property(x => x.SocialProvider)
-            .HasConversion(v => v.ToString(), v => Enum.Parse(typeof(SocialProvider), v) as SocialProvider?)
+            .HasConversion<string>()
             .HasMaxLength(150);
     }
 }

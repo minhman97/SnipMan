@@ -1,8 +1,9 @@
-import { GetErrorMessage, baseUrl } from "./StatusCode";
+import { baseUrl } from "./ApiEndpoint";
+import { GetErrorMessage } from "./StatusCode";
 import { getUserToken } from "./UserApi";
 
 export const getProgramingLanguages = async () => {
-  let token = getUserToken();
+  const token = getUserToken();
   return await fetch(`${baseUrl}ProgramingLanguage/GetLanguage`, {
     method: "GET",
     headers: {

@@ -29,42 +29,41 @@ public class AuthenticationService : IAuthenticationService
         _jwtConfiguration = jwtConfiguration.Value;
     }
 
-    public async Task<Result> GetToken(UserDto userDto)
+    public async Task<Result> GetToken(UserDto userDto, string externalToken)
     {
-        var user = await _unitOfWork.UserRepository.Get(userDto.Email); //test user: a@a.vn/a
-        if (user != null && BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
+        var isTokenNullOrEmpty = string.IsNullOrEmpty(externalToken);
+        if (!isTokenNullOrEmpty)
         {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(externalToken);
+            userDto.Email = jwtToken.Payload["email"].ToString() ;
+            userDto.SocialProvider = SocialProvider.Google;
+            
+            if (string.IsNullOrEmpty(userDto.Email)) return Result.Fail("Incorrect username or password");
+        }
+        
+        var user = await _unitOfWork.UserRepository.Get(userDto.Email); //test user: a@a.vn/a
+        
+        if(isTokenNullOrEmpty && user is null)
+            return Result.Fail("Incorrect username or password");
+        
+        if ( !isTokenNullOrEmpty || BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
+        {
+            if (!isTokenNullOrEmpty && user is null)
+            {
+                user = await _unitOfWork.UserRepository.Create(new CreateUserRequest()
+                {
+                    Email = userDto.Email,
+                    SocialProvider = SocialProvider.Google
+                });
+            }
             SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(user);
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
             return Result.Ok().WithSuccess(tokenHandler.WriteToken(securityToken));
         }
 
-        return Result.Fail("Wrong username or password");
-    }
-
-    public async Task<Result> GetTokenForExternalProvider(string externalToken)
-    {
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(externalToken);
-        var email = jwtToken.Payload["email"].ToString();
-
-        if (string.IsNullOrEmpty(email)) return Result.Fail("Wrong username or password");
-
-        var userDto = await _unitOfWork.UserRepository.Get(email);
-        if (userDto is null)
-        {
-            userDto = await _unitOfWork.UserRepository.Create(new CreateUserRequest()
-            {
-                Email = email,
-                SocialProvider = SocialProvider.Google
-            });
-        }
-
-        SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(userDto);
-        var tokenHandler = new JwtSecurityTokenHandler();
-        SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
-        return Result.Ok().WithSuccess(tokenHandler.WriteToken(securityToken));
+        return Result.Fail("Incorrect username or password");
     }
 
     private SecurityTokenDescriptor GetTokenDescriptor(UserDto user)
@@ -74,7 +73,7 @@ public class AuthenticationService : IAuthenticationService
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Expires = DateTime.UtcNow.AddSeconds(30),
+            Expires = DateTime.UtcNow.AddDays(_jwtConfiguration.ExpiringDays),
             SigningCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature),
             Audience = _jwtConfiguration.ValidAudience,
             Issuer = _jwtConfiguration.ValidIssuer,

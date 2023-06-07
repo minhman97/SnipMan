@@ -23,21 +23,14 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         {
             Id = new Guid(),
             Email = request.Email,
-            Password = string.IsNullOrEmpty(request.Password) ? request.Password : BCrypt.Net.BCrypt.HashPassword(request.Password),
+            Password = string.IsNullOrEmpty(request.Password)
+                ? request.Password
+                : BCrypt.Net.BCrypt.HashPassword(request.Password),
             Created = DateTimeOffset.UtcNow,
             SocialProvider = request.SocialProvider
         };
         await _context.AddAsync(user);
-        try
-        {
-            await _context.SaveChangesAsync();
-
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        await _context.SaveChangesAsync();
 
         return Map(user);
     }

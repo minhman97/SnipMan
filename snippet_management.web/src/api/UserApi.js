@@ -1,9 +1,8 @@
-import { baseUrl } from "./StatusCode";
+import { authUrl, externalAuthUrl } from "./ApiEndpoint";
+const keyToken = "token";
 
 export const login = (credentials, isExternal) => {
-  let url = baseUrl.concat("Authentication");
-  if (isExternal) url = url.concat("/External");
-  return fetch(url, {
+  return fetch(isExternal ? externalAuthUrl : authUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -13,7 +12,7 @@ export const login = (credentials, isExternal) => {
 };
 
 export const getUserToken = () => {
-  const tokenString = localStorage.getItem("token");
+  const tokenString = localStorage.getItem(keyToken);
   if (tokenString) {
     const userToken = JSON.parse(tokenString);
     return userToken?.token;
@@ -24,5 +23,5 @@ export const getUserToken = () => {
 
 export const removeToken = () => {
   window.location = "/";
-  localStorage.removeItem("token");
+  localStorage.removeItem(keyToken);
 };

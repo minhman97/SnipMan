@@ -3,9 +3,10 @@ import { createSnippet } from "../../api/SnippetApi";
 import { Listbox, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { GetErrorMessage, baseUrl } from "../../api/StatusCode";
+import { GetErrorMessage } from "../../api/StatusCode";
 import { toast } from "react-hot-toast";
 import { getProgramingLanguages } from "../../api/ProgramingLanguageApi";
+import { baseUrl } from "../../api/ApiEndpoint";
 
 const CreateSnippet = () => {
   const [name, setName] = useState("");

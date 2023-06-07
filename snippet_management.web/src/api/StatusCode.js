@@ -15,5 +15,3 @@ export const GetErrorMessage = (statusCode) => {
       return "Interner server error";
   }
 };
-
-export const baseUrl = process.env.REACT_APP_BASE_URL;

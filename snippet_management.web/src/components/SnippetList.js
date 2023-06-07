@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { handleStyleSlider } from "../utils/SliderExtentions";
 import { useSnippetContext } from "../context/SnippetContext";
 import { slidesPerView } from "../context/PaginationContext";
-import { baseUrl } from "../api/StatusCode";
+import { baseUrl } from "../api/ApiEndpoint";
 
 const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
   const { snippet, setSnippet, currentCursor, setCurrentCursor } =

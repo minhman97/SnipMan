@@ -12,7 +12,7 @@ using SnippetManagement.Data;
 namespace SnippetManagement.Data.Migrations
 {
     [DbContext(typeof(SnippetManagementDbContext))]
-    [Migration("20230526070848_UpdateSocialProviderColumn")]
+    [Migration("20230606034553_UpdateSocialProviderColumn")]
     partial class UpdateSocialProviderColumn
     {
         /// <inheritdoc />

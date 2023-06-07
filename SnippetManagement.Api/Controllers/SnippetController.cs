@@ -24,7 +24,7 @@ public class SnippetController : ControllerBase
     public async Task<IActionResult> Create(CreateSnippetRequest request)
     {
         var userId = User.Claims.Where(c => c.Type == "UserId")
-            .Select(c => c.Value).SingleOrDefault();
+            .Select(c => c.Value).Single();
         var snippet = new Snippet()
         {
             Id = Guid.NewGuid(),
@@ -77,7 +77,7 @@ public class SnippetController : ControllerBase
     public async Task<IActionResult> GetSnippets(int startIndex, int endIndex, [FromQuery] SortOrder sortOrder)
     {
         var userId = User.Claims.Where(c => c.Type == "UserId")
-            .Select(c => c.Value).SingleOrDefault();
+            .Select(c => c.Value).Single();
         
         return Ok(await _unitOfWork.SnippetRepository.GetRange(new Guid(userId), startIndex, endIndex, sortOrder));
     }
@@ -88,7 +88,7 @@ public class SnippetController : ControllerBase
         [FromQuery] SortOrder sortOrder)
     {
         var userId = User.Claims.Where(c => c.Type == "UserId")
-            .Select(c => c.Value).SingleOrDefault();
+            .Select(c => c.Value).Single();
         return Ok(await _unitOfWork.SnippetRepository.SearchRange(new Guid(userId), startIndex, endIndex, request, sortOrder));
     }
 

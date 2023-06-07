@@ -1,4 +1,5 @@
-import { GetErrorMessage, baseUrl } from "./StatusCode";
+import { baseUrl } from "./ApiEndpoint";
+import { GetErrorMessage } from "./StatusCode";
 import { getUserToken } from "./UserApi";
 
 export const getSnippets = async (
@@ -8,11 +9,11 @@ export const getSnippets = async (
   sortProperty,
   orderWay
 ) => {
-  let url =
+  const url =
     filterKeyWord.trim() === ""
       ? `${baseUrl}Snippet?startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`
       : `${baseUrl}Snippet/Search?keyWord=${filterKeyWord.trim()}&startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`;
-  let token = getUserToken();
+  const token = getUserToken();
   return await fetch(url, {
     method: "GET",
     headers: {
@@ -30,7 +31,7 @@ export const getSnippets = async (
 };
 
 export const createSnippet = async (snippet) => {
-  let token = getUserToken();
+  const token = getUserToken();
   return await fetch(`${baseUrl}Snippet`, {
     method: "POST",
     headers: {
@@ -54,7 +55,7 @@ export const createSnippet = async (snippet) => {
 };
 
 export const updateSnippet = async ({ snippet }) => {
-  let token = getUserToken();
+  const token = getUserToken();
   return await fetch(baseUrl + "Snippet/" + snippet.id, {
     method: "PUT",
     headers: {
@@ -72,7 +73,7 @@ export const updateSnippet = async ({ snippet }) => {
 };
 
 export const deleteSnippet = async ({ id }) => {
-  let token = getUserToken();
+  const token = getUserToken();
   return await fetch(baseUrl + "Snippet?id=" + id, {
     method: "DELETE",
     headers: {
