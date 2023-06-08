@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { createSnippet } from "../../api/SnippetApi";
+import { createSnippet } from "../../api/snippetApi";
 import { Listbox, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { GetErrorMessage } from "../../api/StatusCode";
+import { HandleStatuscode } from "../../helper/statusCodeHelper";
 import { toast } from "react-hot-toast";
-import { getProgramingLanguages } from "../../api/ProgramingLanguageApi";
-import { baseUrl } from "../../api/ApiEndpoint";
+import { getProgramingLanguages } from "../../api/programingLanguageApi";
+import { baseUrl } from "../../api/apiEndpoint";
 
 const CreateSnippet = () => {
   const [name, setName] = useState("");
@@ -29,7 +29,7 @@ const CreateSnippet = () => {
     var res = await createSnippet(snippet);
 
     if (res.status && res.status !== 200)
-      return toast.error(GetErrorMessage(res.status));
+      return toast.error(HandleStatuscode(res.status));
     if (res) window.location.href = "/";
   };
 
@@ -37,7 +37,7 @@ const CreateSnippet = () => {
     (async () => {
       let languages = await getProgramingLanguages();
       if (languages.status && languages.status !== 200)
-        return toast.error(GetErrorMessage(languages.status));
+        return toast.error(HandleStatuscode(languages.status));
 
       setLanguages(languages);
       setLanguage(languages[0]);
@@ -68,7 +68,7 @@ const CreateSnippet = () => {
                     <div className="flex items-center">
                       <img
                         alt="test"
-                        src={`${baseUrl + language.url}`}
+                        src={`${baseUrl}/${language.url}`}
                         className="w-7 h-7 mr-2"
                       />
                       <span className="block truncate text-center">

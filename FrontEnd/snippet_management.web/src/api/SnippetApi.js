@@ -1,6 +1,6 @@
-import { baseUrl } from "./ApiEndpoint";
-import { GetErrorMessage } from "./StatusCode";
-import { getUserToken } from "./UserApi";
+import { createSnippetUrl, deleteSnippetUrl, getSnippetUrl, searchSnippetUrl, updateSnippetUrl } from "./apiEndpoint";
+import { HandleStatuscode } from "../helper/statusCodeHelper";
+import { getUserToken } from "../service/userService";
 
 export const getSnippets = async (
   filterKeyWord,
@@ -11,20 +11,20 @@ export const getSnippets = async (
 ) => {
   const url =
     filterKeyWord.trim() === ""
-      ? `${baseUrl}Snippet?startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`
-      : `${baseUrl}Snippet/Search?keyWord=${filterKeyWord.trim()}&startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`;
+      ? getSnippetUrl(startIndex, endIndex, sortProperty, orderWay)
+      : searchSnippetUrl(filterKeyWord, startIndex, endIndex, sortProperty, orderWay);
   const token = getUserToken();
   return await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+      Authorization: `Bearer ${token}`,
     },
   }).then((res) => {
     if (res.ok) return res.json();
 
     throw new Error(
-      `StatusCode: ${res.status}. ErrorMessage: ${GetErrorMessage(res.status)}`,
+      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(res.status)}`,
       { cause: { status: res.status } }
     );
   });
@@ -32,11 +32,11 @@ export const getSnippets = async (
 
 export const createSnippet = async (snippet) => {
   const token = getUserToken();
-  return await fetch(`${baseUrl}Snippet`, {
+  return await fetch(createSnippetUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(snippet),
   })
@@ -44,7 +44,7 @@ export const createSnippet = async (snippet) => {
       if (res.ok) return res.json();
 
       throw new Error(
-        `StatusCode:${res.status}. ErrorMessage:${GetErrorMessage(res.status)}`,
+        `StatusCode:${res.status}. ErrorMessage:${HandleStatuscode(res.status)}`,
         { cause: { status: res.status } }
       );
     })
@@ -56,17 +56,17 @@ export const createSnippet = async (snippet) => {
 
 export const updateSnippet = async ({ snippet }) => {
   const token = getUserToken();
-  return await fetch(baseUrl + "Snippet/" + snippet.id, {
+  return await fetch(updateSnippetUrl(snippet.id), {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(snippet),
   }).then((res) => {
     if (res.ok) return res.json();
     throw new Error(
-      `StatusCode: ${res.status}. ErrorMessage: ${GetErrorMessage(res.status)}`,
+      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(res.status)}`,
       { cause: { status: res.status } }
     );
   });
@@ -74,16 +74,16 @@ export const updateSnippet = async ({ snippet }) => {
 
 export const deleteSnippet = async ({ id }) => {
   const token = getUserToken();
-  return await fetch(baseUrl + "Snippet?id=" + id, {
+  return await fetch(deleteSnippetUrl(id), {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+      Authorization: `Bearer ${token}`,
     },
   }).then((res) => {
     if (res.ok) return res.json();
     throw new Error(
-      `StatusCode: ${res.status}. ErrorMessage: ${GetErrorMessage(res.status)}`,
+      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(res.status)}`,
       { cause: { status: res.status } }
     );
   });

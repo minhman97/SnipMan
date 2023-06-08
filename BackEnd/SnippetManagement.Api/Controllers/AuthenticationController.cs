@@ -29,7 +29,7 @@ public class AuthenticationController : ControllerBase
             return BadRequest(result);
         }
 
-        return Ok(new { token = result.Successes.FirstOrDefault()?.Message });
+        return Ok(new { token = result.Value });
     }
 
     [Route("External", Name = "External")]
@@ -42,6 +42,6 @@ public class AuthenticationController : ControllerBase
             return BadRequest(result);
         }
 
-        return Ok(new { token = result.Successes.FirstOrDefault()?.Message });
+        return Ok(new { token = result.Value });
     }
 }

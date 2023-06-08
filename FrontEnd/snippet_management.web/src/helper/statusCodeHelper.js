@@ -1,6 +1,6 @@
-import { removeToken } from "./UserApi";
+import { removeToken } from "../service/userService";
 
-export const GetErrorMessage = (statusCode) => {
+export const HandleStatuscode = (statusCode) => {
   switch (statusCode) {
     case 400:
       return "Bad request";

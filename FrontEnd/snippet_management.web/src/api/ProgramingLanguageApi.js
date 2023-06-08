@@ -1,20 +1,20 @@
-import { baseUrl } from "./ApiEndpoint";
-import { GetErrorMessage } from "./StatusCode";
-import { getUserToken } from "./UserApi";
+import { programingLanguageUrl } from "./apiEndpoint";
+import { HandleStatuscode } from "../helper/statusCodeHelper";
+import { getUserToken } from "../service/userService";
 
 export const getProgramingLanguages = async () => {
   const token = getUserToken();
-  return await fetch(`${baseUrl}ProgramingLanguage/GetLanguage`, {
+  return await fetch(programingLanguageUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+      Authorization: `Bearer ${token}`,
     },
   })
     .then((res) => {
       if (!res.ok)
         throw new Error(
-          `StatusCode:${res.status}. ErrorMessage:${GetErrorMessage(
+          `StatusCode:${res.status}. ErrorMessage:${HandleStatuscode(
             res.status
           )}`,
           { cause: { status: res.status } }

@@ -3,10 +3,10 @@ FROM node:alpine as build
 WORKDIR /app
 
 COPY package*.json .
-RUN npm install --silent --force
+RUN npm install --force
 COPY . .
 
-RUN npm run build -- --profile
+RUN npm run build
 
 EXPOSE 3000
 ENTRYPOINT [ "npm", "start" ]

@@ -5,5 +5,5 @@ namespace SnippetManagement.Service.Services;
 
 public interface IAuthenticationService
 {
-    Task<Result> GetToken(UserDto userDto, string externalToken);
+    Task<Result<string>> GetToken(UserDto userDto, string externalToken);
 }

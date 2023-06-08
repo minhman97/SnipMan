@@ -10,7 +10,6 @@ public class ProgramingLanguageController : ControllerBase
 {
     // GET
     [HttpGet]
-    [Route("GetLanguage", Name = "GetLanguage")]
     public IActionResult GetLanguage()
     {
         return Ok( new List<ProgramingLanguageDto>()

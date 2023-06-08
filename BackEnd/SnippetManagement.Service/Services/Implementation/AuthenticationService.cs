@@ -29,25 +29,25 @@ public class AuthenticationService : IAuthenticationService
         _jwtConfiguration = jwtConfiguration.Value;
     }
 
-    public async Task<Result> GetToken(UserDto userDto, string externalToken)
+    public async Task<Result<string>> GetToken(UserDto userDto, string externalToken)
     {
         var isTokenNullOrEmpty = string.IsNullOrEmpty(externalToken);
         if (!isTokenNullOrEmpty)
         {
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(externalToken);
-            userDto.Email = jwtToken.Payload["email"].ToString() ;
+            userDto.Email = jwtToken.Payload["email"].ToString();
             userDto.SocialProvider = SocialProvider.Google;
-            
+
             if (string.IsNullOrEmpty(userDto.Email)) return Result.Fail("Incorrect username or password");
         }
-        
+
         var user = await _unitOfWork.UserRepository.Get(userDto.Email); //test user: a@a.vn/a
-        
-        if(isTokenNullOrEmpty && user is null)
+
+        if (isTokenNullOrEmpty && user is null)
             return Result.Fail("Incorrect username or password");
-        
-        if ( !isTokenNullOrEmpty || BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
+
+        if (!isTokenNullOrEmpty || BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
         {
             if (!isTokenNullOrEmpty && user is null)
             {
@@ -57,10 +57,11 @@ public class AuthenticationService : IAuthenticationService
                     SocialProvider = SocialProvider.Google
                 });
             }
+
             SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(user);
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
-            return Result.Ok().WithSuccess(tokenHandler.WriteToken(securityToken));
+            return Result.Ok(tokenHandler.WriteToken(securityToken));
         }
 
         return Result.Fail("Incorrect username or password");

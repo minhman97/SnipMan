@@ -3,10 +3,10 @@ import React, { Fragment, useRef, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 import { Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { handleStyleSlider } from "../utils/SliderExtentions";
+import { handleStyleSlider } from "../utils/sliderExtentions";
 import { useSnippetContext } from "../context/SnippetContext";
 import { slidesPerView } from "../context/PaginationContext";
-import { baseUrl } from "../api/ApiEndpoint";
+import { baseUrl } from "../api/apiEndpoint";
 
 const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
   const { snippet, setSnippet, currentCursor, setCurrentCursor } =
@@ -81,7 +81,7 @@ const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
                             alt="programing language name"
                             src={`${
                               baseUrl +
-                              `Assets/Icons/classifications/${
+                              `/Assets/Icons/classifications/${
                                 snippet.language === ""
                                   ? "text"
                                   : snippet.language

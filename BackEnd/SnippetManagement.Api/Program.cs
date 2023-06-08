@@ -41,30 +41,28 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.GetSection("Jwt").Bind(options));
 
+Console.WriteLine("checking URL Port: " + builder.Configuration["WEB_PORT"]);
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(name: "_myAllowSpecificOrigins",
-        policy  =>
+        policy =>
         {
-            policy.WithOrigins("http://localhost:5002", "http://localhost:3000")
+            policy.WithOrigins($"http://localhost:{builder.Configuration["WEB_PORT"]}")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
 });
 
-builder.Services.AddControllers(opts =>
-{
-    opts.Filters.Add(new HandleApiExceptionAttribute());
+builder.Services.AddControllers(opts => { opts.Filters.Add(new HandleApiExceptionAttribute()); }).AddFluentValidation(
+    opts =>
+    {
+        // Validate child properties and root collection elements
+        opts.ImplicitlyValidateChildProperties = true;
+        opts.ImplicitlyValidateRootCollectionElements = true;
 
-}).AddFluentValidation(opts =>
-{
-    // Validate child properties and root collection elements
-    opts.ImplicitlyValidateChildProperties = true;
-    opts.ImplicitlyValidateRootCollectionElements = true;
-
-    // Automatic registration of validators in assembly
-    opts.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-});
+        // Automatic registration of validators in assembly
+        opts.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+    });
 
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -122,9 +120,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseFileServer( new FileServerOptions()
+app.UseFileServer(new FileServerOptions()
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),"Assets")),
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Assets")),
     RequestPath = "/Assets",
     EnableDefaultFiles = true
 });

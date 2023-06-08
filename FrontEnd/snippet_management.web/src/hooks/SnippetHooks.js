@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteSnippet, updateSnippet } from "../api/SnippetApi";
+import { deleteSnippet, updateSnippet } from "../api/snippetApi";
 import { toast } from "react-hot-toast";
 
 export const useUpdateSnippet = () => {

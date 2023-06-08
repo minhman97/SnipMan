@@ -1,10 +1,10 @@
 import { React, useEffect, useState } from "react";
-import { login } from "../api/UserApi";
+import { login } from "../api/userApi";
 
 const LoginForm = ({ setToken }) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  const [Auth, setAuth] = useState({ isAuth: false, message: "" });
+  const [auth, setAuth] = useState({ isAuth: false, token: null });
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -30,19 +30,20 @@ const LoginForm = ({ setToken }) => {
     return () => {
       document.body.removeChild(script);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let token = await login({
+    let response = await login({
       email,
       password,
     });
-    if (token.isFailed) {
-      setAuth({ ...Auth, message: token.reasons[0].message });
+    if (response.isFailed) {
+      setAuth({ ...auth, message: response.reasons[0].message });
       return;
     }
-    setToken(token);
+    setToken(response);
   };
 
   const handleCredentialResponse = async (response) => {
@@ -54,12 +55,12 @@ const LoginForm = ({ setToken }) => {
     <>
       <div>Login</div>
       <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
-        {!Auth.isAuth && Auth.message !== "" && (
+        {!auth.isAuth && auth.message === null && (
           <div
             class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
             role="alert"
           >
-            <span class="block sm:inline">{Auth.message}</span>
+            <span class="block sm:inline">{auth.message}</span>
           </div>
         )}
         <form onSubmit={(e) => handleSubmit(e)}>
