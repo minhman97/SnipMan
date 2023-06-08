@@ -192,9 +192,11 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
 
+        var userId = Guid.NewGuid();
+
         context.Set<User>().Add(new User()
         {
-            Id = Guid.NewGuid(),
+            Id = userId,
             Email = "a@a.vn",
             Password = BCrypt.Net.BCrypt.HashPassword("a")
         });
@@ -209,6 +211,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             Origin = "TestA",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
+            UserId = userId
         }, new Snippet()
         {
             Id = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
@@ -219,6 +222,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             Origin = "TestB",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
+            UserId = userId
         });
 
         context.Set<Tag>().AddRange(new Tag()
