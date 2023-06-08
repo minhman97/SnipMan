@@ -235,7 +235,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             new Tag()
             {
                 Id = new Guid("07785b4a-04e6-4435-b156-63fce124b316"),
-                TagName = "tagb",
+                TagName = "tagB",
                 Created = DateTimeOffset.UtcNow,
                 Deleted = false,
             });
