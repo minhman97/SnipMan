@@ -8,7 +8,6 @@ namespace SnippetManagement.Api.Controllers;
 [Authorize]
 public class ProgramingLanguageController : ControllerBase
 {
-    // GET
     [HttpGet]
     public IActionResult GetLanguage()
     {

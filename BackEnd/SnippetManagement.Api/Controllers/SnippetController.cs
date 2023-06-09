@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SnippetManagement.Api.Service;
 using SnippetManagement.Common;
 using SnippetManagement.DataModel;
 using SnippetManagement.Service.Repositories;
@@ -14,17 +15,17 @@ namespace SnippetManagement.Api.Controllers;
 public class SnippetController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private IIdentityService identityService;
 
-    public SnippetController(IUnitOfWork unitOfWork)
+    public SnippetController(IUnitOfWork unitOfWork, IIdentityService identityService)
     {
         _unitOfWork = unitOfWork;
+        this.identityService = identityService;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateSnippetRequest request)
     {
-        var userId = User.Claims.Where(c => c.Type == "UserId")
-            .Select(c => c.Value).Single();
         var snippet = new Snippet()
         {
             Id = Guid.NewGuid(),
@@ -33,7 +34,7 @@ public class SnippetController : ControllerBase
             Description = request.Description,
             Origin = request.Origin,
             Language = request.Language,
-            UserId = new Guid(userId)
+            UserId = identityService.GetCurrentUserId()
         };
 
         var newTags = GetNewTags(request.Tags);
@@ -76,10 +77,8 @@ public class SnippetController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetSnippets(int startIndex, int endIndex, [FromQuery] SortOrder sortOrder)
     {
-        var userId = User.Claims.Where(c => c.Type == "UserId")
-            .Select(c => c.Value).Single();
-        
-        return Ok(await _unitOfWork.SnippetRepository.GetRange(new Guid(userId), startIndex, endIndex, sortOrder));
+        var user = User;
+        return Ok(await _unitOfWork.SnippetRepository.GetRange(identityService.GetCurrentUserId(), startIndex, endIndex, sortOrder));
     }
 
     [HttpGet]
@@ -87,9 +86,7 @@ public class SnippetController : ControllerBase
     public async Task<IActionResult> Search(int startIndex, int endIndex, [FromQuery] SearchSnippetRequest request,
         [FromQuery] SortOrder sortOrder)
     {
-        var userId = User.Claims.Where(c => c.Type == "UserId")
-            .Select(c => c.Value).Single();
-        return Ok(await _unitOfWork.SnippetRepository.SearchRange(new Guid(userId), startIndex, endIndex, request, sortOrder));
+        return Ok(await _unitOfWork.SnippetRepository.SearchRange(identityService.GetCurrentUserId(), startIndex, endIndex, request, sortOrder));
     }
 
     [HttpGet("{id}")]

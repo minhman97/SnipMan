@@ -14,11 +14,11 @@ const LoginForm = ({ setToken }) => {
     script.onload = () => {
       if (window.google) {
         /*global google*/
-
-        google.accounts.id.initialize({
+        var a = {
           client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
           callback: handleCredentialResponse,
-        });
+        };
+        google.accounts.id.initialize(a);
         google.accounts.id.renderButton(
           document.getElementById("btn-signin-gg"),
           { theme: "outline", size: "large" } // customization attributes
@@ -40,7 +40,7 @@ const LoginForm = ({ setToken }) => {
       password,
     });
     if (response.isFailed) {
-      setAuth({ ...auth, message: response.reasons[0].message });
+      setAuth({ ...auth, message: response.message });
       return;
     }
     setToken(response);

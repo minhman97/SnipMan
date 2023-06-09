@@ -6,7 +6,7 @@ WORKDIR /source
 
 COPY . .
 
-RUN dotnet restore
+RUN dotnet restore 
 RUN dotnet publish -c Release -o /publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 as runtime

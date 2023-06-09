@@ -4,33 +4,33 @@ services:
   api:
     image: snippet-management
     ports:
-      - '${API_PORT}:${API_PORT}'
+      - '${Ports__ApiAppPort}:${Ports__ApiAppPort}'
     depends_on:
       - db
     environment:
       ConnectionStrings__DefaultConnection: Server=db;Database=SnippetManagement;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=true
-      Jwt__ValidAudience: http://localhost:${API_PORT}
-      Jwt__ValidIssuer: http://localhost:${API_PORT}
+      Jwt__ValidAudience: http://localhost:${Ports__ApiAppPort}
+      Jwt__ValidIssuer: http://localhost:${Ports__ApiAppPort}
       Jwt__IssuerSigningKey: ${JWT_ISSUER_SIGNING_KEY}
       Jwt__ExpiringDays: 1
-      ASPNETCORE_URLS: http://*:${API_PORT}
-      API_PORT: ${API_PORT}
-      WEB_PORT: ${WEB_PORT}
+      Ports__ApiAppPort: ${Ports__ApiAppPort}
+      Ports__ReactAppPort: ${Ports__ReactAppPort}
+      ASPNETCORE_URLS: http://*:${Ports__ApiAppPort}
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     volumes:
       - snippet-management-vol:/var/opt/mssql
     ports:
-      - '5000:1433'
+      - '${Ports__DbPort}:1433'
     environment:
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       ACCEPT_EULA: 'Y'
   web:
     image: snippet-management-web
     ports:
-      - '${WEB_PORT}:3000'
+      - '${Ports__ReactAppPort}:${Ports__ReactAppExposePort}'
     environment:
       REACT_APP_GOOGLE_CLIENT_ID: ${REACT_APP_GOOGLE_CLIENT_ID}
-      REACT_APP_BASE_URL: http://localhost:${API_PORT}
+      REACT_APP_BASE_URL: http://localhost:${Ports__ApiAppPort}
 volumes:
   snippet-management-vol:

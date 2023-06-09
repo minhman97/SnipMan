@@ -8,6 +8,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SnippetManagement.Api.Middlewares;
+using SnippetManagement.Api.Service;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Repositories.Implementation;
 using SnippetManagement.Service.Services;
@@ -47,7 +48,7 @@ builder.Services.AddCors(opts =>
     opts.AddPolicy(name: "_myAllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins($"http://localhost:{builder.Configuration["WEB_PORT"]}")
+            policy.WithOrigins($"http://localhost:{builder.Configuration["Ports:ReactAppPort"]}")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -63,8 +64,9 @@ builder.Services.AddControllers(opts => { opts.Filters.Add(new HandleApiExceptio
         // Automatic registration of validators in assembly
         opts.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
     });
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+builder.Services.AddTransient<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();

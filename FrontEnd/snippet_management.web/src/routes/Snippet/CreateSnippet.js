@@ -6,7 +6,7 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { HandleStatuscode } from "../../helper/statusCodeHelper";
 import { toast } from "react-hot-toast";
 import { getProgramingLanguages } from "../../api/programingLanguageApi";
-import { baseUrl } from "../../api/apiEndpoint";
+import { getIconUrl } from "../../api/apiEndpoint";
 
 const CreateSnippet = () => {
   const [name, setName] = useState("");
@@ -68,7 +68,7 @@ const CreateSnippet = () => {
                     <div className="flex items-center">
                       <img
                         alt="test"
-                        src={`${baseUrl}/${language.url}`}
+                        src={getIconUrl(language.url)}
                         className="w-7 h-7 mr-2"
                       />
                       <span className="block truncate text-center">
@@ -105,7 +105,7 @@ const CreateSnippet = () => {
                             <>
                               <img
                                 alt="test"
-                                src={`${baseUrl + language.url}`}
+                                src={getIconUrl(language.url)}
                                 className="w-7 h-7 mr-2"
                               />
                               <span

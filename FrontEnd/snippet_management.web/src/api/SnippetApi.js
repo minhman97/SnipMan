@@ -1,4 +1,9 @@
-import { createSnippetUrl, deleteSnippetUrl, getSnippetUrl, searchSnippetUrl, updateSnippetUrl } from "./apiEndpoint";
+import {
+  createSnippetUrl,
+  deleteSnippetUrl,
+  getSnippetUrl,
+  updateSnippetUrl,
+} from "./apiEndpoint";
 import { HandleStatuscode } from "../helper/statusCodeHelper";
 import { getUserToken } from "../service/userService";
 
@@ -9,22 +14,23 @@ export const getSnippets = async (
   sortProperty,
   orderWay
 ) => {
-  const url =
-    filterKeyWord.trim() === ""
-      ? getSnippetUrl(startIndex, endIndex, sortProperty, orderWay)
-      : searchSnippetUrl(filterKeyWord, startIndex, endIndex, sortProperty, orderWay);
   const token = getUserToken();
-  return await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  }).then((res) => {
+  return await fetch(
+    getSnippetUrl(filterKeyWord, startIndex, endIndex, sortProperty, orderWay),
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  ).then((res) => {
     if (res.ok) return res.json();
 
     throw new Error(
-      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(res.status)}`,
+      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(
+        res.status
+      )}`,
       { cause: { status: res.status } }
     );
   });
@@ -44,7 +50,9 @@ export const createSnippet = async (snippet) => {
       if (res.ok) return res.json();
 
       throw new Error(
-        `StatusCode:${res.status}. ErrorMessage:${HandleStatuscode(res.status)}`,
+        `StatusCode:${res.status}. ErrorMessage:${HandleStatuscode(
+          res.status
+        )}`,
         { cause: { status: res.status } }
       );
     })
@@ -66,7 +74,9 @@ export const updateSnippet = async ({ snippet }) => {
   }).then((res) => {
     if (res.ok) return res.json();
     throw new Error(
-      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(res.status)}`,
+      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(
+        res.status
+      )}`,
       { cause: { status: res.status } }
     );
   });
@@ -83,7 +93,9 @@ export const deleteSnippet = async ({ id }) => {
   }).then((res) => {
     if (res.ok) return res.json();
     throw new Error(
-      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(res.status)}`,
+      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(
+        res.status
+      )}`,
       { cause: { status: res.status } }
     );
   });

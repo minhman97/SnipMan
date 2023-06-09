@@ -26,7 +26,7 @@ public class AuthenticationController : ControllerBase
         }, string.Empty);
         if (result.IsFailed)
         {
-            return BadRequest(result);
+            return BadRequest(new { isFailed = result.IsFailed, message = result.Reasons.FirstOrDefault() });
         }
 
         return Ok(new { token = result.Value });
@@ -39,7 +39,7 @@ public class AuthenticationController : ControllerBase
         var result = await _authenticationService.GetToken(new UserDto(), externalToken);
         if (result.IsFailed)
         {
-            return BadRequest(result);
+            return BadRequest(new { isFailed = result.IsFailed, message = result.Reasons.FirstOrDefault() });
         }
 
         return Ok(new { token = result.Value });

@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { handleStyleSlider } from "../utils/sliderExtentions";
 import { useSnippetContext } from "../context/SnippetContext";
 import { slidesPerView } from "../context/PaginationContext";
-import { baseUrl } from "../api/apiEndpoint";
+import { getIconUrl } from "../api/apiEndpoint";
 
 const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
   const { snippet, setSnippet, currentCursor, setCurrentCursor } =
@@ -79,14 +79,10 @@ const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
                         <SwiperSlide key={snippet.id}>
                           <img
                             alt="programing language name"
-                            src={`${
-                              baseUrl +
-                              `/Assets/Icons/classifications/${
-                                snippet.language === ""
-                                  ? "text"
-                                  : snippet.language
-                              }.png`
-                            }`}
+                            src={getIconUrl(
+                              `Assets/Icons/classifications`,
+                              snippet.language
+                            )}
                             className="w-10 h-10 cursor-pointer"
                             title={snippet.language}
                           />
