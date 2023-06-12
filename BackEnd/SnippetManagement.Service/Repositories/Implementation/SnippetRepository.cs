@@ -69,7 +69,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
 
         return new RangeDataResponse<IEnumerable<SnippetDto>>()
         {
-            Data = (await query.ToListAsync()).Select(Map),
+            Data = (await query.ToListAsync()).Select(Map)!,
             StartIndex = startIndex,
             EndIndex = endIndex,
             TotalRecords = totalRecords

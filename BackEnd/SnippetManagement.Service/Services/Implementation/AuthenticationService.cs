@@ -60,7 +60,7 @@ public class AuthenticationService : IAuthenticationService
 
     private SecurityTokenDescriptor GetTokenDescriptor(UserDto user)
     {
-        byte[] securityKey = Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey);
+        byte[] securityKey = Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey ?? throw new InvalidOperationException());
         var symmetricSecurityKey = new SymmetricSecurityKey(securityKey);
 
         var tokenDescriptor = new SecurityTokenDescriptor

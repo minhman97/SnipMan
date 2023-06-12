@@ -9,7 +9,7 @@ public class Snippet: BaseEntity<Guid>
     public string Origin { get; set; }
     public string Language { get; set; }
     public User? User { get; set; }
-    public IEnumerable<SnippetTag>? Tags { get; set; }
+    public IEnumerable<SnippetTag> Tags { get; set; }
 
     public Snippet(Guid id, string name, string content, string description, string origin, string language, Guid userId) : base(id)
     {
