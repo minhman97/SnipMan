@@ -18,14 +18,14 @@ public class CustomWebApplicationFactory<TProgram>
                 d => d.ServiceType ==
                      typeof(DbContextOptions<SnippetManagementDbContext>));
 
-            services.Remove(dbContextDescriptor);
+            if (dbContextDescriptor != null) services.Remove(dbContextDescriptor);
 
             var dbConnectionDescriptor = services.SingleOrDefault(
                 d => d.ServiceType ==
                      typeof(SnippetManagementDbContext));
 
-            services.Remove(dbConnectionDescriptor);
-            
+            if (dbConnectionDescriptor != null) services.Remove(dbConnectionDescriptor);
+
             // var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
             // services.AddDbContext<SnippetManagementDbContext>(options =>
             //     options.UseSqlServer(config.GetConnectionString("XUnitDbTestConnection")));

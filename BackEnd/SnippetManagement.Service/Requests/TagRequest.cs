@@ -2,11 +2,11 @@ namespace SnippetManagement.Service.Requests;
 
 public class CreateTagRequest
 {
-    public Guid? Id { get; set; }
-    public string TagName { get; set; }
-}
+    public CreateTagRequest(string tagName)
+    {
+        TagName = tagName;
+    }
 
-public class FilterTag
-{
+    public Guid? Id { get; set; }
     public string TagName { get; set; }
 }

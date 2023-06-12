@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Mvc;
 using SnippetManagement.Api.Model;
+using SnippetManagement.Common.Enum;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Services;
 
@@ -19,14 +21,13 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> GetAuthToken(LoginRequest request)
     {
-        var result = await _authenticationService.GetToken(new UserDto()
+        var result = await _authenticationService.GetToken(new UserDto(request.Email)
         {
-            Email = request.Email,
             Password = request.Password
-        }, string.Empty);
+        }, false);
         if (result.IsFailed)
         {
-            return BadRequest(new { isFailed = result.IsFailed, message = result.Reasons.FirstOrDefault() });
+            return BadRequest(new { message = result.Reasons.FirstOrDefault() });
         }
 
         return Ok(new { token = result.Value });
@@ -36,10 +37,16 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> GetAuthTokenForExternal([FromBody] string externalToken)
     {
-        var result = await _authenticationService.GetToken(new UserDto(), externalToken);
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(externalToken);
+        var result =
+            await _authenticationService.GetToken(new UserDto(jwtToken.Payload["email"].ToString())
+            {
+                SocialProvider = SocialProvider.Google
+            }, true);
         if (result.IsFailed)
         {
-            return BadRequest(new { isFailed = result.IsFailed, message = result.Reasons.FirstOrDefault() });
+            return BadRequest(new { message = result.Reasons.FirstOrDefault() });
         }
 
         return Ok(new { token = result.Value });

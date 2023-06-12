@@ -22,6 +22,8 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddDbContext<SnippetManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+var jwtSection = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,22 +35,22 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:IssuerSigningKey"])),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["IssuerSigningKey"])),
         ValidateAudience = true,
         ValidateIssuer = true,
-        ValidAudience = builder.Configuration["Jwt:ValidAudience"],
-        ValidIssuer = builder.Configuration["Jwt:ValidIssuer"],
+        ValidAudience = jwtSection["ValidAudience"],
+        ValidIssuer = jwtSection["ValidIssuer"],
     };
 });
 builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.GetSection("Jwt").Bind(options));
 
-Console.WriteLine("checking URL Port: " + builder.Configuration["WEB_PORT"]);
+var portsSection = builder.Configuration.GetSection("Ports");
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(name: "_myAllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins($"http://localhost:{builder.Configuration["Ports:ReactAppPort"]}")
+            policy.WithOrigins($"http://localhost:{portsSection["ReactAppPort"]}")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -122,10 +124,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+var folderSection = builder.Configuration.GetSection("Folder");
 app.UseFileServer(new FileServerOptions()
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Assets")),
-    RequestPath = "/Assets",
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), folderSection["Assets"])),
+    RequestPath = $"/{folderSection["Assets"]}",
     EnableDefaultFiles = true
 });
 

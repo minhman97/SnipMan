@@ -6,4 +6,8 @@ public class SnippetTag: BaseEntity<Guid>
     public Snippet Snippet { get; set; }
     public Guid TagId { get; set; }
     public Tag Tag { get; set; }
+
+    public SnippetTag() : base(Guid.NewGuid())
+    {
+    }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
@@ -38,19 +39,11 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     public async Task CreateSnippet_ShouldBeSuccessful()
     {
         //tạo cai object Snippet
-        var snippet = new CreateSnippetRequest
+        var snippet = new CreateSnippetRequest("test", "test", "test", "Chrome", "C#")
         {
-            Name = "test",
-            Content = "test",
-            Description = "test",
-            Language = "C#",
-            Origin = "Chrome",
             Tags = new[]
             {
-                new CreateTagRequest()
-                {
-                    TagName = "test"
-                }
+                new CreateTagRequest("test")
             }
         };
         //goi toi Api
@@ -59,11 +52,11 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
         var result = await GetContext().Set<Snippet>().Include(x => x.Tags)
             .SingleOrDefaultAsync(x => x.Name == snippet.Name);
         //Expected result
-        snippet.Name.Should().Be(result.Name);
-        snippet.Content.Should().Be(result.Content);
-        snippet.Description.Should().Be(result.Description);
-        snippet.Origin.Should().Be(result.Origin);
-        result.Tags.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
+        snippet.Name.Should().Be(result?.Name);
+        snippet.Content.Should().Be(result?.Content);
+        snippet.Description.Should().Be(result?.Description);
+        snippet.Origin.Should().Be(result?.Origin);
+        result?.Tags?.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
     }
 
     [Fact]
@@ -80,31 +73,23 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = true
             });
-        snippet.Name.Should().Be(result.Name);
-        snippet.Content.Should().Be(result.Content);
-        snippet.Description.Should().Be(result.Description);
-        snippet.Origin.Should().Be(result.Origin);
-        result.Tags.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
+        snippet?.Name.Should().Be(result?.Name);
+        snippet?.Content.Should().Be(result?.Content);
+        snippet?.Description.Should().Be(result?.Description);
+        snippet?.Origin.Should().Be(result?.Origin);
+        result?.Tags?.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
     }
 
     [Fact]
     public async Task UpdateSnippet_ShouldBeSuccessful()
     {
         //tạo cai object Snippet
-        var snippetUpdate = new UpdateSnippetRequest()
+        var snippetUpdate = new UpdateSnippetRequest("test", "test", "test", "Chrome", "C#")
         {
             Id = new Guid($"07785b4a-04e6-4435-b156-63fce124b314"),
-            Name = "updated",
-            Content = "updated",
-            Description = "updated",
-            Language = "C#",
-            Origin = "updated",
             Tags = new List<CreateTagRequest>()
             {
-                new()
-                {
-                    TagName = " new test"
-                },
+                new(" new test"),
             }
         };
 
@@ -116,11 +101,11 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             .FirstOrDefaultAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
 
         //Expected result
-        snippetUpdate.Name.Should().Be(result.Name);
-        snippetUpdate.Content.Should().Be(result.Content);
-        snippetUpdate.Description.Should().Be(result.Description);
-        snippetUpdate.Origin.Should().Be(result.Origin);
-        result.Tags.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
+        snippetUpdate.Name.Should().Be(result?.Name);
+        snippetUpdate.Content.Should().Be(result?.Content);
+        snippetUpdate.Description.Should().Be(result?.Description);
+        snippetUpdate.Origin.Should().Be(result?.Origin);
+        result?.Tags?.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
     }
 
     [Fact]
@@ -151,8 +136,10 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
 
         var result = await GetContext().Set<Snippet>().Include(x => x.Tags).Skip(1).Take(1).FirstOrDefaultAsync();
 
-        pagedResponse?.Data.Count().Should().BeGreaterThan(0);
-        pagedResponse?.Data.ToList()[0].Tags.ToList()[0].Id.Should().Be(result.Tags.ToList()[0].TagId);
+        pagedResponse?.Data?.Count().Should().BeGreaterThan(0);
+        Debug.Assert(result != null, nameof(result) + " != null");
+        Debug.Assert(result.Tags != null, "result.Tags != null");
+        pagedResponse?.Data?.ToList()[0].Tags?.ToList()[0].Id.Should().Be(result.Tags.ToList()[0].TagId);
         pagedResponse?.TotalRecords.Should().Be(2);
     }
 
@@ -169,16 +156,15 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = true
             });
-        pagedResponse?.Data.Count().Should().BeGreaterThan(0);
-        pagedResponse?.Data.ToList()[0].Tags.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
+        pagedResponse?.Data?.Count().Should().BeGreaterThan(0);
+        pagedResponse?.Data?.ToList()[0].Tags?.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
         pagedResponse?.TotalRecords.Should().Be(1);
     }
 
     private string GetToken()
     {
-        var jsonCredentials = JsonSerializer.Serialize(new UserDto()
+        var jsonCredentials = JsonSerializer.Serialize(new UserDto("a@a.vn")
         {
-            Email = "a@a.vn",
             Password = "a"
         });
 
@@ -194,48 +180,31 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
 
         var userId = Guid.NewGuid();
 
-        context.Set<User>().Add(new User()
+        context.Set<User>().Add(new User("a@a.vn")
         {
             Id = userId,
-            Email = "a@a.vn",
             Password = BCrypt.Net.BCrypt.HashPassword("a")
         });
 
-        context.Set<Snippet>().AddRange(new Snippet()
+        context.Set<Snippet>().AddRange(new Snippet(new Guid("07785b4a-04e6-4435-b156-63fce124b313"), "testA", "testA",
+            "testA", "testA", "C#", userId)
         {
-            Id = new Guid("07785b4a-04e6-4435-b156-63fce124b313"),
-            Name = "testA",
-            Content = "testA",
-            Description = "testA",
-            Language = "C#",
-            Origin = "TestA",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
-            UserId = userId
-        }, new Snippet()
+        }, new Snippet(new Guid("07785b4a-04e6-4435-b156-63fce124b314"), "testB", "testB", "testB", "testB", "C#",
+            userId)
         {
-            Id = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
-            Name = "testB",
-            Content = "testB",
-            Description = "testB",
-            Language = "C#",
-            Origin = "TestB",
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
-            UserId = userId
         });
 
-        context.Set<Tag>().AddRange(new Tag()
+        context.Set<Tag>().AddRange(new Tag(new Guid("07785b4a-04e6-4435-b156-63fce124b315"), "tagA")
             {
-                Id = new Guid("07785b4a-04e6-4435-b156-63fce124b315"),
-                TagName = "tagA",
                 Created = DateTimeOffset.UtcNow,
                 Deleted = false,
             },
-            new Tag()
+            new Tag(new Guid("07785b4a-04e6-4435-b156-63fce124b316"), "tagB")
             {
-                Id = new Guid("07785b4a-04e6-4435-b156-63fce124b316"),
-                TagName = "tagB",
                 Created = DateTimeOffset.UtcNow,
                 Deleted = false,
             });
