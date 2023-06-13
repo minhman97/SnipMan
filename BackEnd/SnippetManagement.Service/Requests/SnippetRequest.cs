@@ -32,12 +32,7 @@ public class UpdateSnippetRequest : CreateSnippetRequest
 
 public class SearchSnippetRequest : Pagination
 {
-    public SearchSnippetRequest(string keyWord)
-    {
-        KeyWord = keyWord;
-    }
-
-    public string KeyWord { get; set; }
+    public string? KeyWord { get; set; }
 
     public string[] Terms => KeyWord.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
     public DateTimeOffset? FromDate { get; set; }
