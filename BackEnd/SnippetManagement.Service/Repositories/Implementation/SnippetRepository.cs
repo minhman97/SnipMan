@@ -21,7 +21,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
     public override async Task<Snippet?> Find(Guid id)
     {
         return await _context.Set<Snippet>()
-            .Include(x => x.Tags)
+            .Include(x => x.Tags)!
             .ThenInclude(xx => xx.Tag)
             .SingleOrDefaultAsync(x => x.Id == id && !x.Deleted);
     }
@@ -29,7 +29,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
     public async Task<PagedResponse<IEnumerable<SnippetDto?>>> GetAll(Pagination pagination)
     {
         var snippets = (await _context.Set<Snippet>().Where(x => !x.Deleted)
-                .Include(x => x.Tags)
+                .Include(x => x.Tags)!
                 .ThenInclude(xx => xx.Tag)
                 .Skip((pagination.PageNumber - 1) * pagination.PageSize)
                 .Take(pagination.PageSize)
@@ -40,6 +40,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         {
             Data = snippets,
             TotalRecords = await _context.Set<Snippet>().CountAsync(),
+            // ReSharper disable once PossibleLossOfFraction
             TotalPages = (int)Math.Ceiling((double)(totalRecords / pagination.PageSize)),
             PageSize = pagination.PageSize,
             PageNumber = pagination.PageNumber
@@ -61,7 +62,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                 break;
         }
 
-        query = query.Include(x => x.Tags)
+        query = query.Include(x => x.Tags)!
             .ThenInclude(xx => xx.Tag)
             .Skip(startIndex)
             .Take(endIndex - startIndex + 1)
@@ -79,7 +80,8 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
     public async Task<RangeDataResponse<IEnumerable<SnippetDto>>> SearchRange(Guid userId, int startIndex, int endIndex,
         SearchSnippetRequest request, SortOrder sortOrder)
     {
-        var query = _context.Set<Snippet>().Where(x => !x.Deleted && x.UserId == userId).Include(x => x.Tags)
+        var query = _context.Set<Snippet>().Where(x => !x.Deleted && x.UserId == userId)
+            .Include(x => x.Tags)!
             .ThenInclude(x => x.Tag)
             .AsQueryable();
         if (!string.IsNullOrEmpty(request.KeyWord))
@@ -90,11 +92,11 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                   || x.Origin.ToLower().Contains(request.KeyWord)
                                                                   || x.Description.ToLower().Contains(request.KeyWord)
                                                                   || x.Content.ToLower().Contains(request.KeyWord)
-                                                                  || x.Tags.Any(tagDto =>
-                                                                      tagDto.Tag.TagName.ToLower()
+                                                                  || x.Tags!.Any(tagDto =>
+                                                                      tagDto.Tag!.TagName.ToLower()
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
-                                                                  || x.Modified.ToString().Contains(request.KeyWord)));
+                                                                  || x.Modified.ToString()!.Contains(request.KeyWord)));
         }
 
         switch (sortOrder.Property.Capitalize())
@@ -116,7 +118,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                 new SnippetDto(snippet.Id, snippet.Name, snippet.Content, snippet.Description, snippet.Origin,
                     snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
                 {
-                    Tags = snippet.Tags.Select(x => new TagDto(x.TagId, x.Tag.TagName))
+                    Tags = snippet.Tags!.Select(x => new TagDto(x.TagId, x.Tag!.TagName))
                 }).ToListAsync();
         return new RangeDataResponse<IEnumerable<SnippetDto>>()
         {
@@ -129,7 +131,9 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
 
     public async Task<PagedResponse<IEnumerable<SnippetDto>>> Search(SearchSnippetRequest request)
     {
-        var query = _context.Set<Snippet>().Where(x => !x.Deleted).Include(x => x.Tags).ThenInclude(x => x.Tag)
+        var query = _context.Set<Snippet>().Where(x => !x.Deleted)
+            .Include(x => x.Tags)!
+            .ThenInclude(x => x.Tag)
             .AsQueryable();
         if (!string.IsNullOrEmpty(request.KeyWord))
         {
@@ -139,16 +143,17 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                   || x.Origin.ToLower().Contains(request.KeyWord)
                                                                   || x.Description.ToLower().Contains(request.KeyWord)
                                                                   || x.Content.ToLower().Contains(request.KeyWord)
-                                                                  || x.Tags.Any(tagDto =>
-                                                                      tagDto.Tag.TagName.ToLower()
+                                                                  || (x.Tags ?? Array.Empty<SnippetTag>()).Any(tagDto =>
+                                                                      tagDto.Tag != null && tagDto.Tag.TagName.ToLower()
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
-                                                                  || x.Modified.ToString().Contains(request.KeyWord)));
+                                                                  || x.Modified.ToString()!.Contains(request.KeyWord)));
         }
 
         if (request.TagIds is not null && request.TagIds.Any())
         {
-            query = query.Where(x => x.Tags.Any(tag => request.TagIds.Contains(tag.TagId)));
+            query = query.Where(x =>
+                (x.Tags ?? Array.Empty<SnippetTag>()).Any(tag => request.TagIds.Contains(tag.TagId)));
         }
 
         if (request.FromDate is not null)
@@ -161,7 +166,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                 snippet.Description, snippet.Origin,
                 snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
             {
-                Tags = snippet.Tags.Select(x => new TagDto(x.TagId, x.Tag.TagName))
+                Tags = (snippet.Tags ?? Array.Empty<SnippetTag>()).Select(x => new TagDto(x.TagId, x.Tag!.TagName))
             }).ToListAsync();
 
         return new PagedResponse<IEnumerable<SnippetDto>>()
@@ -189,6 +194,6 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
     {
         if (tags is null)
             return null;
-        return tags.Select(x => new TagDto(x.TagId, x.Tag.TagName));
+        return tags.Select(x => new TagDto(x.TagId, x.Tag!.TagName));
     }
 }

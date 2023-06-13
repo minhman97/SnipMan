@@ -28,17 +28,21 @@ public class SnippetController : ControllerBase
         var snippet = new Snippet(Guid.NewGuid(), request.Name, request.Content, request.Description, request.Origin,
             request.Language, _identityService.GetCurrentUserId());
 
-        var newTags = GetNewTags(request.Tags);
-
-        var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
+        if (request.Tags != null)
         {
-            SnippetId = snippet.Id,
-            TagId = x.Id
-        }).ToList();
+            var newTags = GetNewTags(request.Tags);
+
+            var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
+            {
+                SnippetId = snippet.Id,
+                TagId = x.Id
+            }).ToList();
+
+            _unitOfWork.TagRepository.AddRange(newTags);
+            _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
+        }
 
         _unitOfWork.SnippetRepository.Add(snippet);
-        _unitOfWork.TagRepository.AddRange(newTags);
-        _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -54,7 +58,7 @@ public class SnippetController : ControllerBase
 
     private IEnumerable<Tag> ExistedTags(IEnumerable<CreateTagRequest> tags)
     {
-        return tags.Where(x => x.Id is not null).Select(x => new Tag(((Guid)x.Id), x.TagName));
+        return tags.Where(x => x.Id is not null).Select(x => new Tag((Guid)x.Id!, x.TagName));
     }
 
     [HttpGet]
@@ -89,24 +93,32 @@ public class SnippetController : ControllerBase
         var snippet = await _unitOfWork.SnippetRepository.Find(request.Id);
         if (snippet is null)
             return NotFound();
-        _unitOfWork.SnippetTagRepository.RemoveRange(snippet.Tags.ToList());
-        var newTags = GetNewTags(request.Tags);
-        _unitOfWork.TagRepository.AddRange(newTags);
+        
+        if(snippet.Tags is not null)
+            _unitOfWork.SnippetTagRepository.RemoveRange(snippet.Tags.ToList());
 
-        var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
+        if (request.Tags is not null)
         {
-            SnippetId = snippet.Id,
-            TagId = x.Id
-        }).ToList();
+            var newTags = GetNewTags(request.Tags);
+        
+            _unitOfWork.TagRepository.AddRange(newTags);
 
-        _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
+            var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
+            {
+                SnippetId = snippet.Id,
+                TagId = x.Id
+            }).ToList();
+
+            _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
+            snippet.Tags = snippetTags;
+        }
+            
 
         snippet.Name = request.Name;
         snippet.Content = request.Content;
         snippet.Description = request.Description;
         snippet.Modified = DateTimeOffset.UtcNow;
         snippet.Origin = request.Origin;
-        snippet.Tags = snippetTags;
         _unitOfWork.SnippetRepository.Update(snippet);
 
         await _unitOfWork.SaveChangesAsync();

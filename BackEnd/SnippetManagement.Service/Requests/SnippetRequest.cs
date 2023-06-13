@@ -34,7 +34,15 @@ public class SearchSnippetRequest : Pagination
 {
     public string? KeyWord { get; set; }
 
-    public string[] Terms => KeyWord.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+    public string[] Terms
+    {
+        get
+        {
+            if (KeyWord != null) return KeyWord.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return new string[] { };
+        }
+    }
+
     public DateTimeOffset? FromDate { get; set; }
     public DateTimeOffset? ToDate { get; set; }
 

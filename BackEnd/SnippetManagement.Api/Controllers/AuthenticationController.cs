@@ -40,7 +40,7 @@ public class AuthenticationController : ControllerBase
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(externalToken);
         var result =
-            await _authenticationService.GetToken(new UserDto(jwtToken.Payload["email"].ToString())
+            await _authenticationService.GetToken(new UserDto(jwtToken.Payload["email"].ToString()!)
             {
                 SocialProvider = SocialProvider.Google
             }, true);

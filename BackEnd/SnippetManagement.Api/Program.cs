@@ -35,7 +35,7 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["IssuerSigningKey"])),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["IssuerSigningKey"] ?? throw new InvalidOperationException())),
         ValidateAudience = true,
         ValidateIssuer = true,
         ValidAudience = jwtSection["ValidAudience"],
@@ -114,9 +114,9 @@ if (app.Environment.IsDevelopment())
 
 using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
 {
-    if (scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.ProviderName !=
+    if (scope.ServiceProvider.GetService<SnippetManagementDbContext>()?.Database.ProviderName !=
         "Microsoft.EntityFrameworkCore.InMemory")
-        scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.Migrate();
+        scope.ServiceProvider.GetService<SnippetManagementDbContext>()?.Database.Migrate();
 }
 
 app.UseCors("_myAllowSpecificOrigins");
@@ -127,7 +127,7 @@ app.MapControllers();
 var folderSection = builder.Configuration.GetSection("Folder");
 app.UseFileServer(new FileServerOptions()
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), folderSection["Assets"])),
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), folderSection["Assets"] ?? throw new InvalidOperationException())),
     RequestPath = $"/{folderSection["Assets"]}",
     EnableDefaultFiles = true
 });
