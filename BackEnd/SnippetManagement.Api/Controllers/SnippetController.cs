@@ -32,7 +32,7 @@ public class SnippetController : ControllerBase
         {
             var newTags = GetNewTags(request.Tags);
 
-            var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
+            var snippetTags = newTags.Concat(GetExistedTags(request.Tags)).Select(x => new SnippetTag()
             {
                 SnippetId = snippet.Id,
                 TagId = x.Id
@@ -56,7 +56,7 @@ public class SnippetController : ControllerBase
         return tags.Where(x => x.Id is null).Select(x => new Tag(Guid.NewGuid(), x.TagName)).ToList();
     }
 
-    private IEnumerable<Tag> ExistedTags(IEnumerable<CreateTagRequest> tags)
+    private IEnumerable<Tag> GetExistedTags(IEnumerable<CreateTagRequest> tags)
     {
         return tags.Where(x => x.Id is not null).Select(x => new Tag((Guid)x.Id!, x.TagName));
     }
@@ -93,26 +93,24 @@ public class SnippetController : ControllerBase
         var snippet = await _unitOfWork.SnippetRepository.Find(request.Id);
         if (snippet is null)
             return NotFound();
-        
-        if(snippet.Tags is not null)
+
+        if (snippet.Tags is not null)
             _unitOfWork.SnippetTagRepository.RemoveRange(snippet.Tags.ToList());
 
         if (request.Tags is not null)
         {
             var newTags = GetNewTags(request.Tags);
-        
-            _unitOfWork.TagRepository.AddRange(newTags);
 
-            var snippetTags = newTags.Concat(ExistedTags(request.Tags)).Select(x => new SnippetTag()
+            var snippetTags = newTags.Concat(GetExistedTags(request.Tags)).Select(x => new SnippetTag()
             {
                 SnippetId = snippet.Id,
                 TagId = x.Id
             }).ToList();
 
+            _unitOfWork.TagRepository.AddRange(newTags);
             _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
-            snippet.Tags = snippetTags;
         }
-            
+
 
         snippet.Name = request.Name;
         snippet.Content = request.Content;
