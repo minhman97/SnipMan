@@ -14,7 +14,7 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     env:
       REACT_APP_BASE_URL: https://snipman.azurewebsites.net
-      REACT_APP_GOOGLE_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
+      REACT_APP_GOOGLE_CLIENT_ID: ${{ env.REACT_APP_GOOGLE_CLIENT_ID }}
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
