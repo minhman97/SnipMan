@@ -17,16 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup backend env
-      if: always()
       uses: Azure/cli@v1.0.7
-      env:
-        SETTINGS: ${{ secrets.SETTINGS_BACKEND }}
-        TEST: ${{ github.sha }}
+      if: always()
       with:
-        inlineScript: |
-          az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_APP_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-          echo $SETTINGS > settings.json
-          echo $TEST
+        inlineScript: |          
+          echo '${{ secrets.BE }}' > settings.json
           cat settings.json
           az webapp config appsettings set --resource-group snipman --name snipman --settings @settings.json
     - name: Setup backend env
