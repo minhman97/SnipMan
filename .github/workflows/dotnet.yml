@@ -8,10 +8,17 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
+    
 jobs:
   build:
     runs-on: ubuntu-latest
+    env: 
+      ConnectionStrings__DefaultConnection: Server=db;Database=SnippetManagement;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=true
+      Jwt__ValidAudience: snipman.azurewebsites.net
+      Jwt__ValidIssuer: snipman.azurewebsites.net
+      Jwt__IssuerSigningKey: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
+      Jwt__ExpiringDays: 1
+      Cors__AllowOrigins: https://blue-grass-01e27af00.3.azurestaticapps.net
     environment: SnipMan
     steps:
     - uses: actions/checkout@v3
@@ -49,13 +56,7 @@ jobs:
     - name: Azure CLI login and deploy
       uses: Azure/cli@v1.0.7
       env:
-        ConnectionStrings__DefaultConnection: Server=db;Database=SnippetManagement;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=true
-        Jwt__ValidAudience: snipman.azurewebsites.net
-        Jwt__ValidIssuer: snipman.azurewebsites.net
-        Jwt__IssuerSigningKey: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
-        Jwt__ExpiringDays: 1
         Ports__ApiAppPort: 5001
-        Cors__AllowOrigins: https://blue-grass-01e27af00.3.azurestaticapps.net
         Api_Image: ${{ secrets.DOCKER_USERNAME }}/snippet-management-api:${{ github.sha }}
       with:
         inlineScript: |
