@@ -25,6 +25,7 @@ jobs:
       
     - name: Test
       run: dotnet test BackEnd/SnippetManagement.Api.sln --configuration Release --no-build --verbosity normal
+      
     - name: Docker Login
       uses: docker/login-action@v2.2.0
       with:
@@ -63,5 +64,3 @@ jobs:
       with:
         inlineScript: |          
           echo $SETTINGS > settings.json
-          cat settings.json
-          az webapp config appsettings set --resource-group snipman --name snipman --settings @settings.json
