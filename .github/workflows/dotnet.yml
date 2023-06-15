@@ -52,7 +52,7 @@ jobs:
         ConnectionStrings__DefaultConnection: Server=db;Database=SnippetManagement;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=true
         Jwt__ValidAudience: snipman.azurewebsites.net
         Jwt__ValidIssuer: snipman.azurewebsites.net
-        Jwt__IssuerSigningKey: ${{ JWT_ISSUER_SIGNING_KEY }}
+        Jwt__IssuerSigningKey: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
         Jwt__ExpiringDays: 1
         Ports__ApiAppPort: 5001
         Cors__AllowOrigins: https://blue-grass-01e27af00.3.azurestaticapps.net
