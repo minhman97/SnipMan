@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api:
-    image: snippet-management
+    image: ${Api_Image}
     ports:
       - '${Ports__ApiAppPort}:80'
     environment:
