@@ -17,6 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup backend env
+      if: always()
       uses: Azure/cli@v1.0.7
       env:
         SETTINGS: ${{ secrets.SETTINGS_BACKEND }}
@@ -30,11 +31,10 @@ jobs:
           az webapp config appsettings set --resource-group snipman --name snipman --settings @settings.json
     - name: Setup backend env
       uses: Azure/cli@v1.0.7
-      env:
-        SETTINGS: ${{ secrets.SETTINGS_BACKEND }}
+      if: always()
       with:
         inlineScript: |          
-          echo $SETTINGS > settings.json
+          echo '${{ secrets.SETTINGS_BACKEND }}' > settings.json
           cat settings.json
           az webapp config appsettings set --resource-group snipman --name snipman --settings @settings.json
 
