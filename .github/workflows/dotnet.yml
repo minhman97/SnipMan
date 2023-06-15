@@ -19,6 +19,7 @@ jobs:
       Jwt__IssuerSigningKey: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
       Jwt__ExpiringDays: 1
       Cors__AllowOrigins: https://blue-grass-01e27af00.3.azurestaticapps.net
+      Folder__Assets: Assets
     environment: SnipMan
     steps:
     - uses: actions/checkout@v3
