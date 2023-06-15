@@ -63,4 +63,4 @@ jobs:
         SETTINGS: ${{ secrets.SETTINGS_BACKEND }}
       with:
         inlineScript: |          
-          echo $SETTINGS > settings.json
+          echo test
