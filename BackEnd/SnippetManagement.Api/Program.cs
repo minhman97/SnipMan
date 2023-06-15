@@ -49,7 +49,7 @@ builder.Services.AddCors(opts =>
     opts.AddPolicy(name: "_myAllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins(builder.Configuration.GetSection("Cors")["AllowOrigins"]?.Split(",") ?? Array.Empty<string>())
+            policy.WithOrigins(builder.Configuration.GetSection("Cors")["AllowOrigins"]?.Split(",") ?? throw new InvalidOperationException())
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
