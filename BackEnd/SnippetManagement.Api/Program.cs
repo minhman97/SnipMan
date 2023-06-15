@@ -44,13 +44,12 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.GetSection("Jwt").Bind(options));
 
-var portsSection = builder.Configuration.GetSection("Ports");
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(name: "_myAllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins($"http://localhost:{portsSection["ReactAppPort"]}")
+            policy.WithOrigins(builder.Configuration.GetSection("Cors")["AllowOrigins"]?.Split(",") ?? Array.Empty<string>())
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

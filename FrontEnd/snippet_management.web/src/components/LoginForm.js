@@ -54,7 +54,9 @@ const LoginForm = ({ setToken }) => {
       });
       return;
     }
-    setToken(response);
+    await response.json().then((data) => {
+      setToken(data);
+    });
   };
 
   const handleCredentialResponse = async (response) => {
