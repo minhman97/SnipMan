@@ -19,7 +19,7 @@ jobs:
     - name: Setup backend env
       uses: Azure/cli@v1.0.7
       env:
-        SETTINGS: ${{ vars.REACT_APP_GOOGLE_CLIENT_ID }}
+        SETTINGS: ${{ secrets.SETTINGS_BACKEND }}
         TEST: ${{ github.sha }}
       with:
         inlineScript: |
