@@ -12,14 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env: 
-      ConnectionStrings__DefaultConnection: Server=db;Database=SnippetManagement;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=true
-      Jwt__ValidAudience: snipman.azurewebsites.net
-      Jwt__ValidIssuer: snipman.azurewebsites.net
-      Jwt__IssuerSigningKey: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
-      Jwt__ExpiringDays: 1
-      Cors__AllowOrigins: https://blue-grass-01e27af00.3.azurestaticapps.net
-      Folder__Assets: Assets
+    
     environment: SnipMan
     steps:
     - uses: actions/checkout@v3
@@ -63,3 +56,6 @@ jobs:
         inlineScript: |
           az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_APP_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
           az webapp create --resource-group snipman --plan ASP-snipman-b175 --name snipman --multicontainer-config-type compose --multicontainer-config-file docker-compose-prod.yml
+          echo ${{ secrets.SETTINGS_BACKEND }} > settings.json
+          cat settings.json
+          az webapp config appsettings set --resource-group snipman --name snipman --settings @settings.json
