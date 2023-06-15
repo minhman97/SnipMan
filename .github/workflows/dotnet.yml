@@ -30,13 +30,6 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        
-    - name: scripts
-      run: |
-        echo $SETTINGS > test.json
-        cat test.json
-      env:
-        SETTINGS: ${{ secrets.SETTINGS_BACKEND }}
     - name: Build and push backend Docker images
       uses: docker/build-push-action@v4.1.0
       with:
@@ -65,8 +58,10 @@ jobs:
           
     - name: Setup backend env
       uses: Azure/cli@v1.0.7
+      env:
+        SETTINGS: ${{ secrets.SETTINGS_BACKEND }}
       with:
         inlineScript: |          
-          echo ${{ secrets.SETTINGS_BACKEND }} > settings.json
+          echo $SETTINGS > settings.json
           cat settings.json
           az webapp config appsettings set --resource-group snipman --name snipman --settings @settings.json
