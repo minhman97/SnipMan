@@ -58,7 +58,7 @@ jobs:
       with:
         inlineScript: |
           az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_APP_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-          az webapp create --resource-group $RESOURCE_GROUP --plan ASP-snipman-b81f --name $APP_NAME --multicontainer-config-type compose --multicontainer-config-file docker-compose-prod.yml
+          az webapp create --resource-group $RESOURCE_GROUP --plan ASP-snipman-b81f --name $APP_NAME --deployment-container-image-name minhman97/snippet-management-api:${{ github.sha }}
     
     - name: Setup backend env
       uses: Azure/cli@v1.0.7
