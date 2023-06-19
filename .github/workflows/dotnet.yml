@@ -7,11 +7,11 @@ on:
   push:
     branches: [ "master" ]
     paths:  
-      - "BackEnd/**"
+      - "!FrontEnd/**"
   pull_request:
     branches: [ "master" ]
     paths:
-      - "BackEnd/**"
+      - "!FrontEnd/**"
 env: 
   RESOURCE_GROUP: snipman
   APP_NAME: snipman
