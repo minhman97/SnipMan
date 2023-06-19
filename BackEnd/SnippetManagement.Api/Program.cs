@@ -1,16 +1,17 @@
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using SnippetManagement.Data;
 using System.Text;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SnippetManagement.Api.Middlewares;
+using SnippetManagement.Api.Model.Validator;
 using SnippetManagement.Api.Service;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Repositories.Implementation;
+using SnippetManagement.Service.Requests;
 using SnippetManagement.Service.Services;
 using SnippetManagement.Service.Services.Implementation;
 
@@ -55,16 +56,10 @@ builder.Services.AddCors(opts =>
         });
 });
 
-builder.Services.AddControllers(opts => { opts.Filters.Add(new HandleApiExceptionAttribute()); }).AddFluentValidation(
-    opts =>
-    {
-        // Validate child properties and root collection elements
-        opts.ImplicitlyValidateChildProperties = true;
-        opts.ImplicitlyValidateRootCollectionElements = true;
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequest>();
 
-        // Automatic registration of validators in assembly
-        opts.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-    });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IIdentityService, IdentityService>();
