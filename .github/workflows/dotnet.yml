@@ -5,10 +5,13 @@ name: .NET
 
 on:
   push:
+    branches: [ "master" ]
     paths:  
-      - "BackendEnd/**"
+      - "BackEnd/**"
   pull_request:
     branches: [ "master" ]
+    paths:
+      - "BackEnd/**"
 env: 
   RESOURCE_GROUP: snipman
   APP_NAME: snipman

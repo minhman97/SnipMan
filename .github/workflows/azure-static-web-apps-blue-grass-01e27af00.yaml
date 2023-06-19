@@ -2,10 +2,13 @@ name: Azure Static Web Apps CI/CD
 
 on:
   push:
+    branches: [ "AB#23" ]
     paths:  
       - "FrontEnd/**"      
   pull_request:
-    branches: [ "master" ]
+    branches: [ "AB#23" ]
+    paths:  
+      - "FrontEnd/**"
 
 jobs:
   build_and_deploy_job:
