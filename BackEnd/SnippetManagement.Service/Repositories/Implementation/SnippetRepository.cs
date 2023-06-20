@@ -11,11 +11,8 @@ namespace SnippetManagement.Service.Repositories.Implementation;
 
 public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
 {
-    private new readonly SnippetManagementDbContext _context;
-
     public SnippetRepository(SnippetManagementDbContext context) : base(context)
     {
-        _context = context;
     }
 
     public override async Task<Snippet?> Find(Guid id)
@@ -93,7 +90,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                   || x.Description.ToLower().Contains(request.KeyWord)
                                                                   || x.Content.ToLower().Contains(request.KeyWord)
                                                                   || x.Tags!.Any(tagDto =>
-                                                                      tagDto.Tag!.TagName.ToLower()
+                                                                      tagDto.Tag != null && tagDto.Tag.TagName.ToLower() 
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
                                                                   || x.Modified.ToString()!.Contains(request.KeyWord)));
@@ -143,7 +140,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                   || x.Origin.ToLower().Contains(request.KeyWord)
                                                                   || x.Description.ToLower().Contains(request.KeyWord)
                                                                   || x.Content.ToLower().Contains(request.KeyWord)
-                                                                  || (x.Tags ?? Array.Empty<SnippetTag>()).Any(tagDto =>
+                                                                  || x.Tags!.Any(tagDto =>
                                                                       tagDto.Tag != null && tagDto.Tag.TagName.ToLower()
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
@@ -153,7 +150,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         if (request.TagIds is not null && request.TagIds.Any())
         {
             query = query.Where(x =>
-                (x.Tags ?? Array.Empty<SnippetTag>()).Any(tag => request.TagIds.Contains(tag.TagId)));
+                x.Tags!.Any(tag => request.TagIds.Contains(tag.TagId)));
         }
 
         if (request.FromDate is not null)
@@ -179,10 +176,8 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
-    public SnippetDto? Map(Snippet? snippet)
+    public SnippetDto Map(Snippet snippet)
     {
-        if (snippet is null)
-            return null;
         return new SnippetDto(snippet.Id, snippet.Name, snippet.Content, snippet.Description, snippet.Origin,
             snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
         {
