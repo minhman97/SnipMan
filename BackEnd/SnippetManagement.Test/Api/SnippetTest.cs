@@ -38,7 +38,6 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     [Fact]
     public async Task CreateSnippet_ShouldBeSuccessful()
     {
-        //tạo cai object Snippet
         var snippet = new CreateSnippetRequest("test", "test", "test", "Chrome", "C#")
         {
             Tags = new[]
@@ -46,17 +45,17 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
                 new CreateTagRequest("test")
             }
         };
-        //goi toi Api
+        
         await _httpRequestMessageHelper.PostAsync(_client, _token, "https://localhost:44395/Snippet",
             JsonSerializer.Serialize(snippet));
         var result = await GetContext().Set<Snippet>().Include(x => x.Tags)
-            .SingleOrDefaultAsync(x => x.Name == snippet.Name);
-        //Expected result
-        snippet.Name.Should().Be(result?.Name);
-        snippet.Content.Should().Be(result?.Content);
-        snippet.Description.Should().Be(result?.Description);
-        snippet.Origin.Should().Be(result?.Origin);
-        result?.Tags?.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
+            .SingleAsync(x => x.Name == snippet.Name);
+        
+        snippet.Name.Should().Be(result.Name);
+        snippet.Content.Should().Be(result.Content);
+        snippet.Description.Should().Be(result.Description);
+        snippet.Origin.Should().Be(result.Origin);
+        result.Tags.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
     }
 
     [Fact]
@@ -66,18 +65,18 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             "https://localhost:44395/Snippet/07785b4a-04e6-4435-b156-63fce124b314",
             null);
         var result = await GetContext().Set<Snippet>().Include(x => x.Tags)
-            .FirstOrDefaultAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
+            .FirstAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
         var snippet = JsonSerializer.Deserialize<SnippetDto>(await response.Content.ReadAsStringAsync(),
             new JsonSerializerOptions()
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = true
             });
-        snippet?.Name.Should().Be(result?.Name);
-        snippet?.Content.Should().Be(result?.Content);
-        snippet?.Description.Should().Be(result?.Description);
-        snippet?.Origin.Should().Be(result?.Origin);
-        result?.Tags?.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
+        snippet?.Name.Should().Be(result.Name);
+        snippet?.Content.Should().Be(result.Content);
+        snippet?.Description.Should().Be(result.Description);
+        snippet?.Origin.Should().Be(result.Origin);
+        result.Tags.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
     }
 
     [Fact]
@@ -98,13 +97,13 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             JsonSerializer.Serialize(snippetUpdate));
 
         var result = await GetContext().Set<Snippet>().Include(x => x.Tags)
-            .FirstOrDefaultAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
+            .FirstAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
 
         //Expected result
-        snippetUpdate.Name.Should().Be(result?.Name);
-        snippetUpdate.Content.Should().Be(result?.Content);
-        snippetUpdate.Description.Should().Be(result?.Description);
-        snippetUpdate.Origin.Should().Be(result?.Origin);
+        snippetUpdate.Name.Should().Be(result.Name);
+        snippetUpdate.Content.Should().Be(result.Content);
+        snippetUpdate.Description.Should().Be(result.Description);
+        snippetUpdate.Origin.Should().Be(result.Origin);
         result?.Tags?.ToList()[0].TagId.Should().NotBeEmpty().Should().NotBeNull();
     }
 
@@ -116,8 +115,8 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             $"https://localhost:44395/Snippet?id=07785b4a-04e6-4435-b156-63fce124b314",
             null);
         var result = await GetContext().Set<Snippet>()
-            .FirstOrDefaultAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
-        result?.Deleted.Should().Be(true);
+            .FirstAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
+        result.Deleted.Should().Be(true);
     }
 
     [Fact]
@@ -134,12 +133,12 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
                 WriteIndented = true
             });
 
-        var result = await GetContext().Set<Snippet>().Include(x => x.Tags).Skip(1).Take(1).FirstOrDefaultAsync();
+        var result = await GetContext().Set<Snippet>().Include(x => x.Tags).Skip(1).Take(1).FirstAsync();
 
         pagedResponse?.Data?.Count().Should().BeGreaterThan(0);
         Debug.Assert(result != null, nameof(result) + " != null");
         Debug.Assert(result.Tags != null, "result.Tags != null");
-        pagedResponse?.Data?.ToList()[0].Tags?.ToList()[0].Id.Should().Be(result.Tags.ToList()[0].TagId);
+        pagedResponse?.Data?.ToList()[0].Tags.ToList()[0].Id.Should().Be(result.Tags.ToList()[0].TagId);
         pagedResponse?.TotalRecords.Should().Be(2);
     }
 
@@ -157,7 +156,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
                 WriteIndented = true
             });
         pagedResponse?.Data?.Count().Should().BeGreaterThan(0);
-        pagedResponse?.Data?.ToList()[0].Tags?.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
+        pagedResponse?.Data?.ToList()[0].Tags.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
         pagedResponse?.TotalRecords.Should().Be(1);
     }
 

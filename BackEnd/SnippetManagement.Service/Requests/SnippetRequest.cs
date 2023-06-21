@@ -18,7 +18,7 @@ public class CreateSnippetRequest
     public string Description { get; set; }
     public string Origin { get; set; }
     public string Language { get; set; }
-    public IEnumerable<CreateTagRequest>? Tags { get; set; }
+    public IEnumerable<CreateTagRequest> Tags { get; set; }
 }
 
 public class UpdateSnippetRequest : CreateSnippetRequest

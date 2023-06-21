@@ -47,6 +47,7 @@ public class SnippetController : ControllerBase
         await _unitOfWork.SaveChangesAsync();
 
         snippet.Tags = await _unitOfWork.SnippetTagRepository.GetSnippetTagsBySnippetId(snippet.Id);
+        
 
         return Ok(_unitOfWork.SnippetRepository.Map(snippet));
     }

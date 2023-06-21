@@ -13,5 +13,5 @@ public class User : BaseEntity<Guid>
     public string? Password { get; set; }
     public SocialProvider? SocialProvider { get; set; }
 
-    public IEnumerable<Snippet>? Snippets { get; set; }
+    public IEnumerable<Snippet> Snippets { get; set; }
 }

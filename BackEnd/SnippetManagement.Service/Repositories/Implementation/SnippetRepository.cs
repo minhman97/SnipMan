@@ -115,7 +115,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                 new SnippetDto(snippet.Id, snippet.Name, snippet.Content, snippet.Description, snippet.Origin,
                     snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
                 {
-                    Tags = snippet.Tags!.Select(x => new TagDto(x.TagId, x.Tag!.TagName))
+                    Tags = snippet.Tags.Select(x => new TagDto(x.TagId, x.Tag!.TagName))
                 }).ToListAsync();
         return new RangeDataResponse<IEnumerable<SnippetDto>>()
         {
@@ -163,7 +163,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                 snippet.Description, snippet.Origin,
                 snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
             {
-                Tags = (snippet.Tags ?? Array.Empty<SnippetTag>()).Select(x => new TagDto(x.TagId, x.Tag!.TagName))
+                Tags = snippet.Tags.Select(x => new TagDto(x.TagId, x.Tag!.TagName))
             }).ToListAsync();
 
         return new PagedResponse<IEnumerable<SnippetDto>>()
@@ -185,10 +185,8 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
-    private IEnumerable<TagDto>? MapTag(IEnumerable<SnippetTag>? tags)
+    private IEnumerable<TagDto> MapTag(IEnumerable<SnippetTag> tags)
     {
-        if (tags is null)
-            return null;
         return tags.Select(x => new TagDto(x.TagId, x.Tag!.TagName));
     }
 }
