@@ -18,7 +18,10 @@ public class IdentityService : ControllerBase, IIdentityService
 
     public Guid GetCurrentUserId()
     {
-        return new Guid(_accessor.HttpContext?.User.Claims.Where(c => c.Type == "UserId")
-            .Select(c => c.Value).Single()!);
+        if (_accessor.HttpContext is null)
+            throw new InvalidOperationException("Method cannot be used without HttpContext");
+        
+        return new Guid(_accessor.HttpContext!.User.Claims.Where(c => c.Type == "UserId")
+            .Select(c => c.Value).Single());
     }
 }

@@ -4,9 +4,11 @@ namespace SnippetManagement.Service.Requests;
 
 public class CreateUserRequest
 {
-    public CreateUserRequest(string email)
+    public CreateUserRequest(string email, string? password, SocialProvider? socialProvider)
     {
         Email = email;
+        Password = password;
+        SocialProvider = socialProvider;
     }
 
     public string Email { get; set; }

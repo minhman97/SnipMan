@@ -18,15 +18,17 @@ public class CreateSnippetRequest
     public string Description { get; set; }
     public string Origin { get; set; }
     public string Language { get; set; }
-    public IEnumerable<CreateTagRequest> Tags { get; set; }
+    public IEnumerable<TagsExisted> TagsExisted { get; set; }
+    public IEnumerable<CreateTagRequest> NewTags { get; set; }
 }
 
 public class UpdateSnippetRequest : CreateSnippetRequest
 {
     public Guid Id { get; set; }
 
-    public UpdateSnippetRequest(string name, string content, string description, string origin, string language) : base(name, content, description, origin, language)
+    public UpdateSnippetRequest(Guid id, string name, string content, string description, string origin, string language) : base(name, content, description, origin, language)
     {
+        Id = id;
     }
 }
 
@@ -38,8 +40,9 @@ public class SearchSnippetRequest : Pagination
     {
         get
         {
-            if (KeyWord != null) return KeyWord.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            return new string[] { };
+            return KeyWord is not null
+                ? KeyWord.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                : new string[] { };
         }
     }
 

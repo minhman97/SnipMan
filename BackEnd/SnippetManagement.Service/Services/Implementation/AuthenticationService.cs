@@ -1,9 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using FluentResults;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using SnippetManagement.Common.Enum;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Requests;
@@ -12,17 +12,16 @@ namespace SnippetManagement.Service.Services.Implementation;
 
 public class JwtConfiguration
 {
-    public JwtConfiguration(string issuerSigningKey, string validAudience, string validIssuer, int expiringDays)
+    public JwtConfiguration()
     {
-        IssuerSigningKey = issuerSigningKey;
-        ValidAudience = validAudience;
-        ValidIssuer = validIssuer;
-        ExpiringDays = expiringDays;
     }
-
+    [Required]
     public string IssuerSigningKey { get; set; }
+    [Required]
     public string ValidAudience { get; set; }
+    [Required]
     public string ValidIssuer { get; set; }
+    [Required]
     public int ExpiringDays { get; set; }
 }
 
@@ -44,10 +43,8 @@ public class AuthenticationService : IAuthenticationService
         {
             if (user is null)
             {
-                user = await _unitOfWork.UserRepository.Create(new CreateUserRequest(userDto.Email)
-                {
-                    SocialProvider = userDto.SocialProvider
-                });
+                user = await _unitOfWork.UserRepository.Create(new CreateUserRequest(userDto.Email, null,
+                    userDto.SocialProvider));
             }
         }
         else
@@ -68,7 +65,8 @@ public class AuthenticationService : IAuthenticationService
 
     private SecurityTokenDescriptor GetTokenDescriptor(UserDto user)
     {
-        byte[] securityKey = Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey ?? throw new InvalidOperationException());
+        byte[] securityKey =
+            Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey ?? throw new InvalidOperationException());
         var symmetricSecurityKey = new SymmetricSecurityKey(securityKey);
 
         var tokenDescriptor = new SecurityTokenDescriptor

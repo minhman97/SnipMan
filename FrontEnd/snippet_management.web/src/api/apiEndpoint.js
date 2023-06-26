@@ -12,7 +12,7 @@ export const getSnippetUrl = (
   sortProperty,
   orderWay
 ) => {
-  return `${baseUrl}/Snippet?${filterKeyWord.trim() === "" ? `?` : `/Search?keyWord=${filterKeyWord.trim()}&` }startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`;
+  return `${baseUrl}/Snippet${ filterKeyWord.trim() === "" ? "?" : `/Search?keyWord=${filterKeyWord.trim()}&` }startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`;
 };
 
 export const createSnippetUrl = `${baseUrl}/Snippet`;

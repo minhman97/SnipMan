@@ -21,6 +21,8 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     private readonly IServiceProvider _serviceProvider;
     private readonly string _token;
     private readonly HttpRequestMessageHelper _httpRequestMessageHelper;
+    private Guid _snippetBId;
+    private Guid _tagAId;
 
     public SnippetTest(CustomWebApplicationFactory<Program> factory)
     {
@@ -40,10 +42,11 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         var snippet = new CreateSnippetRequest("test", "test", "test", "Chrome", "C#")
         {
-            Tags = new[]
+            NewTags = new[]
             {
                 new CreateTagRequest("test")
-            }
+            },
+            TagsExisted = new List<TagsExisted>()
         };
         
         await _httpRequestMessageHelper.PostAsync(_client, _token, "https://localhost:44395/Snippet",
@@ -62,10 +65,10 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     public async Task GetSnippet_ShouldBeSuccessful()
     {
         var response = await _httpRequestMessageHelper.GetAsync(_client, _token,
-            "https://localhost:44395/Snippet/07785b4a-04e6-4435-b156-63fce124b314",
+            $"https://localhost:44395/Snippet/{_snippetBId}",
             null);
         var result = await GetContext().Set<Snippet>().Include(x => x.Tags)
-            .FirstAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
+            .FirstAsync(x => x.Id == _snippetBId);
         var snippet = JsonSerializer.Deserialize<SnippetDto>(await response.Content.ReadAsStringAsync(),
             new JsonSerializerOptions()
             {
@@ -82,24 +85,21 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     [Fact]
     public async Task UpdateSnippet_ShouldBeSuccessful()
     {
-        //tạo cai object Snippet
-        var snippetUpdate = new UpdateSnippetRequest("test", "test", "test", "Chrome", "C#")
+        var snippetUpdate = new UpdateSnippetRequest(_snippetBId,"test", "test", "test", "Chrome", "C#")
         {
-            Id = new Guid($"07785b4a-04e6-4435-b156-63fce124b314"),
-            Tags = new List<CreateTagRequest>()
+            NewTags = new List<CreateTagRequest>()
             {
                 new(" new test"),
-            }
+            },
+            TagsExisted = new List<TagsExisted>()
         };
 
-        //goi toi Api
         await _httpRequestMessageHelper.PutAsync(_client, _token, $"https://localhost:44395/Snippet/{snippetUpdate.Id}",
             JsonSerializer.Serialize(snippetUpdate));
 
         var result = await GetContext().Set<Snippet>().Include(x => x.Tags)
-            .FirstAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
+            .FirstAsync(x => x.Id == _snippetBId);
 
-        //Expected result
         snippetUpdate.Name.Should().Be(result.Name);
         snippetUpdate.Content.Should().Be(result.Content);
         snippetUpdate.Description.Should().Be(result.Description);
@@ -110,12 +110,11 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     [Fact]
     public async Task DeleteSnippet_ShouldBeSuccessful()
     {
-        //goi toi Api
         await _httpRequestMessageHelper.DeleteAsync(_client, _token,
-            $"https://localhost:44395/Snippet?id=07785b4a-04e6-4435-b156-63fce124b314",
+            $"https://localhost:44395/Snippet?id={_snippetBId}",
             null);
         var result = await GetContext().Set<Snippet>()
-            .FirstAsync(x => x.Id == new Guid($"07785b4a-04e6-4435-b156-63fce124b314"));
+            .FirstAsync(x => x.Id == _snippetBId);
         result.Deleted.Should().Be(true);
     }
 
@@ -146,7 +145,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
     public async Task SearchSnippet_ShouldBeSuccessful()
     {
         var responseMessage = await _httpRequestMessageHelper.GetAsync(_client, _token,
-            "https://localhost:44395/Snippet/search?TagIds=07785b4a-04e6-4435-b156-63fce124b315&KeyWord=testA&PageNumber=1&PageSize=10",
+            $"https://localhost:44395/Snippet/search?TagIds={_tagAId}&KeyWord=testA&PageNumber=1&PageSize=10",
             null);
         var content = await responseMessage.Content.ReadAsStringAsync();
         var pagedResponse = JsonSerializer.Deserialize<PagedResponse<IEnumerable<SnippetDto>>>(content,
@@ -156,7 +155,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
                 WriteIndented = true
             });
         pagedResponse?.Data?.Count().Should().BeGreaterThan(0);
-        pagedResponse?.Data?.ToList()[0].Tags.ToList()[0].Id.Should().Be("07785b4a-04e6-4435-b156-63fce124b315");
+        pagedResponse?.Data?.ToList()[0].Tags.ToList()[0].Id.Should().Be(_tagAId);
         pagedResponse?.TotalRecords.Should().Be(1);
     }
 
@@ -178,6 +177,10 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
         context.Database.EnsureCreated();
 
         var userId = Guid.NewGuid();
+        var snippetAId = Guid.NewGuid();
+        var tagBId = Guid.NewGuid();
+        _snippetBId = Guid.NewGuid();
+        _tagAId = Guid.NewGuid();
 
         context.Set<User>().Add(new User("a@a.vn")
         {
@@ -185,24 +188,24 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             Password = BCrypt.Net.BCrypt.HashPassword("a")
         });
 
-        context.Set<Snippet>().AddRange(new Snippet(new Guid("07785b4a-04e6-4435-b156-63fce124b313"), "testA", "testA",
+        context.Set<Snippet>().AddRange(new Snippet(snippetAId, "testA", "testA",
             "testA", "testA", "C#", userId)
         {
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
-        }, new Snippet(new Guid("07785b4a-04e6-4435-b156-63fce124b314"), "testB", "testB", "testB", "testB", "C#",
+        }, new Snippet(_snippetBId, "testB", "testB", "testB", "testB", "C#",
             userId)
         {
             Created = DateTimeOffset.UtcNow,
             Deleted = false,
         });
 
-        context.Set<Tag>().AddRange(new Tag(new Guid("07785b4a-04e6-4435-b156-63fce124b315"), "tagA")
+        context.Set<Tag>().AddRange(new Tag(_tagAId, "tagA")
             {
                 Created = DateTimeOffset.UtcNow,
                 Deleted = false,
             },
-            new Tag(new Guid("07785b4a-04e6-4435-b156-63fce124b316"), "tagB")
+            new Tag(tagBId, "tagB")
             {
                 Created = DateTimeOffset.UtcNow,
                 Deleted = false,
@@ -210,13 +213,13 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
 
         context.Set<SnippetTag>().AddRange(new SnippetTag()
             {
-                SnippetId = new Guid("07785b4a-04e6-4435-b156-63fce124b313"),
-                TagId = new Guid("07785b4a-04e6-4435-b156-63fce124b315"),
+                SnippetId = snippetAId,
+                TagId = _tagAId,
             },
             new SnippetTag()
             {
-                SnippetId = new Guid("07785b4a-04e6-4435-b156-63fce124b314"),
-                TagId = new Guid("07785b4a-04e6-4435-b156-63fce124b316"),
+                SnippetId = _snippetBId,
+                TagId = tagBId,
             });
 
         context.SaveChanges();

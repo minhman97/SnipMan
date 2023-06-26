@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SnippetManagement.Api.Configuration;
 using SnippetManagement.Api.Model.Validator;
 using SnippetManagement.Api.Service;
 using SnippetManagement.Service.Repositories;
@@ -23,6 +24,10 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddDbContext<SnippetManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddOptions<JwtConfiguration>()
+    .BindConfiguration("Jwt") 
+    .ValidateDataAnnotations() 
+    .ValidateOnStart();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(options =>
@@ -36,7 +41,7 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["IssuerSigningKey"] ?? throw new InvalidOperationException())),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["IssuerSigningKey"]!)),
         ValidateAudience = true,
         ValidateIssuer = true,
         ValidAudience = jwtSection["ValidAudience"],
@@ -45,12 +50,17 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.GetSection("Jwt").Bind(options));
 
+builder.Services.AddOptions<CorsConfiguration>()
+    .BindConfiguration("Cors") 
+    .ValidateDataAnnotations() 
+    .ValidateOnStart();
+
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(name: "_myAllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins(builder.Configuration.GetSection("Cors")["AllowOrigins"]?.Split(",") ?? throw new InvalidOperationException())
+            policy.WithOrigins(builder.Configuration.GetSection("Cors")["AllowOrigins"]?.Split(",")!)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

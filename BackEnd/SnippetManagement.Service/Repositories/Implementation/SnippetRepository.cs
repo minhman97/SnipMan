@@ -90,7 +90,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                   || x.Description.ToLower().Contains(request.KeyWord)
                                                                   || x.Content.ToLower().Contains(request.KeyWord)
                                                                   || x.Tags!.Any(tagDto =>
-                                                                      tagDto.Tag != null && tagDto.Tag.TagName.ToLower() 
+                                                                      tagDto.Tag != null && tagDto.Tag.TagName.ToLower()
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
                                                                   || x.Modified.ToString()!.Contains(request.KeyWord)));
@@ -110,8 +110,8 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         if (request.ToDate is not null)
             query = query.Where(x => x.Created <= request.ToDate.Value.AddDays(1));
         var totalRecords = await query.CountAsync();
-        var snippets = await query.Skip(startIndex).Take(endIndex - startIndex + 1)
-            .AsNoTracking().Select(snippet =>
+        var snippets = await query.AsNoTracking().Skip(startIndex).Take(endIndex - startIndex + 1)
+            .Select(snippet =>
                 new SnippetDto(snippet.Id, snippet.Name, snippet.Content, snippet.Description, snippet.Origin,
                     snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
                 {
@@ -158,8 +158,9 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         if (request.ToDate is not null)
             query = query.Where(x => x.Created <= request.ToDate.Value.AddDays(1));
         var totalRecords = await query.CountAsync();
-        var snippets = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize)
-            .AsNoTracking().Select(snippet => new SnippetDto(snippet.Id, snippet.Name, snippet.Content,
+        var snippets = await query.AsNoTracking().Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(snippet => new SnippetDto(snippet.Id, snippet.Name, snippet.Content,
                 snippet.Description, snippet.Origin,
                 snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
             {
