@@ -16,6 +16,8 @@ on:
       - develop
     paths-ignore:
       - 'FrontEnd/**'
+  workflow_dispatch:
+  
 env: 
   RESOURCE_GROUP: snipman
   APP_NAME: snipman
