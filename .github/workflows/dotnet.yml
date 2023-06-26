@@ -38,7 +38,7 @@ jobs:
       run: dotnet test BackEnd/SnippetManagement.Api.sln --configuration Release --no-build --verbosity normal
 
   deploy_to_staging:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     environment: Staging
     needs: build
 
