@@ -6,12 +6,12 @@ name: .NET
 on:
   push:
     branches: [ "master" ]
-    paths:  
-      - "!FrontEnd/**"
+    paths-ignore:
+      - 'FrontEnd/**'
   pull_request:
     branches: [ "master" ]
-    paths:
-      - "!FrontEnd/**"
+    paths-ignore:
+      - 'FrontEnd/**'
 env: 
   RESOURCE_GROUP: snipman
   APP_NAME: snipman
