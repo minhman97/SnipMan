@@ -55,8 +55,8 @@ jobs:
     - name: Build and push backend Docker images with staging version
       uses: docker/build-push-action@v4.1.0
       with:
-        file: ./BackEnd/Dockerfile
-        context: ./BackEnd
+        context: "{{defaultContext}}:BackEnd"      
+        file: BackEnd/Dockerfile
         push: true
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/snippet-management-api-staging:${{ github.sha }}
