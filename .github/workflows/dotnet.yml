@@ -44,7 +44,7 @@ jobs:
     environment: Staging
     needs: build
 
-#     if: ${{ github.ref == 'refs/heads/develop' }}
+    if: github.event.pull_request.merged == true
     steps:
     - uses: actions/checkout@v3
     
@@ -92,12 +92,13 @@ jobs:
           echo '${{ secrets.SETTINGS_BACKEND }}' > settings.json
           cat settings.json
           az webapp config appsettings set --resource-group $RESOURCE_GROUP --name $APP_NAME_STATING --settings @settings.json
-
+  
   deploy_to_production:
     runs-on: ubuntu-latest
     environment: Production
     needs: deploy_to_staging
-        
+    
+    if: ${{ github.ref == 'refs/heads/develop' }}
     steps:
     - uses: actions/checkout@v3
     
