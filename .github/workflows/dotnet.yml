@@ -53,11 +53,11 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Test
       run: |
-        ls ./
+        ls -d */
     - name: Build and push backend Docker images with staging version
       uses: docker/build-push-action@v4.1.0
       with:
-        context: BackEnd
+        context: BackEnd/
         file: BackEnd/Dockerfile
         push: true
         tags: |
