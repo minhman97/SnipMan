@@ -98,8 +98,10 @@ jobs:
     environment: Production
     needs: deploy_to_staging
         
-    steps:     
-    - name: Docker login    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Docker login
       uses: docker/login-action@v2.2.0
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
