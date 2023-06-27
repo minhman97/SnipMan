@@ -1,0 +1,64 @@
+name: Azure Static Web Apps CI/CD
+
+on:
+  push:
+    branches:
+      - master
+      - developa
+    paths-ignore:
+      - "BackEnd/**"
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - "BackEnd/**"
+
+jobs:
+  build_and_deploy_to_staging:
+    runs-on: ubuntu-latest
+    environment: Staging
+
+    env:
+      REACT_APP_BASE_URL: https://snipman-staging.azurewebsites.net
+      REACT_APP_GOOGLE_CLIENT_ID: ${{ vars.REACT_APP_GOOGLE_CLIENT_ID }}
+
+    name: Build and Deploy to Staging
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GREEN_BAY_0FA492D00 }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/FrontEnd/snippet_management.web"
+          output_location: "build"
+
+  build_and_deploy_to_production:
+    runs-on: ubuntu-latest
+    environment: Production
+
+    env:
+      REACT_APP_BASE_URL: https://snipman.azurewebsites.net
+      REACT_APP_GOOGLE_CLIENT_ID: ${{ vars.REACT_APP_GOOGLE_CLIENT_ID }}
+
+    name: Build and Deploy to Production
+    needs: build_and_deploy_to_staging
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLUE_GRASS_01E27AF00 }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/FrontEnd/snippet_management.web"
+          output_location: "build"
