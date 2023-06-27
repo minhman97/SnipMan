@@ -5,12 +5,14 @@ on:
     branches:
       - master
       - develop
+      - AB#23
     paths-ignore:
       - "BackEnd/**"
   pull_request:
     branches:
       - master
       - develop
+      - AB#23
     paths-ignore:
       - "BackEnd/**"
 
