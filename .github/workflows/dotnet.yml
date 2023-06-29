@@ -19,10 +19,11 @@ on:
   workflow_dispatch:
   
 env: 
-  RESOURCE_GROUP: snipman
-  APP_NAME: snipman-api
-  APP_NAME_STAGING: snipman-api-staging
-  APP_PLAN: /subscriptions/b20b8693-f2e0-4702-90fb-0a41106a70f0/resourceGroups/snipman/providers/Microsoft.Web/serverFarms/ASP-snipman-b218
+  AZURE_RESOURCE_GROUP: snipman
+  AZURE_APP_NAME: snipman-api
+  AZURE_APP_NAME_STAGING: snipman-api-staging
+  AZURE_APP_SERVICE_PLAN: /subscriptions/b20b8693-f2e0-4702-90fb-0a41106a70f0/resourceGroups/snipman/providers/Microsoft.Web/serverFarms/ASP-snipman-b218
+  AZURE_SUBCRIPTION: b20b8693-f2e0-4702-90fb-0a41106a70f0
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -54,11 +55,7 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Test
-      run: |
-        echo 123
-        ls ./
-        echo ls ./
+        
     - name: Build and push backend Docker images with staging version
       uses: docker/build-push-action@v4.1.0
       with:
@@ -84,6 +81,7 @@ jobs:
       with:
         inlineScript: |
           az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_APP_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az account set -s AZURE_SUBCRIPTION
           az webapp create --resource-group $RESOURCE_GROUP --plan $APP_PLAN --name $APP_NAME_STAGING --deployment-container-image-name minhman97/snippet-management-api-staging:${{ github.sha }}
     
     - name: Setup backend env
