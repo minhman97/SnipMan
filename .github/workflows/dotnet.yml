@@ -131,6 +131,7 @@ jobs:
       with:
         inlineScript: |
           az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_APP_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az account set -s $AZURE_SUBCRIPTION
           az webapp create --resource-group $AZURE_RESOURCE_GROUP --plan $AZURE_APP_SERVICE_PLAN --name $AZURE_APP_NAME --deployment-container-image-name minhman97/snippet-management-api:${{ github.sha }}
     
     - name: Setup backend env
