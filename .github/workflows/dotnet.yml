@@ -82,7 +82,7 @@ jobs:
         inlineScript: |
           az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_APP_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
           az account set -s $AZURE_SUBCRIPTION
-          az webapp create --resource-group $RESOURCE_GROUP --plan $APP_PLAN --name $APP_NAME_STAGING --deployment-container-image-name minhman97/snippet-management-api-staging:${{ github.sha }}
+          az webapp create --resource-group $AZURE_RESOURCE_GROUP --plan $AZURE_APP_SERVICE_PLAN --name $AZURE_APP_NAME_STAGING --deployment-container-image-name minhman97/snippet-management-api-staging:${{ github.sha }}
     
     - name: Setup backend env
       uses: Azure/cli@v1.0.7
@@ -90,7 +90,7 @@ jobs:
         inlineScript: |          
           echo '${{ secrets.SETTINGS_BACKEND }}' > settings.json
           cat settings.json
-          az webapp config appsettings set --resource-group $RESOURCE_GROUP --name $APP_NAME_STAGING --settings @settings.json
+          az webapp config appsettings set --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_APP_NAME_STAGING --settings @settings.json
   
   deploy_to_production:
     runs-on: ubuntu-latest
@@ -131,7 +131,7 @@ jobs:
       with:
         inlineScript: |
           az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_APP_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-          az webapp create --resource-group $RESOURCE_GROUP --plan $APP_PLAN --name $APP_NAME --deployment-container-image-name minhman97/snippet-management-api:${{ github.sha }}
+          az webapp create --resource-group $AZURE_RESOURCE_GROUP --plan $AZURE_APP_SERVICE_PLAN --name $AZURE_APP_NAME --deployment-container-image-name minhman97/snippet-management-api:${{ github.sha }}
     
     - name: Setup backend env
       uses: Azure/cli@v1.0.7
@@ -139,4 +139,4 @@ jobs:
         inlineScript: |          
           echo '${{ secrets.SETTINGS_BACKEND }}' > settings.json
           cat settings.json
-          az webapp config appsettings set --resource-group $RESOURCE_GROUP --name $APP_NAME --settings @settings.json    
+          az webapp config appsettings set --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_APP_NAME --settings @settings.json    
