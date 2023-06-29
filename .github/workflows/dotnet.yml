@@ -22,7 +22,7 @@ env:
   RESOURCE_GROUP: snipman
   APP_NAME: snipman-api
   APP_NAME_STAGING: snipman-api-staging
-  APP_PLAN: ASP-snipman-b218
+  APP_PLAN: /subscriptions/b20b8693-f2e0-4702-90fb-0a41106a70f0/resourceGroups/snipman/providers/Microsoft.Web/serverFarms/ASP-snipman-b218
 jobs:
   build:
     runs-on: ubuntu-latest
