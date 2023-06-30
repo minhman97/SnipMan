@@ -24,8 +24,9 @@ jobs:
     env:
       REACT_APP_BASE_URL: https://${{ vars.AZURE_APP_NAME }}.azurewebsites.net
       REACT_APP_GOOGLE_CLIENT_ID: ${{ vars.REACT_APP_GOOGLE_CLIENT_ID }}
+      TARGET_ENV: ${{ github.ref == 'refs/heads/master' && 'Production' || 'Staging' }}
 
-    name: Build and Deploy to ${{ github.ref == 'refs/heads/master' && 'Production' || 'Staging' }} 
+    name: Build and Deploy to $TARGET_ENV
     if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' }}
     steps:
       - uses: actions/checkout@v3
