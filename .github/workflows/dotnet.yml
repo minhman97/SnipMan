@@ -18,12 +18,6 @@ on:
       - 'FrontEnd/**'
   workflow_dispatch:
   
-# env: 
-#   AZURE_RESOURCE_GROUP: snipman
-#   AZURE_APP_NAME: snipman-api
-#   AZURE_APP_NAME_STAGING: snipman-api-staging
-#   AZURE_APP_SERVICE_PLAN: /subscriptions/b20b8693-f2e0-4702-90fb-0a41106a70f0/resourceGroups/snipman/providers/Microsoft.Web/serverFarms/ASP-snipman-b218
-#   AZURE_SUBCRIPTION: b20b8693-f2e0-4702-90fb-0a41106a70f0
 jobs:
   build:
     runs-on: ubuntu-latest
