@@ -91,5 +91,5 @@ jobs:
         inlineScript: |          
           echo '${{ secrets.SETTINGS_BACKEND }}' > settings.json
           cat settings.json
-          az webapp config appsettings set --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name $AZURE_APP_NAME_STAGING --settings @settings.json
+          az webapp config appsettings set --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name ${{ vars.AZURE_APP_NAME }} --settings @settings.json
   
