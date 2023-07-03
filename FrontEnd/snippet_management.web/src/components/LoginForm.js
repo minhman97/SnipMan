@@ -1,10 +1,14 @@
 import { React, useEffect, useState } from "react";
 import { login } from "../api/userApi";
+import { useForm } from "react-hook-form";
 
 const LoginForm = ({ setToken }) => {
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
-  const [auth, setAuth] = useState({ isAuth: false, token: null });
+  const [auth, setAuth] = useState({
+    isAuth: false,
+    token: null,
+    message: null,
+  });
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -30,17 +34,15 @@ const LoginForm = ({ setToken }) => {
     return () => {
       document.body.removeChild(script);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let response = await login({
-      email,
-      password,
-    });
+  const onSubmit = async (data) => {
+    console.log(data);
+
+    let response = await login(data);
     if (response.isFailed) {
-      setAuth({ ...auth, message: response.message });
+      setAuth({ ...auth, message: response.message.message });
       return;
     }
     setToken(response);
@@ -53,68 +55,57 @@ const LoginForm = ({ setToken }) => {
 
   return (
     <>
-      <div>Login</div>
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
-        {!auth.isAuth && auth.message === null && (
-          <div
-            class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <span class="block sm:inline">{auth.message}</span>
-          </div>
-        )}
-        <form onSubmit={(e) => handleSubmit(e)}>
-          <div className="mb-4">
-            <label
-              className="block text-grey-darker text-sm font-bold mb-2"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker"
-              id="email"
-              type="text"
-              //   value={"a@a.vn"}
-              placeholder="Email"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              className="block text-grey-darker text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border border-red rounded w-full py-2 px-3 text-grey-darker mb-3"
-              id="password"
-              type="password"
-              placeholder="******************"
-              //   value={"a"}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-            <p className="text-red text-xs italic">Please choose a password.</p>
-          </div>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-400 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
-              type="submit"
-            >
-              Sign In
+      <div className="h-screen bg-slate-800 from-blue-600 to-indigo-600 flex justify-center items-center w-full">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="bg-white px-10 py-8 rounded-xl w-screen shadow-md max-w-sm">
+            <div className="space-y-4">
+              <h1 className="text-center text-2xl font-semibold text-gray-600">
+                Login
+              </h1>
+              {!auth.isAuth && auth.message !== null && (
+                <div
+                  class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                  role="alert"
+                >
+                  <span class="block sm:inline">{auth.message}</span>
+                </div>
+              )}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block mb-1 text-gray-600 font-semibold"
+                >
+                  Email
+                </label>
+                <input
+                  type="text"
+                  className="bg-indigo-50 px-4 py-2 outline-none rounded-md w-full"
+                  //   value={"a@a.vn"}
+                  placeholder="Input your Email"
+                  {...register("email", { required: true, maxLength: 150 })}
+                />
+                {errors?.email?.type === "required" && <p className="text-red-700">Please input your Email</p>}
+              </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block mb-1 text-gray-600 font-semibold"
+                >
+                  Password
+                </label>
+                <input
+                  className="bg-indigo-50 px-4 py-2 outline-none rounded-md w-full"
+                  type="password"
+                  placeholder="Input your Password"
+                  {...register("password", { required: true })}                  
+                />
+                {errors?.email?.type === "required" && <p className="text-red-700">Please input your Password</p>}
+              </div>
+            </div>
+            <button type="submit" className="mt-4 w-full bg-slate-700  text-white py-2 rounded-md text-lg tracking-wide">
+              Sign in
             </button>
-            <div id="btn-signin-gg"></div>
-            <a
-              className="inline-block align-baseline font-bold text-sm text-blue hover:text-blue-darker"
-              href="/"
-            >
-              Forgot Password?
-            </a>
+            <div className="mt-4 flex justify-center" id="btn-signin-gg"></div>
           </div>
         </form>
       </div>
