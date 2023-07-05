@@ -46,7 +46,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             {
                 new CreateTagRequest("test")
             },
-            TagsExisted = new List<TagsExisted>()
+            TagsExisted = new List<ExistedTagRequest>()
         };
         
         await _httpRequestMessageHelper.PostAsync(_client, _token, "https://localhost:44395/Snippet",
@@ -91,7 +91,7 @@ public class SnippetTest : IClassFixture<CustomWebApplicationFactory<Program>>
             {
                 new(" new test"),
             },
-            TagsExisted = new List<TagsExisted>()
+            TagsExisted = new List<ExistedTagRequest>()
         };
 
         await _httpRequestMessageHelper.PutAsync(_client, _token, $"https://localhost:44395/Snippet/{snippetUpdate.Id}",

@@ -10,9 +10,9 @@ public class CreateTagRequest
     public string TagName { get; set; }
 }
 
-public class TagsExisted
+public class ExistedTagRequest
 {
-    public TagsExisted(Guid id, string tagName)
+    public ExistedTagRequest(Guid id, string tagName)
     {
         Id = id;
         TagName = tagName;

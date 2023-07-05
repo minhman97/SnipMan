@@ -53,7 +53,7 @@ public class SnippetController : ControllerBase
         return tags.Select(x => new Tag(Guid.NewGuid(), x.TagName)).ToList();
     }
 
-    private IEnumerable<Tag> GetExistedTags(IEnumerable<TagsExisted> tags)
+    private IEnumerable<Tag> GetExistedTags(IEnumerable<ExistedTagRequest> tags)
     {
         return tags.Select(x => new Tag(x.Id, x.TagName));
     }
