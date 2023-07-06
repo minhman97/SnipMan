@@ -1,9 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using FluentResults;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using SnippetManagement.Common.Enum;
 using SnippetManagement.Service.Model;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Requests;
@@ -12,9 +12,16 @@ namespace SnippetManagement.Service.Services.Implementation;
 
 public class JwtConfiguration
 {
+    public JwtConfiguration()
+    {
+    }
+    [Required]
     public string IssuerSigningKey { get; set; }
+    [Required]
     public string ValidAudience { get; set; }
+    [Required]
     public string ValidIssuer { get; set; }
+    [Required]
     public int ExpiringDays { get; set; }
 }
 
@@ -29,47 +36,37 @@ public class AuthenticationService : IAuthenticationService
         _jwtConfiguration = jwtConfiguration.Value;
     }
 
-    public async Task<Result<string>> GetToken(UserDto userDto, string externalToken)
+    public async Task<Result<string>> GetToken(UserDto userDto, bool isExternal)
     {
-        var isTokenNullOrEmpty = string.IsNullOrEmpty(externalToken);
-        if (!isTokenNullOrEmpty)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(externalToken);
-            userDto.Email = jwtToken.Payload["email"].ToString();
-            userDto.SocialProvider = SocialProvider.Google;
-
-            if (string.IsNullOrEmpty(userDto.Email)) return Result.Fail("Incorrect username or password");
-        }
-
         var user = await _unitOfWork.UserRepository.Get(userDto.Email); //test user: a@a.vn/a
-
-        if (isTokenNullOrEmpty && user is null)
-            return Result.Fail("Incorrect username or password");
-
-        if (!isTokenNullOrEmpty || BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
+        if (isExternal)
         {
-            if (!isTokenNullOrEmpty && user is null)
+            if (user is null)
             {
-                user = await _unitOfWork.UserRepository.Create(new CreateUserRequest()
-                {
-                    Email = userDto.Email,
-                    SocialProvider = SocialProvider.Google
-                });
+                user = await _unitOfWork.UserRepository.Create(new CreateUserRequest(userDto.Email, null,
+                    userDto.SocialProvider));
             }
+        }
+        else
+        {
+            if (user is null)
+                return Result.Fail("User not existed.");
 
-            SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(user);
-            var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
-            return Result.Ok(tokenHandler.WriteToken(securityToken));
+            if (!BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
+                return Result.Fail("Incorrect username or password");
         }
 
-        return Result.Fail("Incorrect username or password");
+        SecurityTokenDescriptor tokenDescriptor = GetTokenDescriptor(user);
+        var tokenHandler = new JwtSecurityTokenHandler();
+        SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
+
+        return Result.Ok(tokenHandler.WriteToken(securityToken));
     }
 
     private SecurityTokenDescriptor GetTokenDescriptor(UserDto user)
     {
-        byte[] securityKey = Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey);
+        byte[] securityKey =
+            Encoding.UTF8.GetBytes(_jwtConfiguration.IssuerSigningKey ?? throw new InvalidOperationException());
         var symmetricSecurityKey = new SymmetricSecurityKey(securityKey);
 
         var tokenDescriptor = new SecurityTokenDescriptor

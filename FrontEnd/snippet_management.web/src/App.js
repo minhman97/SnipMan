@@ -19,7 +19,6 @@ function App() {
   
   const queryClient = new QueryClient();
   queryClient.invalidateQueries({ queryKey: ["list-snippet"] });
-
   const router = createBrowserRouter(
     createRoutesFromElements(
       <>

@@ -22,10 +22,6 @@ public class UserController: ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         
-        return Ok(await _unitOfWork.UserRepository.Create(new CreateUserRequest()
-        {
-            Email = model.Email,
-            Password = model.Password
-        }));
+        return Ok(await _unitOfWork.UserRepository.Create(new CreateUserRequest(model.Email, model.Password, null)));
     }
 }

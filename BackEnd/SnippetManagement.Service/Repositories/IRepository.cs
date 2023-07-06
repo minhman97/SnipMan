@@ -8,6 +8,6 @@ public interface IRepository<T> where T: BaseEntity<Guid>
     void AddRange(List<T> entities);
     void RemoveRange(List<T> entities);
     void Update(T entity);
-    public Task<T> Find(Guid id);
+    public Task<T?> Find(Guid id);
     void Remove(T entity);
 }
