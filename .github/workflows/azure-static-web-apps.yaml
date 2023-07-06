@@ -37,5 +37,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/FrontEnd/snippet_management.web"
-          output_location: "build"
+          output_location: "build" 
           
