@@ -19,10 +19,9 @@ public class UserRepository : BaseRepository<User>, IUserRepository
 
     public async Task<UserDto> Create(CreateUserRequest request)
     {
-        var user = new User()
+        var user = new User(request.Email)
         {
             Id = new Guid(),
-            Email = request.Email,
             Password = string.IsNullOrEmpty(request.Password)
                 ? request.Password
                 : BCrypt.Net.BCrypt.HashPassword(request.Password),
@@ -32,22 +31,21 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         await _context.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return Map(user);
+        return Map(user)!;
     }
 
-    public async Task<UserDto> Get(string email)
+    public async Task<UserDto?> Get(string email)
     {
         return Map(await _context.Set<User>().FirstOrDefaultAsync(x => x.Email == email));
     }
 
-    private UserDto Map(User user)
+    private UserDto? Map(User? user)
     {
         if (user is null)
             return null;
-        return new UserDto()
+        return new UserDto(user.Email)
         {
             Id = user.Id,
-            Email = user.Email,
             Password = user.Password,
             SocialProvider = user.SocialProvider
         };

@@ -399,3 +399,6 @@ FodyWeavers.xsd
 .idea/
 .vscode/
 
+/BackEnd/SnippetManagement.Api.sln.DotSettings
+
+.env*

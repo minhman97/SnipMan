@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { login } from "../api/userApi";
 import { useForm } from "react-hook-form";
+import { HandleStatuscode } from "../helper/statusCodeHelper";
 
 const LoginForm = ({ setToken }) => {
   const [auth, setAuth] = useState({
@@ -45,12 +46,24 @@ const LoginForm = ({ setToken }) => {
       setAuth({ ...auth, message: response.message.message });
       return;
     }
-    setToken(response);
+    await response.json().then((data) => {
+      setToken(data);
+    });
   };
 
   const handleCredentialResponse = async (response) => {
-    const token = await login(response.credential, true);
-    setToken(token);
+    const res = await login(response.credential, true);
+    if (!res.ok) {
+      throw new Error(
+        `StatusCode:${res.status}. ErrorMessage:${HandleStatuscode(
+          res.status
+        )}`,
+        { cause: { status: res.status } }
+      );
+    }
+    await res.json().then((data) => {
+      setToken(data);
+    });
   };
 
   return (
