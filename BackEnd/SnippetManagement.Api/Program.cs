@@ -1,16 +1,18 @@
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using SnippetManagement.Data;
 using System.Text;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SnippetManagement.Api.Middlewares;
+using SnippetManagement.Api.Configuration;
+using SnippetManagement.Api.Model.Validator;
 using SnippetManagement.Api.Service;
 using SnippetManagement.Service.Repositories;
 using SnippetManagement.Service.Repositories.Implementation;
+using SnippetManagement.Service.Requests;
 using SnippetManagement.Service.Services;
 using SnippetManagement.Service.Services.Implementation;
 
@@ -22,6 +24,12 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddDbContext<SnippetManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddOptions<JwtConfiguration>()
+    .BindConfiguration("Jwt") 
+    .ValidateDataAnnotations() 
+    .ValidateOnStart();
+
+var jwtSection = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,37 +41,35 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:IssuerSigningKey"])),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["IssuerSigningKey"]!)),
         ValidateAudience = true,
         ValidateIssuer = true,
-        ValidAudience = builder.Configuration["Jwt:ValidAudience"],
-        ValidIssuer = builder.Configuration["Jwt:ValidIssuer"],
+        ValidAudience = jwtSection["ValidAudience"],
+        ValidIssuer = jwtSection["ValidIssuer"],
     };
 });
 builder.Services.Configure<JwtConfiguration>(options => builder.Configuration.GetSection("Jwt").Bind(options));
 
-Console.WriteLine("checking URL Port: " + builder.Configuration["WEB_PORT"]);
+builder.Services.AddOptions<CorsConfiguration>()
+    .BindConfiguration("Cors") 
+    .ValidateDataAnnotations() 
+    .ValidateOnStart();
+
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy(name: "_myAllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins($"http://localhost:{builder.Configuration["Ports:ReactAppPort"]}")
+            policy.WithOrigins(builder.Configuration.GetSection("Cors")["AllowOrigins"]?.Split(",")!)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
 });
 
-builder.Services.AddControllers(opts => { opts.Filters.Add(new HandleApiExceptionAttribute()); }).AddFluentValidation(
-    opts =>
-    {
-        // Validate child properties and root collection elements
-        opts.ImplicitlyValidateChildProperties = true;
-        opts.ImplicitlyValidateRootCollectionElements = true;
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequest>();
 
-        // Automatic registration of validators in assembly
-        opts.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-    });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IIdentityService, IdentityService>();
@@ -112,9 +118,9 @@ if (app.Environment.IsDevelopment())
 
 using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
 {
-    if (scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.ProviderName !=
+    if (scope.ServiceProvider.GetService<SnippetManagementDbContext>()?.Database.ProviderName !=
         "Microsoft.EntityFrameworkCore.InMemory")
-        scope.ServiceProvider.GetService<SnippetManagementDbContext>().Database.Migrate();
+        scope.ServiceProvider.GetService<SnippetManagementDbContext>()?.Database.Migrate();
 }
 
 app.UseCors("_myAllowSpecificOrigins");
@@ -122,10 +128,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+var folderSection = builder.Configuration.GetSection("Folder");
 app.UseFileServer(new FileServerOptions()
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Assets")),
-    RequestPath = "/Assets",
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), folderSection["Assets"] ?? throw new InvalidOperationException())),
+    RequestPath = $"/{folderSection["Assets"]}",
     EnableDefaultFiles = true
 });
 

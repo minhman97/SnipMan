@@ -1,0 +1,38 @@
+[
+  {
+    "name": "ConnectionStrings__DefaultConnection",
+    "value": "Server=tcp:snipman.database.windows.net,1433;Initial Catalog=snipman;Persist Security Info=False;User ID=snipman;Password=MyPassword123!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  },
+  {
+    "name": "Jwt__ValidAudience",
+    "value": "snipman.azurewebsites.net"
+  },
+  {
+    "name": "Jwt__ValidIssuer",
+    "value": "snipman.azurewebsites.net"
+  },
+  {
+    "name": "Jwt__IssuerSigningKey",
+    "value": "ByYM000OLlMQG6VVVp1OH7Xzyr7gHuw1qvUC5dcGt3SNM"
+  },
+  {
+    "name": "Jwt__ExpiringDays",
+    "value": "1"
+  },
+  {
+    "name": "Ports__ApiAppPort",
+    "value": "5001"
+  },
+  {
+    "name": "Folder__Assets",
+    "value": "Assets"
+  },
+  {
+    "name": "Cors__AllowOrigins",
+    "value": "http://localhost:3000,https://blue-grass-01e27af00.3.azurestaticapps.net"
+  },
+  {
+    "name": "ASPNETCORE_URLS",
+    "value": "http://*:80"
+  }
+]

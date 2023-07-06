@@ -15,6 +15,7 @@ services:
       Jwt__ExpiringDays: 1
       Ports__ApiAppPort: ${Ports__ApiAppPort}
       Ports__ReactAppPort: ${Ports__ReactAppPort}
+      Cors__AllowOrigins: ${Cors__AllowOrigins}
       ASPNETCORE_URLS: http://*:${Ports__ApiAppPort}
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -28,7 +29,7 @@ services:
   web:
     image: snippet-management-web
     ports:
-      - '${Ports__ReactAppPort}:${Ports__ReactAppExposePort}'
+      - '${Ports__ReactAppPort}:${Ports__ReactAppPrivatePort}'
     environment:
       REACT_APP_GOOGLE_CLIENT_ID: ${REACT_APP_GOOGLE_CLIENT_ID}
       REACT_APP_BASE_URL: http://localhost:${Ports__ApiAppPort}
