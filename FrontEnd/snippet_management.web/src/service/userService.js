@@ -7,7 +7,7 @@ export const getUserToken = () => {
     return userToken?.token;
   }
 
-  return undefined;
+  return null;
 };
 
 export const removeToken = () => {

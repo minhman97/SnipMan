@@ -8,5 +8,5 @@ public interface IUserRepository : IRepository<User>
 {
     Task<List<User>> GetUsers();
     Task<UserDto> Create(CreateUserRequest request);
-    Task<UserDto> Get(string email);
+    Task<UserDto?> Get(string email);
 }
