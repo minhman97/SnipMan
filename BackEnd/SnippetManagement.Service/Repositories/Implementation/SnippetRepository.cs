@@ -37,7 +37,6 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         {
             Data = snippets,
             TotalRecords = await _context.Set<Snippet>().CountAsync(),
-            // ReSharper disable once PossibleLossOfFraction
             TotalPages = (int)Math.Ceiling((double)(totalRecords / pagination.PageSize)),
             PageSize = pagination.PageSize,
             PageNumber = pagination.PageNumber
@@ -93,7 +92,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                       tagDto.Tag.TagName.ToLower()
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
-                                                                  || x.Modified.ToString()!.Contains(request.KeyWord)));
+                                                                  || x.Modified.ToString().Contains(request.KeyWord)));
         }
 
         switch (sortOrder.Property.Capitalize())
@@ -144,7 +143,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                       tagDto.Tag.TagName.ToLower()
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
-                                                                  || x.Modified.ToString()!.Contains(request.KeyWord)));
+                                                                  || x.Modified.ToString().Contains(request.KeyWord)));
         }
 
         if (request.TagIds is not null && request.TagIds.Any())
