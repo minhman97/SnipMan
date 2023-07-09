@@ -18,8 +18,8 @@ public class CreateSnippetRequest
     public string Description { get; set; }
     public string Origin { get; set; }
     public string Language { get; set; }
-    public IEnumerable<ExistedTagRequest> TagsExisted { get; set; }
-    public IEnumerable<CreateTagRequest> NewTags { get; set; }
+    public IEnumerable<ExistedTagRequest> TagsExisted { get; set; } = new List<ExistedTagRequest>();
+    public IEnumerable<CreateTagRequest> NewTags { get; set; } = new List<CreateTagRequest>();
 }
 
 public class UpdateSnippetRequest : CreateSnippetRequest
