@@ -131,8 +131,8 @@ public class SnippetController : ControllerBase
     }
     
     [HttpGet]
-    [Route("GetShareableLink")]
-    public async Task<IActionResult> GetShareableLink(Guid snippetId, Guid userId)
+    [Route("GetShareableSnippet")]
+    public async Task<IActionResult> GetShareableSnippet(Guid snippetId, Guid userId)
     {
         var snippet = await _unitOfWork.SnippetRepository.Find(snippetId);
         if (snippet is null)
@@ -143,7 +143,11 @@ public class SnippetController : ControllerBase
             snippet.ShareableId = Guid.NewGuid();
             await _unitOfWork.SaveChangesAsync();
         }
-        return Ok(new { ShareableLink = $"{_domainConfiguration.ShareSnippetUrl}?userId={snippet.UserId}&shareableId={snippet.ShareableId}" });
+        return Ok(new { ShareableSnippet = new
+        {
+            UserId = snippet.UserId,
+            ShareableId = snippet.ShareableId
+        }});
     }
 
     [HttpGet]

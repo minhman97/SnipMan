@@ -178,7 +178,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
 
     public async Task<SnippetDto> GetShareableSnippet(Guid userId, Guid shareableId)
     {
-        return Map(await _context.Set<Snippet>().FirstAsync(x => x.UserId == userId && x.ShareableId == shareableId));
+        return Map(await _context.Set<Snippet>().Include(x => x.Tags).FirstAsync(x => x.UserId == userId && x.ShareableId == shareableId));
     }
 
     public SnippetDto Map(Snippet snippet)

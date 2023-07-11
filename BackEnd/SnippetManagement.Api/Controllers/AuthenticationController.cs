@@ -12,7 +12,7 @@ namespace SnippetManagement.Api.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
-
+    
     public AuthenticationController(IAuthenticationService authenticationService)
     {
         _authenticationService = authenticationService;
@@ -29,8 +29,11 @@ public class AuthenticationController : ControllerBase
         {
             return BadRequest(new { message = result.Reasons.FirstOrDefault() });
         }
+        
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(result.Value);
 
-        return Ok(new { token = result.Value });
+        return Ok(new { token = result.Value, userId = jwtToken.Payload["UserId"].ToString()});
     }
 
     [Route("External", Name = "External")]
@@ -40,7 +43,7 @@ public class AuthenticationController : ControllerBase
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(externalToken);
         var result =
-            await _authenticationService.GetToken(new UserDto(jwtToken.Payload["email"].ToString()!)
+            await _authenticationService.GetToken(new UserDto(jwtToken.Payload["email"].ToString())
             {
                 SocialProvider = SocialProvider.Google
             }, true);
@@ -49,6 +52,6 @@ public class AuthenticationController : ControllerBase
             return BadRequest(new { message = result.Reasons.FirstOrDefault() });
         }
 
-        return Ok(new { token = result.Value });
+        return Ok(new { token = result.Value, userId =  jwtToken.Payload["UserId"]});
     }
 }
