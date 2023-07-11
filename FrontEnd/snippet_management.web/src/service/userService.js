@@ -9,6 +9,11 @@ export const getUserToken = () => {
 
   return null;
 };
+export const getUserId = () => {
+  const tokenString = localStorage.getItem(keyToken);
+  const userToken = JSON.parse(tokenString);
+  return userToken?.userId;
+};
 
 export const removeToken = () => {
   window.location = "/";
