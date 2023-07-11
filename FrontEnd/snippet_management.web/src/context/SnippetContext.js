@@ -5,6 +5,7 @@ const Context = createContext();
 export const SnippetContext = ({ children }) => {
   const [snippet, setSnippet] = useState({});
   const [currentCursor, setCurrentCursor] = useState(0);
+  const [shareableLink, setShareableLink] = useState(undefined);
 
   const [filterKeyWord, setFilterKeyWord] = useState("");
 
@@ -17,6 +18,8 @@ export const SnippetContext = ({ children }) => {
         setCurrentCursor,
         filterKeyWord,
         setFilterKeyWord,
+        shareableLink,
+        setShareableLink
       }}
     >
       {children}
