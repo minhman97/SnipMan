@@ -1,6 +1,8 @@
 import {
   createSnippetUrl,
   deleteSnippetUrl,
+  getShareableIdUrl,
+  getShareableSnippetUrl,
   getSnippetUrl,
   updateSnippetUrl,
 } from "./apiEndpoint";
@@ -100,3 +102,39 @@ export const deleteSnippet = async ({ id }) => {
     );
   });
 };
+
+export const getShareableId = async (snippetId, userId) => {
+  const token = getUserToken();
+  return await fetch(getShareableIdUrl(snippetId, userId), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((res) => {
+    if (res.ok) return res.json();
+    throw new Error(
+      `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(
+        res.status
+      )}`,
+      { cause: { status: res.status } }
+    );
+  });
+};
+
+export const getShareableSnippet = async (shareableId, userId) => {
+  const token = getUserToken();
+  return await fetch(getShareableSnippetUrl(shareableId, userId), {method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+}).then((res) => {
+  if (res.ok) return res.json();
+  throw new Error(
+    `StatusCode: ${res.status}. ErrorMessage: ${HandleStatuscode(
+      res.status
+    )}`,
+    { cause: { status: res.status } }
+  );
+});
+}
