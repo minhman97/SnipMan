@@ -17,13 +17,10 @@ public class SnippetController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IIdentityService _identityService;
-    private readonly DomainConfiguration _domainConfiguration;
-
-    public SnippetController(IUnitOfWork unitOfWork, IIdentityService identityService, IOptions<DomainConfiguration> domainConfiguration)
+    public SnippetController(IUnitOfWork unitOfWork, IIdentityService identityService)
     {
         _unitOfWork = unitOfWork;
         _identityService = identityService;
-        _domainConfiguration = domainConfiguration.Value;
     }
 
     [HttpPost]

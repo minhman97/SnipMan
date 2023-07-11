@@ -54,10 +54,6 @@ builder.Services.AddOptions<CorsConfiguration>()
     .BindConfiguration("Cors") 
     .ValidateDataAnnotations() 
     .ValidateOnStart();
-builder.Services.AddOptions<DomainConfiguration>()
-    .BindConfiguration("Domain") 
-    .ValidateDataAnnotations() 
-    .ValidateOnStart();
 
 builder.Services.AddCors(opts =>
 {
