@@ -14,4 +14,6 @@ public interface ISnippetRepository : IRepository<Snippet>
 
     Task<RangeDataResponse<IEnumerable<SnippetDto>>> SearchRange(Guid userId, int startIndex, int endIndex,
         SearchSnippetRequest request, SortOrder sortOrder);
+
+    Task<SnippetDto> GetShareableSnippet(Guid userId, Guid shareableId);
 }

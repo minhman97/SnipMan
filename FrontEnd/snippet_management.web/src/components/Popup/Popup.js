@@ -1,16 +1,18 @@
 import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { usePopupContext } from "../../context/PopupContext";
 
-export default function Popup({ children, title, isOpen, setIsOpen }) {
+export default function Popup({ children, title }) {
   const cancelButtonRef = useRef(null);
+  const { popup, setPopup} = usePopupContext();
   return (
-    <Transition.Root show={isOpen} as={Fragment}>
+    <Transition.Root show={popup.isOpen} as={Fragment}>
       <Dialog
         as="div"
         className="absolute z-10"
         initialFocus={cancelButtonRef}
         onClose={(e) => {
-          setIsOpen(false)
+          setPopup({...popup, isOpen: false, content: "Loading..."})
         }}
       >
         <Transition.Child
@@ -44,9 +46,9 @@ export default function Popup({ children, title, isOpen, setIsOpen }) {
                         as="h3"
                         className="text-base font-semibold leading-6 text-gray-900"
                       >
-                        {title}
+                        {popup.title}
                       </Dialog.Title>
-                      <div className="mt-2">{children}</div>
+                      <div className="mt-2">{popup.content}</div>
                     </div>
                   </div>
                 </div>

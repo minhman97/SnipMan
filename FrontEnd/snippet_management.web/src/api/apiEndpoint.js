@@ -12,7 +12,11 @@ export const getSnippetUrl = (
   sortProperty,
   orderWay
 ) => {
-  return `${baseUrl}/Snippet${ filterKeyWord.trim() === "" ? "?" : `/Search?keyWord=${filterKeyWord.trim()}&` }startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`;
+  return `${baseUrl}/Snippet${
+    filterKeyWord.trim() === ""
+      ? "?"
+      : `/Search?keyWord=${filterKeyWord.trim()}&`
+  }startIndex=${startIndex}&endIndex=${endIndex}&property=${sortProperty}&orderWay=${orderWay}`;
 };
 
 export const createSnippetUrl = `${baseUrl}/Snippet`;
@@ -26,10 +30,17 @@ export const deleteSnippetUrl = (id) => {
 };
 
 export const getIconUrl = (url, language) => {
-  if(language)
-  {
-    return `${baseUrl}/${url}/${language === "" ? "text": language}.png`;
+  if (language) {
+    return `${baseUrl}/${url}/${language === "" ? "text" : language}.png`;
   }
-  
+
   return `${baseUrl}/${url}`;
+};
+
+export const getShareableIdUrl = (snippetId, userId) => {
+  return `${baseUrl}/snippet/getshareablesnippet?snippetId=${snippetId}&userId=${userId}`;
+};
+
+export const getShareableSnippetUrl = (shareableId, userId) => {
+  return `${baseUrl}/snippet/share?shareableId=${shareableId}&userId=${userId}`;
 };

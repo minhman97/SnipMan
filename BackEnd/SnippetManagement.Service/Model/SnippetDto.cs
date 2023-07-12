@@ -24,5 +24,6 @@ public class SnippetDto
     public DateTimeOffset? Modified { get; set; }
     public string Language { get; set; }
     public Guid UserId { get; set; }
+    public UserDto User { get; set; }
     public IEnumerable<TagDto> Tags { get; set; }
 }

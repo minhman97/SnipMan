@@ -17,8 +17,9 @@ public class SnippetConfiguration : IEntityTypeConfiguration<Snippet>
         builder.Property(x => x.Modified);
         builder.Property(x => x.Deleted);
         builder.Property(x => x.Language);
-        builder.Property(x => x.UserId).HasDefaultValue(new Guid("3b094ed2-5eb3-4b6e-150c-08db05b7cf56"));
-
+        builder.Property(x => x.UserId);
+        builder.Property(x => x.ShareableId);
+        
         builder.HasOne<User>(x => x.User).WithMany(x => x.Snippets).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
 
     }

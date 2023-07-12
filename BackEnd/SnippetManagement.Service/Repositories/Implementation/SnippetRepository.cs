@@ -37,7 +37,6 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         {
             Data = snippets,
             TotalRecords = await _context.Set<Snippet>().CountAsync(),
-            // ReSharper disable once PossibleLossOfFraction
             TotalPages = (int)Math.Ceiling((double)(totalRecords / pagination.PageSize)),
             PageSize = pagination.PageSize,
             PageNumber = pagination.PageNumber
@@ -93,7 +92,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                       tagDto.Tag.TagName.ToLower()
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
-                                                                  || x.Modified.ToString()!.Contains(request.KeyWord)));
+                                                                  || x.Modified.ToString().Contains(request.KeyWord)));
         }
 
         switch (sortOrder.Property.Capitalize())
@@ -144,7 +143,7 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
                                                                       tagDto.Tag.TagName.ToLower()
                                                                           .Contains(request.KeyWord))
                                                                   || x.Created.ToString().Contains(request.KeyWord)
-                                                                  || x.Modified.ToString()!.Contains(request.KeyWord)));
+                                                                  || x.Modified.ToString().Contains(request.KeyWord)));
         }
 
         if (request.TagIds is not null && request.TagIds.Any())
@@ -177,12 +176,31 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         };
     }
 
+    public async Task<SnippetDto> GetShareableSnippet(Guid userId, Guid shareableId)
+    {
+        return Map(await _context.Set<Snippet>()
+            .Include(x => x.User)
+            .Include(x => x.Tags)
+            .AsNoTracking()
+            .FirstAsync(x => x.UserId == userId && x.ShareableId == shareableId));
+    }
+
     public SnippetDto Map(Snippet snippet)
     {
         return new SnippetDto(snippet.Id, snippet.Name, snippet.Content, snippet.Description, snippet.Origin,
             snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
         {
-            Tags = MapTag(snippet.Tags)
+            Tags = MapTag(snippet.Tags),
+            User = MapUser(snippet.User)
+        };
+    }
+
+    private UserDto MapUser(User snippetUser)
+    {
+        return new UserDto(snippetUser.Email)
+        {
+            Id = snippetUser.Id,
+            SocialProvider = snippetUser.SocialProvider
         };
     }
 

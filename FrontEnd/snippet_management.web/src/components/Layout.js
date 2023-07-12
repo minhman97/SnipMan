@@ -1,12 +1,12 @@
 import Popup from "./Popup/Popup";
 import AddSnippetButton from "./Popup/Contents/AddSnippetButton";
-import { useState } from "react";
 import SearchBar from "./SearchBar";
 import SideBar from "./SideBar";
 import SnippetList from "./SnippetList";
 import Button from "./Elements/Button";
 import { useSnippetContext } from "../context/SnippetContext";
-import { Toaster } from 'react-hot-toast';
+import { usePopupContext } from "../context/PopupContext";
+import { Toaster } from "react-hot-toast";
 
 const Layout = ({
   children,
@@ -15,11 +15,11 @@ const Layout = ({
   refetch,
   handleUpdateSnippet,
   handleDeleteSnippet,
-  handleSortSnippets
+  handleSortSnippets,
 }) => {
   const { snippet } = useSnippetContext();
+  const { popup, setPopup } = usePopupContext();
 
-  let [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <main
@@ -43,7 +43,12 @@ const Layout = ({
               <Button
                 className="px-4 py-2 font-semibold text-sm bg-slate-700 text-white rounded-full shadow-sm mt-5 mr-5 hover:bg-slate-500"
                 onClick={(e) => {
-                  setIsOpen(true);
+                  setPopup({
+                    ...popup,
+                    isOpen: true,
+                    title: "Add Code Snippets & Developer Materials",
+                    content: <AddSnippetButton></AddSnippetButton>,
+                  });
                 }}
                 type="button"
               >
@@ -83,13 +88,7 @@ const Layout = ({
           </div>
         </div>
       </main>
-      <Popup
-        title={"Add Code Snippets & Developer Materials"}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      >
-        <AddSnippetButton></AddSnippetButton>
-      </Popup>
+      <Popup></Popup>
       <Toaster />
     </>
   );

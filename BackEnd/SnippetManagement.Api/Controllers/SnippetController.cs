@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using SnippetManagement.Api.Configuration;
 using SnippetManagement.Api.Service;
 using SnippetManagement.Common;
 using SnippetManagement.DataModel;
@@ -15,7 +17,6 @@ public class SnippetController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IIdentityService _identityService;
-
     public SnippetController(IUnitOfWork unitOfWork, IIdentityService identityService)
     {
         _unitOfWork = unitOfWork;
@@ -35,7 +36,7 @@ public class SnippetController : ControllerBase
             SnippetId = snippet.Id,
             TagId = x.Id
         }).ToList();
-        
+
         _unitOfWork.TagRepository.AddRange(newTags);
         _unitOfWork.SnippetTagRepository.AddRange(snippetTags);
         _unitOfWork.SnippetRepository.Add(snippet);
@@ -91,7 +92,7 @@ public class SnippetController : ControllerBase
             return NotFound();
 
         _unitOfWork.SnippetTagRepository.RemoveRange(snippet.Tags.ToList());
-        
+
         var newTags = GetNewTags(request.NewTags);
         var snippetTags = newTags.Concat(GetExistedTags(request.TagsExisted)).Select(x => new SnippetTag()
         {
@@ -124,5 +125,33 @@ public class SnippetController : ControllerBase
         _unitOfWork.SnippetRepository.Remove(snippet);
         await _unitOfWork.SaveChangesAsync();
         return Ok(new { success = true, message = "Snippet:" + snippet.Name + " deleted successfully" });
+    }
+    
+    [HttpGet]
+    [Route("GetShareableSnippet")]
+    public async Task<IActionResult> GetShareableSnippet(Guid snippetId, Guid userId)
+    {
+        var snippet = await _unitOfWork.SnippetRepository.Find(snippetId);
+        if (snippet is null)
+            return NotFound();
+
+        if (snippet.ShareableId is null)
+        {
+            snippet.ShareableId = Guid.NewGuid();
+            await _unitOfWork.SaveChangesAsync();
+        }
+        return Ok(new { ShareableSnippet = new
+        {
+            UserId = snippet.UserId,
+            ShareableId = snippet.ShareableId
+        }});
+    }
+
+    [HttpGet]
+    [Route("Share")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Share(Guid userId, Guid shareableId)
+    {
+        return Ok(await _unitOfWork.SnippetRepository.GetShareableSnippet(userId, shareableId));
     }
 }
