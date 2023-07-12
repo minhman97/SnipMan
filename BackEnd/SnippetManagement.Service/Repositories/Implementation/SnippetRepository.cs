@@ -178,7 +178,11 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
 
     public async Task<SnippetDto> GetShareableSnippet(Guid userId, Guid shareableId)
     {
-        return Map(await _context.Set<Snippet>().Include(x => x.Tags).FirstAsync(x => x.UserId == userId && x.ShareableId == shareableId));
+        return Map(await _context.Set<Snippet>()
+            .Include(x => x.User)
+            .Include(x => x.Tags)
+            .AsNoTracking()
+            .FirstAsync(x => x.UserId == userId && x.ShareableId == shareableId));
     }
 
     public SnippetDto Map(Snippet snippet)
@@ -186,7 +190,17 @@ public class SnippetRepository : BaseRepository<Snippet>, ISnippetRepository
         return new SnippetDto(snippet.Id, snippet.Name, snippet.Content, snippet.Description, snippet.Origin,
             snippet.Created, snippet.Modified, snippet.Language, snippet.UserId)
         {
-            Tags = MapTag(snippet.Tags)
+            Tags = MapTag(snippet.Tags),
+            User = MapUser(snippet.User)
+        };
+    }
+
+    private UserDto MapUser(User snippetUser)
+    {
+        return new UserDto(snippetUser.Email)
+        {
+            Id = snippetUser.Id,
+            SocialProvider = snippetUser.SocialProvider
         };
     }
 

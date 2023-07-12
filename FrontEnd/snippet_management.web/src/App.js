@@ -62,7 +62,7 @@ function App() {
           element={token ? <CreateSnippet /> : <Navigate to={`/`} />}
         />
         <Route
-          path="/:userId/:shareableId"
+          path="/snippet/share/:userId/:shareableId"
           element={<ShareableSnippet />}
         ></Route>
       </>
