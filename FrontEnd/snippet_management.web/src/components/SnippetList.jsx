@@ -8,28 +8,32 @@ import { useSnippetContext } from "../context/SnippetContext";
 import { slidesPerView } from "../context/PaginationContext";
 import { getIconUrl } from "../api/apiEndpoint";
 
-const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
-  const { snippet, setSnippet, currentCursor, setCurrentCursor } =
-    useSnippetContext();
+const SnippetList = ({ pages, fetchNextPage }) => {
+  const {
+    snippet,
+    setSnippet,
+    currentCursor,
+    setCurrentCursor,
+    handleUpdateSnippet,
+  } = useSnippetContext();
 
   const [renameSnippet, setRenameSnippet] = useState(false);
   const swiperRef = useRef(null);
-
   return (
     <>
       {pages === null || pages === undefined ? (
-        <div className="flex justify-center mt-5">Loading...</div>
+        <div className="mt-5 flex justify-center">Loading...</div>
       ) : (
         <>
-          <div className="flex justify-center mt-5">
+          <div className="mt-5 flex justify-center">
             <button
               type="button"
-              className="px-4 py-2 font-semibold text-sm bg-slate-700 hover:bg-slate-400 text-white rounded-full shadow-sm"
+              className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-400"
               onClick={(e) => {
                 swiperRef.current.swiper.slidePrev();
               }}
             >
-              <ArrowLeftIcon className="h-6 w-6 text-white-500" />
+              <ArrowLeftIcon className="text-white-500 h-6 w-6" />
             </button>
             <Swiper
               ref={swiperRef}
@@ -38,7 +42,7 @@ const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
               centeredSlides={true}
               slideToClickedSlide={true}
               modules={[Navigation]}
-              className="mx-5 w-1/2"
+              className="!mx-5 w-1/2"
               setWrapperSize={true}
               onSlideChange={(e) => {
                 if (e.activeIndex + 3 >= e.slides.length) {
@@ -69,6 +73,12 @@ const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
               }}
               onAfterInit={(e) => {
                 handleStyleSlider(e);
+                swiperRef.current.swiper.slideTo(currentCursor);
+                let snippets = [];
+                pages.forEach((page) => {
+                  snippets = snippets.concat(page.data);
+                });
+                setSnippet(snippets[currentCursor]);
               }}
             >
               {pages.map((page, i) => {
@@ -83,7 +93,7 @@ const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
                               `Assets/Icons/classifications`,
                               snippet.language
                             )}
-                            className="w-10 h-10 cursor-pointer"
+                            className="h-10 w-10 cursor-pointer"
                             title={snippet.language}
                           />
                         </SwiperSlide>
@@ -95,28 +105,28 @@ const SnippetList = ({ pages, fetchNextPage, handleUpdateSnippet }) => {
             </Swiper>
             <button
               type="button"
-              className="px-4 py-2 font-semibold text-sm bg-slate-700 hover:bg-slate-400 text-white rounded-full shadow-sm"
+              className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-400"
               onClick={(e) => {
                 swiperRef.current.swiper.slideNext();
               }}
             >
-              <ArrowRightIcon className="h-6 w-6 text-white-500" />
+              <ArrowRightIcon className="text-white-500 h-6 w-6" />
             </button>
           </div>
           <div className="flex flex-col items-center">
-            {snippet.name && (
+            {snippet != undefined && (
               <>
                 <input
                   type="text"
                   value={snippet.name}
-                  className="rounded-full w-8/12 h-12 bg-slate-800 px-5 mt-5 text-center : hover:bg-slate-900 font-extrabold"
+                  className=": mt-5 h-12 w-8/12 rounded-full bg-slate-800 px-5 text-center font-extrabold hover:bg-slate-900"
                   onChange={(e) => {
                     setSnippet({ ...snippet, name: e.target.value });
                     setRenameSnippet(true);
                   }}
                   onBlur={async (e) => {
                     if (renameSnippet) {
-                      handleUpdateSnippet();
+                      handleUpdateSnippet(snippet);
 
                       setRenameSnippet(false);
                     }

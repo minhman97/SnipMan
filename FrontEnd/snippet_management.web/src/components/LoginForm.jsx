@@ -19,11 +19,10 @@ const LoginForm = ({ setToken }) => {
     script.onload = () => {
       if (window.google) {
         /*global google*/
-        var a = {
-          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+        google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
           callback: handleCredentialResponse,
-        };
-        google.accounts.id.initialize(a);
+        });
         google.accounts.id.renderButton(
           document.getElementById("btn-signin-gg"),
           { theme: "outline", size: "large" } // customization attributes

@@ -16,7 +16,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 function App() {
   const [token, saveToken] = useToken();
-  
+
   const queryClient = new QueryClient();
   queryClient.invalidateQueries({ queryKey: ["list-snippet"] });
   const router = createBrowserRouter(
@@ -43,7 +43,10 @@ function App() {
                     <Snippet />
                   </PaginationContext>
                 </SnippetContext>
-                <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+                <ReactQueryDevtools
+                  initialIsOpen={false}
+                  position="bottom-right"
+                />
               </QueryClientProvider>
             ) : (
               <Navigate to={`/`} />
