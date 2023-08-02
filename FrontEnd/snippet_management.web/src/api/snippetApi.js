@@ -62,15 +62,15 @@ export const createSnippet = async (snippet) => {
     });
 };
 
-export const updateSnippet = async ({ snippet }) => {
+export const updateSnippet = async ({ updatingSnippet }) => {
   const token = getUserToken();
-  return await fetch(updateSnippetUrl(snippet.id), {
+  return await fetch(updateSnippetUrl(updatingSnippet.id), {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(snippet),
+    body: JSON.stringify(updatingSnippet),
   }).then((res) => {
     if (res.ok) return res.json();
     throw new Error(

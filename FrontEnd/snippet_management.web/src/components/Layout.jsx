@@ -1,6 +1,6 @@
 import Popup from "./Popup/Popup";
 import AddSnippetButton from "./Popup/Contents/AddSnippetButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
 import SideBar from "./SideBar";
 import SnippetList from "./SnippetList";
@@ -13,13 +13,13 @@ const Layout = ({
   pages,
   fetchNextPage,
   refetch,
-  handleUpdateSnippet,
   handleDeleteSnippet,
   handleSortSnippets
 }) => {
   const { snippet } = useSnippetContext();
-
+  
   let [isOpen, setIsOpen] = useState(false);
+  
   return (
     <>
       <main
@@ -75,7 +75,6 @@ const Layout = ({
             <SnippetList
               pages={pages}
               fetchNextPage={fetchNextPage}
-              handleUpdateSnippet={handleUpdateSnippet}
             />
           </div>
           <div>

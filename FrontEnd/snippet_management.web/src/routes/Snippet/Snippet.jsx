@@ -1,4 +1,3 @@
-import { SnippetTextArea } from "../../components/SnippetTextArea";
 import Layout from "../../components/Layout";
 import { getSnippets } from "../../api/snippetApi";
 import { useSnippetContext } from "../../context/SnippetContext";
@@ -6,13 +5,12 @@ import {
   pageSize,
   usePaginationContext,
 } from "../../context/PaginationContext";
-import { useDeleteSnippet, useUpdateSnippet, } from "../../hooks/snippetHooks";
+import { useDeleteSnippet, useUpdateSnippet } from "../../hooks/snippetHooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
-
+import { Editor } from "../../components/Elements/Editor";
 
 const Snippet = () => {
   const {
-    snippet,
     currentCursor,
     setCurrentCursor,
     filterKeyWord,
@@ -21,11 +19,6 @@ const Snippet = () => {
   const { sortOrder, setSortOrder } = usePaginationContext();
 
   const { mutate: mutateDeleteSnippet } = useDeleteSnippet();
-  const { mutate: mutateUpdateSnippet } = useUpdateSnippet();
-
-  const handleUpdateSnippet = () => {
-    mutateUpdateSnippet({ snippet });
-  };
 
   const handleDeleteSnippet = (id) => {
     let cursor = currentCursor - 1 < 0 ? 0 : currentCursor - 1;
@@ -34,32 +27,27 @@ const Snippet = () => {
     setCurrentCursor(cursor);
   };
 
-  const handleSortSnippets = () =>{
+  const handleSortSnippets = () => {
     setSortOrder({
       ...sortOrder,
       orderWay: sortOrder.orderWay === "asc" ? "desc" : "asc",
       sortProperty: "created",
     });
     setCurrentCursor(0);
-    refetch();
-  }
+  };
 
-  const {
-    data,
-    error,
-    fetchNextPage,
-    refetch,
-  } = useInfiniteQuery(
+  const { data, error, fetchNextPage, refetch } = useInfiniteQuery(
     ["list-snippet", sortOrder, filterKeyWord],
     async ({ pageParam = 0 }) => {
-      const snippets = await getSnippets(
+      const res = await getSnippets(
         filterKeyWord,
         pageParam,
         pageParam + pageSize,
         sortOrder.sortProperty,
         sortOrder.orderWay
       );
-      return snippets;
+
+      return res;
     },
     {
       getNextPageParam: (lastPage) => {
@@ -70,25 +58,21 @@ const Snippet = () => {
       refetchOnWindowFocus: false,
     }
   );
-  
+
   if (error) {
     return (
-      <div className="flex justify-center mt-5">{`An error has occured: ${error.message}`}</div>
+      <div className="mt-5 flex justify-center">{`An error has occured: ${error.message}`}</div>
     );
   }
-  
   return (
     <Layout
       pages={data?.pages}
       fetchNextPage={fetchNextPage}
       refetch={refetch}
-      handleUpdateSnippet={handleUpdateSnippet}
       handleDeleteSnippet={handleDeleteSnippet}
       handleSortSnippets={handleSortSnippets}
     >
-      <SnippetTextArea
-        handleUpdateSnippet={handleUpdateSnippet}
-      ></SnippetTextArea>
+      <Editor></Editor>
     </Layout>
   );
 };

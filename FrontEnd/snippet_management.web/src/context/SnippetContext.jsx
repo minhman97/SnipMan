@@ -1,12 +1,18 @@
 import React, { createContext, useContext, useState } from "react";
-
+import { useUpdateSnippet } from "../hooks/snippetHooks";
 const Context = createContext();
 
 export const SnippetContext = ({ children }) => {
-  const [snippet, setSnippet] = useState({});
+  const [snippet, setSnippet] = useState(undefined);
   const [currentCursor, setCurrentCursor] = useState(0);
 
   const [filterKeyWord, setFilterKeyWord] = useState("");
+  const { mutate: mutateUpdateSnippet } = useUpdateSnippet();
+
+  const handleUpdateSnippet = (updatingSnippet) => {
+    setSnippet(updatingSnippet);
+    mutateUpdateSnippet({ updatingSnippet });
+  };
 
   return (
     <Context.Provider
@@ -17,6 +23,7 @@ export const SnippetContext = ({ children }) => {
         setCurrentCursor,
         filterKeyWord,
         setFilterKeyWord,
+        handleUpdateSnippet
       }}
     >
       {children}
